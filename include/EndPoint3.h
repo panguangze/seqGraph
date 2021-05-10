@@ -6,13 +6,12 @@
 #define SEQMAP_ENDPOINT3_H
 
 #include <vector>
-#include "EndPoint5.h"
-
+#include "OuterEdge.h"
 
 class EndPoint3 {
 protected:
     int *copyNumber;
-    std::vector<EndPoint5 *> nextPoints;
+    std::vector<OuterEdge *> edges ;
 };
 
 
