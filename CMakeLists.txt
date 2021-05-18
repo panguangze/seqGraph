@@ -1,15 +1,41 @@
 cmake_minimum_required(VERSION 3.19)
-project(seqMap)
+project(seqGraph VERSION 1.0.1 DESCRIPTION "seq graph")
 
 set(CMAKE_CXX_STANDARD 14)
+set(DEFAULT_BUILD_TYPE "Release")
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Setting build type to '${DEFAULT_BUILD_TYPE}' as none was specified.")
+    set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+include(GNUInstallDirs)
 
-#add_library(seqMap SHARED library.cpp library.h)
+set(SOURCE_FILES src/Edge.cpp
+        src/EndPoint.cpp
+        src/Exception.cpp
+        src/Graph.cpp
+        src/Junction.cpp
+        src/Vertex.cpp
+        src/Weight.cpp)
 
-set(CMAKE_BUILD_TYPE DEBUG)
-set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXX_FLAGS} -O0 -Wall -ggdb -fkeep-inline-functions")
-set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 ")
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
-aux_source_directory(./src  SEQMAP_SRC)
-include_directories(${PROJECT_SOURCE_DIR}/include)
-add_executable(test test.cpp ${SEQMAP_SRC} ./include)
-#target_link_libraries(countSupport -lCbcSolver -lCbc -lOsi -lOsiCbc -lCgl -lOsiClp -lClp -lCoinUtils -llapack -lbz2 -lz -lhts)
+target_include_directories(${PROJECT_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION 1)
+
+install(TARGETS ${PROJECT_NAME} EXPORT seqGraphConfig
+        ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+
+install(EXPORT seqGraphConfig DESTINATION share/seqGraph/cmake)
+
+export(TARGETS ${PROJECT_NAME} FILE seqGraphConfig.cmake)
+
