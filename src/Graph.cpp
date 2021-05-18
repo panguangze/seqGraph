@@ -182,3 +182,11 @@ Vertex *Graph::getSink() const {
 void Graph::setSink(std::string Id) {
     this->sink = this->getVertexById(Id);
 }
+
+std::vector<Vertex *> *Graph::getVertices() const {
+    return vertices;
+}
+
+std::vector<Junction *> *Graph::getJunctions() const {
+    return junctions;
+}

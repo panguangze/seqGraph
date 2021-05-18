@@ -58,6 +58,10 @@ namespace seqGraph {
         Vertex *getSink() const;
 
         void setSink(std::string Id);
+
+        std::vector<Vertex *> *getVertices() const;
+
+        std::vector<Junction *> *getJunctions() const;
     };
 }
 

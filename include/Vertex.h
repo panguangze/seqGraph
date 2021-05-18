@@ -86,6 +86,9 @@ namespace seqGraph {
         void resetHasLowerBoundLimit();
         void checkLowerBound();
         bool hasCopy();
+
+        double getInCoverage();
+        double getOutCoverage();
     };
 }
 

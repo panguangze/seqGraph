@@ -148,3 +148,10 @@ bool Vertex::isHasLowerBoundLimit() {
 bool Vertex::hasCopy() {
     return this->EP3->hasCopy();
 }
+
+double Vertex::getInCoverage(){
+    return this->EP5->getInCoverage();
+}
+double Vertex::getOutCoverage(){
+    return this->EP3->getOutCoverage();
+}
