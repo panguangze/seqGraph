@@ -23,13 +23,13 @@ namespace seqGraph {
         Weight *weight;
         EndPoint *mateEP;
         Vertex* vertex;
-        std::string vId;
+        int vId;
         std::vector<Edge *> *edges;
         int type; // EP type,0: left top, 1: right top, 2: right bottom,3: left bottom
         bool visited;
         Edge *shortestPrevEdge;
     public:
-        EndPoint(Weight *weight, int type, std::string vId);
+        EndPoint(Weight *weight, int type, int vId);
 
         ~EndPoint();
 
@@ -57,9 +57,11 @@ namespace seqGraph {
 
         void setShortestPrevEdge(Edge *shortestPrevEdge);
 
-        const std::string getVId() const;
+        const int getVId() const;
 
         EndPoint *getMateEp() const;
+
+        void setMateEp(EndPoint *mateEp);
 
         std::vector<Edge *> *getInEdges();
 

@@ -14,7 +14,7 @@ namespace seqGraph {
     class EndPoint;
     class Vertex {
     protected:
-        std::string Id;
+        int Id;
         std::string chrom;
         int start;
         int end;
@@ -28,13 +28,13 @@ namespace seqGraph {
         bool orphan;
         bool hasLowerBoundLimit;
     public:
-        Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
+        Vertex(int mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
 
         ~Vertex();
 
-        const std::string getId() const;
+        const int getId() const;
 
-        void setId(const std::string mId);
+        void setId(const int mId);
 
         Weight *getWeight() const;
 
@@ -89,6 +89,8 @@ namespace seqGraph {
 
         double getInCoverage();
         double getOutCoverage();
+
+        void setMateEP();
     };
 }
 

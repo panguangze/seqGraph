@@ -18,6 +18,8 @@ Edge::Edge(EndPoint *source, EndPoint *target, double aCoverage, int type) {
 Edge::Edge(EndPoint *source, EndPoint *target, Weight *weight, int type) {
     this->source = source;
     this->target = target;
+    source->addEdge(this);
+    target->addEdge(this);
     this->weight = weight;
     this->type = type;
     this->visited = false;

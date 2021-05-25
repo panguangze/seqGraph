@@ -6,7 +6,7 @@
 
 using namespace seqGraph;
 
-Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double aCredibility, int aCopyNum) {
+Vertex::Vertex(int mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double aCredibility, int aCopyNum) {
     this->Id = mId;
     this->orphan = true;
     this->chrom = aChrom;
@@ -17,15 +17,16 @@ Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double 
     weight = new Weight(aCoverage);
     weight->setCopyNum(aCopyNum);
 //    create endpoints
-    this->EP3 = new EndPoint(weight, _LEFT_TOP_, mId);
-    this->rEP3 = new EndPoint(weight, _RIGHT_BOTTOM_, mId);
-    this->EP5 = new EndPoint(weight, _RIGHT_TOP_, mId);
-    this->rEP5 = new EndPoint(weight, _LEFT_BOTTOM_, mId);
+    this->EP5 = new EndPoint(weight, _LEFT_TOP_, mId);
+    this->rEP5 = new EndPoint(weight, _RIGHT_BOTTOM_, mId);
+    this->EP3 = new EndPoint(weight, _RIGHT_TOP_, mId);
+    this->rEP3 = new EndPoint(weight, _LEFT_BOTTOM_, mId);
 
     this->EP3->setVertex(this);
     this->rEP3->setVertex(this);
     this->EP5->setVertex(this);
     this->rEP5->setVertex(this);
+    this->setMateEP();
 
     //    create inner edges, inner edges has same weight with vertex weigh
 //    auto *topEdge = new Edge(this->EP5, this->EP3, aCoverage, _INNER_EDGE_);
@@ -37,11 +38,11 @@ Vertex::~Vertex() {
 
 }
 
-const std::string Vertex::getId() const {
+const int Vertex::getId() const {
     return Id;
 }
 
-void Vertex::setId(const std::string mId) {
+void Vertex::setId(const int mId) {
     Vertex::Id = mId;
 }
 
@@ -154,4 +155,11 @@ double Vertex::getInCoverage(){
 }
 double Vertex::getOutCoverage(){
     return this->EP3->getOutCoverage();
+}
+
+void Vertex::setMateEP() {
+    this->EP5->setMateEp(this->EP3);
+    this->EP3->setMateEp(this->EP5);
+    this->rEP5->setMateEp(this->rEP3);
+    this->rEP3->setMateEp(this->rEP5);
 }

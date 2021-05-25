@@ -23,19 +23,19 @@ namespace seqGraph {
 
         ~Graph();
 
-        Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
+        Vertex *addVertex(int mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
 
         Junction *
         addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
                     double coverage, bool aIsBounded);
 
         Junction *
-        addJunction(std::string sourceId, std::string targetId, char sourceDir, char targetDir, double copyNum,
+        addJunction(int sourceId, int targetId, char sourceDir, char targetDir, double copyNum,
                     double coverage, bool aIsBounded);
 
         Junction * addJunction(EndPoint* ep3, EndPoint* ep5, double copyNum, double converage, bool isBounded);
 
-        Vertex *getVertexById(std::string Id);
+        Vertex *getVertexById(int Id);
 
         bool doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);
 
@@ -55,11 +55,11 @@ namespace seqGraph {
 
         Vertex *getSource() const;
 
-        void setSource(std::string Id);
+        void setSource(int Id);
 
         Vertex *getSink() const;
 
-        void setSink(std::string Id);
+        void setSink(int Id);
 
         std::vector<Vertex *> *getVertices() const;
 

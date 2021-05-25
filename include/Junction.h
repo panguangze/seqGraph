@@ -5,7 +5,7 @@
 #ifndef SEQMAP_JUNCTION_H
 #define SEQMAP_JUNCTION_H
 #define _POSITIVE_DIR_ '+'
-#define _NEGATIVE_DIR_ '+'
+#define _NEGATIVE_DIR_ '-'
 
 #include "Vertex.h"
 #include "Edge.h"

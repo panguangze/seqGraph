@@ -6,7 +6,7 @@
 
 using namespace seqGraph;
 
-EndPoint::EndPoint(Weight *weight, int type, std::string vId) {
+EndPoint::EndPoint(Weight *weight, int type, int vId) {
     this->weight = weight;
     this->type = type;
     this->visited = false;
@@ -32,7 +32,7 @@ void EndPoint::setType(int type) {
 }
 
 std::string EndPoint::getInfo() {
-    return this->vId + std::to_string(this->type);
+    return std::to_string(this->vId) + std::to_string(this->type);
 }
 
 Edge *EndPoint::getOneNextEdge(bool isTraversing) {
@@ -87,7 +87,7 @@ void EndPoint::setShortestPrevEdge(Edge *shortestPrevEdge) {
     this->mateEP->shortestPrevEdge = shortestPrevEdge;
 }
 
-const std::string EndPoint::getVId() const {
+const int EndPoint::getVId() const {
     return vId;
 }
 
@@ -97,12 +97,12 @@ EndPoint *EndPoint::getMateEp() const {
 
 std::vector<Edge *> *EndPoint::getInEdges() {
     if (this->type == _LEFT_TOP_ || this->type == _RIGHT_BOTTOM_) return this->edges;
-    if (this->type == _LEFT_TOP_ || this->type == _RIGHT_BOTTOM_) return this->mateEP->edges;
+    if (this->type == _LEFT_BOTTOM_ || this->type == _RIGHT_TOP_) return this->mateEP->edges;
 }
 
 std::vector<Edge *> *EndPoint::getOutEdges() {
     if (this->type == _LEFT_TOP_ || this->type == _RIGHT_BOTTOM_) return this->mateEP->edges;
-    if (this->type == _LEFT_TOP_ || this->type == _RIGHT_BOTTOM_) return this->edges;
+    if (this->type == _LEFT_BOTTOM_ || this->type == _RIGHT_TOP_) return this->edges;
 }
 
 double EndPoint::getInCoverage() {
@@ -126,4 +126,8 @@ Vertex *EndPoint::getVertex() const {
 
 void EndPoint::setVertex(Vertex *vertex) {
     EndPoint::vertex = vertex;
+}
+
+void EndPoint::setMateEp(EndPoint *mateEp) {
+    mateEP = mateEp;
 }

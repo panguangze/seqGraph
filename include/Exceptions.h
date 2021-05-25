@@ -23,10 +23,10 @@ namespace seqGraph {
 
     class VertexDoesNotExistException : public std::exception {
     private:
-        std::string Id;
+        int Id;
         std::string whatMsg;
     public:
-        VertexDoesNotExistException(std::string Id);
+        VertexDoesNotExistException(int Id);
 
         virtual const char *what() const throw();
     };

@@ -22,7 +22,7 @@ Graph::~Graph() {
 
 }
 
-Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum) {
+Vertex *Graph::addVertex(int mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum) {
 //    create vertex add push
     auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum);
     this->vertices->push_back(vertex);
@@ -43,7 +43,7 @@ Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char so
 }
 
 Junction *
-Graph::addJunction(std::string sourceId, std::string targetId, char sourceDir, char targetDir, double copyNum,
+Graph::addJunction(int sourceId, int targetId, char sourceDir, char targetDir, double copyNum,
                    double coverage ,bool aIsBounded) {
     Vertex *sourceVertex = this->getVertexById(sourceId);
     Vertex *targetVertex = this->getVertexById(targetId);
@@ -59,7 +59,7 @@ Junction * Graph::addJunction(EndPoint *ep3, EndPoint *ep5, double copyNum, doub
     return this->addJunction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, isBounded);
 }
 
-Vertex *Graph::getVertexById(std::string Id) {
+Vertex *Graph::getVertexById(int Id) {
     for (auto *vertex : *this->vertices) {
         if (vertex->getId() == Id) return vertex;
     }
@@ -133,7 +133,7 @@ bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
             }
         } else {
             EndPoint *nextEP = nextEdge->getTarget();
-            if (nextEP == sinkEndpoint) {
+            if (nextEP == sinkEndpoint || nextEP == sinkEndpoint->getMateEp()) {
                 isReach = true;
                 break;
             }
@@ -180,7 +180,7 @@ Vertex *Graph::getSource() const {
     return source;
 }
 
-void Graph::setSource(std::string Id) {
+void Graph::setSource(int Id) {
     this->source = this->getVertexById(Id);
 }
 
@@ -188,7 +188,7 @@ Vertex *Graph::getSink() const {
     return sink;
 }
 
-void Graph::setSink(std::string Id) {
+void Graph::setSink(int Id) {
     this->sink = this->getVertexById(Id);
 }
 
