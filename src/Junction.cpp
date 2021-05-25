@@ -11,6 +11,7 @@ Junction::Junction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, c
     this->sourceDir = sourceDir;
     this->targetDir = targetDir;
     this->weight = new Weight(coverage);
+    weight->setCopyNum(copyNum);
     this->source = sourceVertex;
     this->target = targetVertex;
     this->hasLowerBoundLimit = aIsBounded;

@@ -32,7 +32,7 @@ void EndPoint::setType(int type) {
 }
 
 std::string EndPoint::getInfo() {
-    return std::to_string(this->vId) + std::to_string(this->type);
+    return std::to_string(this->vId) + (this->type < 0 ? "-":"+");
 }
 
 Edge *EndPoint::getOneNextEdge(bool isTraversing) {

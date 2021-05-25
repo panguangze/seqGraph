@@ -7,10 +7,11 @@
 
 using namespace seqGraph;
 
-Edge::Edge(EndPoint *source, EndPoint *target, double aCoverage, int type) {
+Edge::Edge(EndPoint *source, EndPoint *target, double aCoverage,double copyNum, int type) {
     this->source = source;
     this->target = target;
     this->weight = new Weight(aCoverage);
+    this->weight->setCopyNum(copyNum);
     this->type = type;
     this->visited = false;
 }

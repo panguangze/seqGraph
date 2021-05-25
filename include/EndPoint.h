@@ -4,10 +4,10 @@
 
 #ifndef SEQMAP_ENDPOINT_H
 #define SEQMAP_ENDPOINT_H
-#define _LEFT_TOP_ 0
-#define _RIGHT_TOP_ 1
-#define _RIGHT_BOTTOM_ 2
-#define _LEFT_BOTTOM_ 3
+#define _LEFT_TOP_ 5
+#define _RIGHT_TOP_ 3
+#define _RIGHT_BOTTOM_ -5
+#define _LEFT_BOTTOM_ -3
 
 #include "Weight.h"
 #include "Edge.h"

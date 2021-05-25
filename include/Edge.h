@@ -23,7 +23,7 @@ namespace seqGraph {
         int type;
         bool visited;
     public:
-        Edge(EndPoint *source, EndPoint *target, double aCoverage, int type);
+        Edge(EndPoint *source, EndPoint *target, double aCoverage, double copyNum, int type);
 
         Edge(EndPoint *source, EndPoint *target, Weight *weight, int type);
 
