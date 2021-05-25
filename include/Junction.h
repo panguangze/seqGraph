@@ -24,6 +24,7 @@ namespace seqGraph {
 
         Edge *oEdge; // original edge
         Edge *cEdge; // conjugate edge
+        bool inferred;
 
     public:
         Junction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
@@ -48,6 +49,10 @@ namespace seqGraph {
         Vertex *getSource() const;
 
         Vertex *getTarget() const;
+
+        bool isInferred() const;
+
+        void setInferred(bool inferred);
 
         bool isHasLowerBoundLimit() const;
 

@@ -50,6 +50,15 @@ Graph::addJunction(std::string sourceId, std::string targetId, char sourceDir, c
     return this->addJunction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
 }
 
+Junction * Graph::addJunction(EndPoint *ep3, EndPoint *ep5, double copyNum, double coverage, bool isBounded) {
+    Vertex *sourceVertex = ep3->getVertex();
+    Vertex *targetVertex = ep5->getVertex();
+
+    char sourceDir = ep3->getType() == _RIGHT_TOP_ ? '+' : '-';
+    char targetDir = ep3->getType() == _LEFT_TOP_ ? '+' : '-';
+    return this->addJunction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, isBounded);
+}
+
 Vertex *Graph::getVertexById(std::string Id) {
     for (auto *vertex : *this->vertices) {
         if (vertex->getId() == Id) return vertex;

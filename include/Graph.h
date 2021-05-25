@@ -33,6 +33,8 @@ namespace seqGraph {
         addJunction(std::string sourceId, std::string targetId, char sourceDir, char targetDir, double copyNum,
                     double coverage, bool aIsBounded);
 
+        Junction * addJunction(EndPoint* ep3, EndPoint* ep5, double copyNum, double converage, bool isBounded);
+
         Vertex *getVertexById(std::string Id);
 
         bool doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);

@@ -99,3 +99,11 @@ void Junction::checkLowerBound() { hasLowerBoundLimit = this->weight->getCopyNum
 bool Junction::hasCopy(){
     return this->oEdge->hasCopy();
 }
+
+bool Junction::isInferred() const {
+    return inferred;
+}
+
+void Junction::setInferred(bool inferred) {
+    Junction::inferred = inferred;
+}
