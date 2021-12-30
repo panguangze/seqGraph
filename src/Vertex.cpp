@@ -6,7 +6,7 @@
 
 using namespace seqGraph;
 
-Vertex::Vertex(int mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double aCredibility, int aCopyNum) {
+Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double aCredibility, int aCopyNum) {
     this->Id = mId;
     this->orphan = true;
     this->chrom = aChrom;
@@ -38,7 +38,7 @@ Vertex::~Vertex() {
 
 }
 
-const int Vertex::getId() const {
+const std::string Vertex::getId() const {
     return Id;
 }
 
@@ -46,6 +46,13 @@ void Vertex::setId(const int mId) {
     Vertex::Id = mId;
 }
 
+void Vertex::setIdx(const int idx) {
+    this->idx = idx;
+}
+
+int Vertex::getIdx() const {
+    return this->idx;
+}
 Weight *Vertex::getWeight() const {
     return weight;
 }

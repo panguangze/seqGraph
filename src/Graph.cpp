@@ -22,10 +22,13 @@ Graph::~Graph() {
 
 }
 
-Vertex *Graph::addVertex(int mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum) {
+Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum) {
 //    create vertex add push
+
     auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum);
+    vertex->setIdx(this->vertices->size());
     this->vertices->push_back(vertex);
+    return vertex;
 }
 
 Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
@@ -43,7 +46,7 @@ Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char so
 }
 
 Junction *
-Graph::addJunction(int sourceId, int targetId, char sourceDir, char targetDir, double copyNum,
+Graph::addJunction(std::string& sourceId, std::string& targetId, char sourceDir, char targetDir, double copyNum,
                    double coverage ,bool aIsBounded) {
     Vertex *sourceVertex = this->getVertexById(sourceId);
     Vertex *targetVertex = this->getVertexById(targetId);
@@ -59,11 +62,12 @@ Junction * Graph::addJunction(EndPoint *ep3, EndPoint *ep5, double copyNum, doub
     return this->addJunction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, isBounded);
 }
 
-Vertex *Graph::getVertexById(int Id) {
+Vertex *Graph::getVertexById(std::string Id) {
     for (auto *vertex : *this->vertices) {
         if (vertex->getId() == Id) return vertex;
     }
-    throw VertexDoesNotExistException(Id);
+//    throw VertexDoesNotExistException(Id);
+    return nullptr;
 }
 
 
@@ -180,7 +184,7 @@ Vertex *Graph::getSource() const {
     return source;
 }
 
-void Graph::setSource(int Id) {
+void Graph::setSource(std::string& Id) {
     this->source = this->getVertexById(Id);
 }
 
@@ -188,7 +192,7 @@ Vertex *Graph::getSink() const {
     return sink;
 }
 
-void Graph::setSink(int Id) {
+void Graph::setSink(std::string& Id) {
     this->sink = this->getVertexById(Id);
 }
 
@@ -198,4 +202,38 @@ std::vector<Vertex *> *Graph::getVertices() const {
 
 std::vector<Junction *> *Graph::getJunctions() const {
     return junctions;
+}
+
+double ** Graph::getConjugateMatrix(){
+    if(this->ConjugateMatrix != nullptr) return this->ConjugateMatrix;
+    int n = this->getVCount();
+    this->ConjugateMatrix = new double *[2*n + 1];
+    for(int i = 0; i < 2*n + 1; i++) {
+        this->ConjugateMatrix[i] = new double[2*n + 1];
+    }
+    for(auto junc : *junctions) {
+        int i = junc->getSource()->getIdx();
+        int j = junc->getTarget()->getIdx();
+        int sDir = junc->getSourceDir();
+        int tDir = junc->getTargetDir();
+        double weightValue = junc->getWeight()->getCopyNum();
+        if (sDir == '+') {
+            if (tDir == '+') {
+                this->ConjugateMatrix[2*j + 1][2*i + 1] = weightValue;
+                this->ConjugateMatrix[2*(i+1)][2*(j+1)] = weightValue;
+            } else {
+                this->ConjugateMatrix[2*(j + 1)][2*i+1] = weightValue;
+                this->ConjugateMatrix[2*(i+1)][2*j+1] = weightValue;
+            }
+        } else {
+            if (tDir == '+') {
+                this->ConjugateMatrix[2*j+1][2*(i + 1)] = weightValue;
+                this->ConjugateMatrix[2*i+1][2*(j+1)] = weightValue;
+            } else {
+                this->ConjugateMatrix[2*i+1][2*j+1] = weightValue;
+                this->ConjugateMatrix[2*(j+1)][2*(i+1)] = weightValue;
+            }
+        }
+    }
+    return ConjugateMatrix;
 }

@@ -6,7 +6,7 @@
 
 using namespace seqGraph;
 
-EndPoint::EndPoint(Weight *weight, int type, int vId) {
+EndPoint::EndPoint(Weight *weight, int type, std::string vId) {
     this->weight = weight;
     this->type = type;
     this->visited = false;
@@ -32,7 +32,7 @@ void EndPoint::setType(int type) {
 }
 
 std::string EndPoint::getInfo() {
-    return std::to_string(this->vId) + (this->type < 0 ? "-":"+");
+    return this->vId + (this->type < 0 ? "-":"+");
 }
 
 Edge *EndPoint::getOneNextEdge(bool isTraversing) {
@@ -87,7 +87,7 @@ void EndPoint::setShortestPrevEdge(Edge *shortestPrevEdge) {
     this->mateEP->shortestPrevEdge = shortestPrevEdge;
 }
 
-const int EndPoint::getVId() const {
+const std::string EndPoint::getVId() const {
     return vId;
 }
 

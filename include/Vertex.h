@@ -14,11 +14,12 @@ namespace seqGraph {
     class EndPoint;
     class Vertex {
     protected:
-        int Id;
+        std::string Id;
         std::string chrom;
         int start;
         int end;
         double credibility;
+        int idx;
 
         Weight *weight;
         EndPoint *EP3;
@@ -28,13 +29,17 @@ namespace seqGraph {
         bool orphan;
         bool hasLowerBoundLimit;
     public:
-        Vertex(int mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
+        Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
 
         ~Vertex();
 
-        const int getId() const;
+        const std::string getId() const;
 
         void setId(const int mId);
+
+        void setIdx(const int idx);
+
+        int getIdx() const;
 
         Weight *getWeight() const;
 

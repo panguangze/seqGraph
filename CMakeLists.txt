@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.16)
 project(seqGraph VERSION 1.0.1 DESCRIPTION "seq graph")
 
 set(CMAKE_CXX_STANDARD 14)
@@ -17,9 +17,12 @@ set(SOURCE_FILES src/Edge.cpp
         src/Graph.cpp
         src/Junction.cpp
         src/Vertex.cpp
-        src/Weight.cpp)
+        src/Weight.cpp
+        src/matching.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+
+add_executable(test test.cpp ${SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

@@ -18,24 +18,29 @@ namespace seqGraph {
         std::vector<Junction *> *junctions;
         Vertex *source;
         Vertex *sink;
+        double ** ConjugateMatrix;
     public:
         Graph();
 
         ~Graph();
 
-        Vertex *addVertex(int mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
+        inline int getVCount() const {
+            return this->vertices->size();
+        }
+
+        Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
 
         Junction *
         addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
                     double coverage, bool aIsBounded);
 
         Junction *
-        addJunction(int sourceId, int targetId, char sourceDir, char targetDir, double copyNum,
+        addJunction(std::string& sourceId, std::string& targetId, char sourceDir, char targetDir, double copyNum,
                     double coverage, bool aIsBounded);
 
         Junction * addJunction(EndPoint* ep3, EndPoint* ep5, double copyNum, double converage, bool isBounded);
 
-        Vertex *getVertexById(int Id);
+        Vertex *getVertexById(std::string Id);
 
         bool doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);
 
@@ -55,15 +60,17 @@ namespace seqGraph {
 
         Vertex *getSource() const;
 
-        void setSource(int Id);
+        void setSource(std::string& Id);
 
         Vertex *getSink() const;
 
-        void setSink(int Id);
+        void setSink(std::string& Id);
 
         std::vector<Vertex *> *getVertices() const;
 
         std::vector<Junction *> *getJunctions() const;
+
+        double ** getConjugateMatrix();
     };
 }
 

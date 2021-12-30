@@ -18,9 +18,9 @@ const char *DuplicateJunctionException::what() const throw() {
 }
 
 /* cannot find Vertex */
-VertexDoesNotExistException::VertexDoesNotExistException(int aSegId) {
+VertexDoesNotExistException::VertexDoesNotExistException(std::string& aSegId) {
     Id = aSegId;
-    whatMsg = "VertexDoesNotExistException: Vertex with ID " + to_string(Id) + " does not exist";
+    whatMsg = "VertexDoesNotExistException: Vertex with ID " + Id + " does not exist";
 }
 
 const char *VertexDoesNotExistException::what() const throw() {
