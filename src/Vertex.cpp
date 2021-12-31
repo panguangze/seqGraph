@@ -38,6 +38,10 @@ Vertex::~Vertex() {
 
 }
 
+bool Vertex::operator==(const Vertex &rhs) const {
+    return this->Id == rhs.Id;
+};
+
 const std::string Vertex::getId() const {
     return Id;
 }
@@ -93,9 +97,6 @@ void Vertex::setRep5(EndPoint *rEp5) {
     rEP5 = rEp5;
 }
 
-bool Vertex::operator==(const Vertex &rhs) const {
-    return Id == rhs.Id;
-}
 
 bool Vertex::isOrphan() const {
     return orphan;

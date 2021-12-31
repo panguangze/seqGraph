@@ -17,7 +17,7 @@ private:
     int* matched;
     void init_labels();
     void update_labels();
-    void bfs(int i, double* ex, double* ey, bool* visity,int* pre, double* slack);
+    void bfs(int i, double ex[], double ey[], bool visity[],int pre[], double []);
 public:
     explicit matching(seqGraph::Graph* graph1);
     inline int* getMatched() const {
@@ -33,9 +33,14 @@ public:
         free(this->graph);
     }
     void hungarian();
+    bool dfs(int u, bool visity[], std::vector<int>* pre);
+    bool kmDfs(int u, bool visity[],bool visitx[], std::vector<int>* pre, double ex[], double ey[], double slack[]);
     void main_steps();
 
-    void resolvePath();
+    std::vector<std::vector<std::string>*>* resolvePath();
+
+    int checkConjugateMatch();
+
 };
 
 int conjugateIdx(int idx);

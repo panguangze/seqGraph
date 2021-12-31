@@ -33,16 +33,19 @@ Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aE
 
 Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
                              double coverage, bool aIsBounded) {
-    auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
-    if (this->doesJunctionExist(junction)) {
-        throw DuplicateJunctionException(junction);
+//    auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
+    auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
+    if (jun == nullptr) {
+//        throw DuplicateJunctionException(junction);
+        auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
+        junction->junctionToEdge();
+        this->junctions->push_back(junction);
+    //    set vertex not orphan
+        sourceVertex->setOrphan(false);
+        targetVertex->setOrphan(false);
+        return junction;
     }
-    junction->junctionToEdge();
-    this->junctions->push_back(junction);
-//    set vertex not orphan
-    sourceVertex->setOrphan(false);
-    targetVertex->setOrphan(false);
-    return junction;
+    return jun;
 }
 
 Junction *
@@ -116,10 +119,27 @@ int Graph::BFS(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint) {
 }
 
 
-bool Graph::doesJunctionExist(Junction *aJunction) {
-    return std::find(this->junctions->begin(), this->junctions->end(), aJunction) != this->junctions->end();
+Junction* Graph::doesJunctionExist(Junction *aJunction) {
+    for(auto item: *this->junctions){
+        if(*item == *aJunction) {
+            return item;
+        }
+    }
+    return nullptr;
 }
 
+
+Junction* Graph::doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d) {
+    for(auto item: *this->junctions){
+        auto& s1 = *item->getSource();
+        auto& s2 = *item->getTarget();
+        auto s1d = item->getSourceDir();
+        auto s2d = item->getTargetDir();
+        if ((s1 == v1 && s2 == v2 && v1d == s1d && v2d == s2d) || (s1 == v2 && s2 == v1 && v1d != s1d && v2d != s2d) )
+            return item;
+    }
+    return nullptr;
+}
 bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
     bool isReach = false;
     EndPoint *startEP = sourceEndPoint;

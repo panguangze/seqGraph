@@ -46,7 +46,9 @@ namespace seqGraph {
 
         int BFS(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint);
 
-        bool doesJunctionExist(Junction *junction);
+        Junction* doesJunctionExist(Junction *junction);
+
+        Junction* doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d);
 
         void resetJunctionVisitFlag();
 

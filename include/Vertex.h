@@ -35,6 +35,9 @@ namespace seqGraph {
 
         const std::string getId() const;
 
+        bool operator==(const Vertex &otherVertex) const;
+
+
         void setId(const int mId);
 
         void setIdx(const int idx);
@@ -81,7 +84,6 @@ namespace seqGraph {
 
         void setCredibility(double mCredibility);
 
-        bool operator==(const Vertex &rhs) const;
 
         void restoreCopy();
         void backupCopy();

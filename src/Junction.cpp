@@ -43,10 +43,13 @@ void Junction::junctionToEdge() {
 }
 
 bool Junction::operator==(const Junction &otherJunc) const {
-    return (this->oEdge->getInfo() == otherJunc.oEdge->getInfo() &&
-            this->cEdge->getInfo() == otherJunc.cEdge->getInfo()) ||
-           (this->oEdge->getInfo() == otherJunc.cEdge->getInfo() &&
-            this->cEdge->getInfo() == otherJunc.oEdge->getInfo());
+    return(*this->source == *otherJunc.target && *this->target == *otherJunc.source  ||
+            *this->source == *otherJunc.source && *this->target == *otherJunc.target && this->sourceDir == otherJunc.sourceDir &&
+            this->targetDir != otherJunc.targetDir);
+//    return (this->oEdge->getInfo() == otherJunc.oEdge->getInfo() &&
+//            this->cEdge->getInfo() == otherJunc.cEdge->getInfo()) ||
+//           (this->oEdge->getInfo() == otherJunc.cEdge->getInfo() &&
+//            this->cEdge->getInfo() == otherJunc.oEdge->getInfo());
 }
 
 char Junction::getSourceDir() const {

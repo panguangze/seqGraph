@@ -6,6 +6,16 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+void checkMatrixConjugate(double** matrix, int n) {
+    for(int i = 1; i < n+1; i++) {
+        for(int j = 1; j < n+1; j++) {
+            if (matrix[i][j] != matrix[conjugateIdx(j)][conjugateIdx(i)]) {
+                std::cout<<"Error\n"<<std::endl;
+                break;
+            }
+        }
+    }
+}
 void tokenize(const std::string &str, std::vector<std::string> &tokens, const std::string &delimiters)
 {
     std::string::size_type pos, lastPos = 0, length = str.length();
@@ -22,7 +32,7 @@ void tokenize(const std::string &str, std::vector<std::string> &tokens, const st
         }
 
         if (pos != lastPos)
-            tokens.push_back(value_type(str.data() + lastPos, (size_type) pos - lastPos));
+            tokens.emplace_back(str.data() + lastPos, (size_type) pos - lastPos);
 
         lastPos = pos + 1;
     }
@@ -31,15 +41,12 @@ void tokenize(const std::string &str, std::vector<std::string> &tokens, const st
 int main(int argc, char *argv[]) {
     auto md = argv[1];
     std::ifstream infile(argv[1]);
+    std::ofstream resultFile(argv[2]);
     std::string source, target;
     char sDir, tDir;
     double weight;
-    seqGraph::Graph* g = new seqGraph::Graph;
+    auto* g = new seqGraph::Graph;
 
-    auto* idToSeg = new std::map<int, std::string>();
-    auto* segToId = new std::map<std::string, int>();
-
-    int idx = 0;
     while (infile>>source>>sDir>>target>>tDir>>weight) {
         seqGraph::Vertex* v1;
         seqGraph::Vertex* v2;
@@ -60,7 +67,8 @@ int main(int argc, char *argv[]) {
 //    g->addJunction(v3,v4,'-','+',2,1,1);
 //    g->addJunction(v4,v5,'+','-',2,1,1);
 
-    matching* m = new matching(g);
+    auto* m = new matching(g);
+    checkMatrixConjugate(m->getMatrix(), m->getN());
     for(int i = 0; i < m->getN() + 1; i++){
         for(int j = 0; j < m->getN() + 1; j++) {
             auto tmp = m->getMatrix()[i][j];
@@ -74,11 +82,20 @@ int main(int argc, char *argv[]) {
     }
     std::cout<<std::endl;
 
-    m->main_steps();
-    std::cout<<"out\n";
+//    m->main_steps();
+    m->hungarian();
+    std::cout<<"final matched relation\n";
     for(int i = 0; i < m->getN() + 1; i++) {
         std::cout<<m->getMatched()[i]<<"\t";
     }
-    std::cout<<"resolve\n";
-    m->resolvePath();
+    std::cout<<"\nresolve path";
+    auto paths = m->resolvePath();
+    for(auto item : *paths) {
+        for(const auto& v: *item) {
+            resultFile<<v<<"\t";
+        }
+        resultFile<<"\n";
+    }
+    infile.close();
+    resultFile.close();
 }
