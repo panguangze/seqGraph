@@ -14,6 +14,8 @@ Graph::Graph() {
     this->mAvgCoverage = 0;
     this->vertices = new std::vector<Vertex *>();
     this->junctions = new std::vector<Junction *>();
+    verticesIdx = new std::map<std::string, int>();
+    junctionIdx = new std::map<std::string, int>();
     source = nullptr;
     sink = nullptr;
 }
@@ -28,6 +30,7 @@ Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aE
     auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum);
     vertex->setIdx(this->vertices->size());
     this->vertices->push_back(vertex);
+    this->verticesIdx->emplace(mId, vertex->getIdx());
     return vertex;
 }
 
@@ -36,10 +39,12 @@ Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char so
 //    auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
     auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
     if (jun == nullptr) {
+        auto  k = sourceVertex->getId()+ targetVertex->getId()+sourceDir+targetDir;
 //        throw DuplicateJunctionException(junction);
         auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
         junction->junctionToEdge();
         this->junctions->push_back(junction);
+        this->junctionIdx->emplace(k, junctions->size());
     //    set vertex not orphan
         sourceVertex->setOrphan(false);
         targetVertex->setOrphan(false);
@@ -66,9 +71,13 @@ Junction * Graph::addJunction(EndPoint *ep3, EndPoint *ep5, double copyNum, doub
 }
 
 Vertex *Graph::getVertexById(std::string Id) {
-    for (auto *vertex : *this->vertices) {
-        if (vertex->getId() == Id) return vertex;
+    if (verticesIdx->find(Id) != verticesIdx->end()){
+        auto idx = (*verticesIdx)[Id];
+        return (*this->vertices)[idx];
     }
+//    for (auto *vertex : *this->vertices) {
+//        if (vertex->getId() == Id) return vertex;
+//    }
 //    throw VertexDoesNotExistException(Id);
     return nullptr;
 }
@@ -130,14 +139,19 @@ Junction* Graph::doesJunctionExist(Junction *aJunction) {
 
 
 Junction* Graph::doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d) {
-    for(auto item: *this->junctions){
-        auto& s1 = *item->getSource();
-        auto& s2 = *item->getTarget();
-        auto s1d = item->getSourceDir();
-        auto s2d = item->getTargetDir();
-        if ((s1 == v1 && s2 == v2 && v1d == s1d && v2d == s2d) || (s1 == v2 && s2 == v1 && v1d != s1d && v2d != s2d) )
-            return item;
+    auto  k = v1.getId()+ v2.getId()+v1d+v2d;
+    if (junctionIdx->find(k) != junctionIdx->end()) {
+        auto idx = (*junctionIdx)[k];
+        return (*junctions)[idx];
     }
+//    for(auto item: *this->junctions){
+//        auto& s1 = *item->getSource();
+//        auto& s2 = *item->getTarget();
+//        auto s1d = item->getSourceDir();
+//        auto s2d = item->getTargetDir();
+//        if ((s1 == v1 && s2 == v2 && v1d == s1d && v2d == s2d) || (s1 == v2 && s2 == v1 && v1d != s1d && v2d != s2d) )
+//            return item;
+//    }
     return nullptr;
 }
 bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {

@@ -42,6 +42,14 @@ bool Vertex::operator==(const Vertex &rhs) const {
     return this->Id == rhs.Id;
 };
 
+bool Vertex::operator>(const Vertex &rhs) const {
+    return this->getId() > rhs.getId();
+}
+
+bool Vertex::operator<(const Vertex &rhs) const {
+    return this->getId() > rhs.getId();
+}
+
 const std::string Vertex::getId() const {
     return Id;
 }

@@ -35,7 +35,10 @@ namespace seqGraph {
 
         const std::string getId() const;
 
-        bool operator==(const Vertex &otherVertex) const;
+        bool operator ==(const Vertex &otherVertex) const;
+
+        bool operator >(const Vertex &otherVertex) const;
+        bool operator <(const Vertex &rhs) const;
 
 
         void setId(const int mId);

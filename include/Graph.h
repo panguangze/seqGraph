@@ -7,6 +7,8 @@
 
 #include "Vertex.h"
 #include "Junction.h"
+#include  <set>
+#include "map"
 
 namespace seqGraph {
     typedef std::vector<EndPoint *> EndPointPath;
@@ -19,6 +21,8 @@ namespace seqGraph {
         Vertex *source;
         Vertex *sink;
         double ** ConjugateMatrix;
+        std::map<std::string, int>* verticesIdx;
+        std::map<std::string, int>* junctionIdx;
     public:
         Graph();
 
