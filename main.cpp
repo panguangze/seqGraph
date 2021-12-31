@@ -69,13 +69,13 @@ int main(int argc, char *argv[]) {
 
     auto* m = new matching(g);
     checkMatrixConjugate(m->getMatrix(), m->getN());
-    for(int i = 0; i < m->getN() + 1; i++){
-        for(int j = 0; j < m->getN() + 1; j++) {
-            auto tmp = m->getMatrix()[i][j];
-            std::cout<<tmp<<"\t";
-        }
-        std::cout<<"\n";
-    }
+//    for(int i = 0; i < m->getN() + 1; i++){
+//        for(int j = 0; j < m->getN() + 1; j++) {
+//            auto tmp = m->getMatrix()[i][j];
+//            std::cout<<tmp<<"\t";
+//        }
+//        std::cout<<"\n";
+//    }
     std::cout<<std::endl;
     for(int i = 0; i < m->getN() + 1; i++) {
         std::cout<<m->getMatched()[i]<<"\t";
