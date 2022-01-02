@@ -21,6 +21,15 @@ matching::matching(seqGraph::Graph* graph1) {
     N = 2 * graph1->getVCount();
     this->matched = new int[N + 1];
     for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
+    currentMatrix = this->graph->getConjugateMatrix();
+}
+
+void matching::resetGraph(seqGraph::Graph* g) {
+    this->graph =  g;
+    N = 2 *  g->getVCount();
+    this->matched = new int[N + 1];
+    for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
+    currentMatrix = this->graph->getConjugateMatrix();
 }
 
 bool matching::kmDfs(int u, bool visity[],bool visitx[], std::vector<int>* pre, double ex[], double ey[], double slack[]) {
@@ -253,11 +262,18 @@ void matching::main_steps() {
     }
 }
 
-std::map<int, std::vector<std::string>*>* matching::resolvePath() {
+std::string matching::idx2Str(int idx) {
+    int now = idx;
+    int vIdx = (now + 1) / 2;
+    char dir = now % 2 == 0 ? '-':'+';
+    auto idStr = (*this->graph->getVertices())[vIdx - 1]->getId();
+    return idStr+dir;
+}
+std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vector<int>*>* prevPaths) {
     auto matrix = graph->getConjugateMatrix();
     bool visited[N+1];
     memset(visited, 0, sizeof visited);
-    auto* resolvePath = new std::map<int, std::vector<std::string> *>();
+    auto* resolvePath = new std::map<int, std::vector<int> *>();
     auto checkedC = checkConjugateMatch();
     if(checkedC!= 0)
         std::cout<<"Conjugate not checked\n";
@@ -267,11 +283,12 @@ std::map<int, std::vector<std::string>*>* matching::resolvePath() {
     for(int i = 1; i < N + 1; i++) {
         if (visited[i]) continue;
         if (matrix[matched[i]][i] == 0) continue;
-        auto* currentPath = new std::vector<std::string>();
+        auto* currentPath = new std::vector<int>();
         int now = i;
         int vIdx = (now + 1) / 2;
         char dir = now % 2 == 0 ? '-':'+';
-        currentPath->push_back((*this->graph->getVertices())[vIdx - 1]->getId() + dir);
+//        currentPath->push_back((*this->graph->getVertices())[vIdx - 1]->getId() + dir);
+        currentPath->push_back(now);
         if ((*this->graph->getVertices())[vIdx - 1]->getId() == "52_0")
             int tm = 99;
 
@@ -281,18 +298,18 @@ std::map<int, std::vector<std::string>*>* matching::resolvePath() {
         bool currentInsert = true;
         while (matrix[matched[now]][now] != double(0)) {
             if (resolvePath->find(matched[now]) != resolvePath->end()) {
-                auto prevPath = (*resolvePath)[matched[now]];
+                auto oldPath = (*resolvePath)[matched[now]];
 //                +"_"+ std::to_string(now)
                 for (auto it = currentPath->rbegin(); it != currentPath->rend(); it++){
-                    prevPath->insert(prevPath->begin(), *it);
+                    oldPath->insert(oldPath->begin(), *it);
                 }
                 resolvePath->erase(matched[now]);
-                resolvePath->emplace(i, prevPath);
+                resolvePath->emplace(i, addPrevPath(prevPaths, oldPath));
                 currentInsert = false;
                 break;
             }
             if(visited[matched[now]]){
-                if (matched[now] == i) currentPath->push_back("c");
+                if (matched[now] == i) currentPath->push_back(-1);
                 break;
             }
             visited[matched[now]] = true;
@@ -301,10 +318,10 @@ std::map<int, std::vector<std::string>*>* matching::resolvePath() {
             dir = matched[now] % 2 == 0 ? '-':'+';
 //            std::cout<<(*this->graph->getVertices())[vIdx - 1]->getId()<<dir<<'\t';
             now = matched[now];
-            currentPath->push_back((*this->graph->getVertices())[vIdx - 1]->getId() + dir);
+            currentPath->push_back(matched[now]);
         }
         if(currentInsert)
-            (*resolvePath)[i] = currentPath;
+            resolvePath->emplace(i, addPrevPath(prevPaths, currentPath));
     }
     return resolvePath;
 }
@@ -314,6 +331,83 @@ int conjugateIdx(int idx) {
     if(idx == 0) return idx;
     cI = idx%2 == 0? idx-1:idx+1;
     return cI;
+}
+
+double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix) {
+    auto result = new double[4];
+    for(int i = 0 ; i< 4 ; i ++) result[i] = 0;
+
+    for (auto ip1: *p1) {
+        if (ip1 == -1) continue;
+        for (auto ip2: *p2) {
+            if (ip2 == -1) continue;
+            if (ip1 % 2 == 1) {
+                if (ip2 % 2 == 1) {//            ++
+                    result[0] += matrix[ip1][ip2];
+                } else {
+                    result[1] += matrix[ip1][ip2];
+                }
+            } else {
+                if (ip2 % 2 == 1) {//            -+
+                    result[2] += matrix[ip1][ip2];
+                } else {
+                    result[3] += matrix[ip1][ip2];
+                }
+            }
+        }
+    }
+}
+
+void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
+    auto resultG = new seqGraph::Graph;
+//    int n = 2 * paths->size();
+//    auto result = new double*[n + 1];
+//    for (int i = 0; i< n + 1; i++) {
+//        result[i]= new double[n];
+//        result[i][0] = -1;
+//    }
+
+//    if (sDir == '+') {
+//        if (tDir == '+') {
+//            this->ConjugateMatrix[2*j + 1][2*i + 1] = weightValue;
+//            this->ConjugateMatrix[2*(i+1)][2*(j+1)] = weightValue;
+//        } else {
+//            this->ConjugateMatrix[2*(j + 1)][2*i+1] = weightValue;
+//            this->ConjugateMatrix[2*(i+1)][2*j+1] = weightValue;
+//        }
+//    } else {
+//        if (tDir == '+') {
+//            this->ConjugateMatrix[2*j+1][2*(i + 1)] = weightValue;
+//            this->ConjugateMatrix[2*i+1][2*(j+1)] = weightValue;
+//        } else {
+//            this->ConjugateMatrix[2*i+1][2*j+1] = weightValue;
+//            this->ConjugateMatrix[2*(j+1)][2*(i+1)] = weightValue;
+//        }
+//    }
+    int i = 1;
+    int j = 1;
+    for (auto iPath: *paths) {
+        i++;
+        for (auto jPath: *paths) {
+            j++;
+            auto values = mergePath(iPath.second, jPath.second, currentMatrix);
+//            result[2*j + 1][2*i + 1] = values[0];
+//            result[2*(i+1)][2*(j+1)] = values[0];
+//            result[2*(j + 1)][2*i+1] = values[1];
+//            result[2*(i+1)][2*j+1] = values[1];
+//            result[2*j+1][2*(i + 1)] = values[2];
+//            result[2*i+1][2*(j+1)] = values[2];
+//            result[2*i+1][2*j+1] = values[3];
+//            result[2*(j+1)][2*(i+1)] = values[3];
+            auto v1 = resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2);
+            auto v2 = resultG->addVertex(std::to_string(jPath.second->front()),"xx",1,2,1,1,2);
+            resultG->addJunction(v1, v2, '+', '+', values[0], 1 , 1);
+            resultG->addJunction(v1, v2, '+', '-', values[1], 1 , 1);
+            resultG->addJunction(v1, v2, '-', '+', values[2], 1 , 1);
+            resultG->addJunction(v1, v2, '-', '-', values[3], 1 , 1);
+        }
+    }
+    resetGraph(resultG);
 }
 
 int matching::checkConjugateMatch() {
@@ -331,4 +425,20 @@ int matching::checkConjugateMatch() {
     }
     std::cout<<std::endl;
     return r;
+}
+
+std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPaths, std::vector<int>* curPath) {
+    if (prevPaths == nullptr) return curPath;
+    auto res = new std::vector<int>();
+    for(auto item : *curPath) {
+        if(prevPaths->find(item) != prevPaths->end()) {
+            auto pPath = (*prevPaths)[item];
+            for (auto pItem: *pPath) {
+                res->push_back(pItem);
+            }
+        } else {
+            std::cout<<"error, prev path not found "<<item<<std::endl;
+        }
+    }
+    return res;
 }

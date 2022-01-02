@@ -43,7 +43,9 @@ int main(int argc, char *argv[]) {
     auto md = argv[1];
     std::ifstream infile(argv[1]);
     std::ofstream resultFile(argv[2]);
-    VERBOSE = std::atoi(argv[3]);
+    int iterRounds = std::atoi(argv[3]);
+    VERBOSE = std::atoi(argv[4]);
+
     std::string source, target;
     char sDir, tDir;
     double weight;
@@ -67,10 +69,21 @@ int main(int argc, char *argv[]) {
         std::cout<<m->getMatched()[i]<<"\t";
     }
     std::cout<<"\nresolve path";
-    auto paths = m->resolvePath();
+    auto paths = m->resolvePath(nullptr);
+    while (iterRounds !=0) {
+        m->reconstructMatrix(paths);
+        checkMatrixConjugate(m->getMatrix(), m->getN());
+        m->hungarian();
+        paths = m->resolvePath(paths);
+        iterRounds--;
+    }
     for(auto item : *paths) {
         for(const auto& v: *item.second) {
-            resultFile<<v<<"\t";
+            if (v == -1) {
+                resultFile<<'c';
+                continue;
+            }
+            resultFile<<m->idx2Str(v)<<"\t";
         }
         resultFile<<"\n";
     }
