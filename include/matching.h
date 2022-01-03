@@ -11,6 +11,7 @@ class matching {
 private:
     seqGraph::Graph* graph;
     double** currentMatrix;
+    seqGraph::Graph* originalGraph;
 
     int N;
 
@@ -40,13 +41,14 @@ public:
     bool kmDfs(int u, bool visity[],bool visitx[], std::vector<int>* pre, double ex[], double ey[], double slack[]);
     void main_steps();
 
-    std::map<int, std::vector<int>*>* resolvePath(std::map<int, std::vector<int>*>* prevPath);
+    std::map<int, std::vector<int>*>* resolvePath(std::map<int, std::vector<int>*>* prevPaths);
 
     int checkConjugateMatch();
 
     std::string idx2Str(int idx);
     void reconstructMatrix(std::map<int, std::vector<int>*>* paths);
     void resetGraph(seqGraph::Graph* g);
+    std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
 
 };
 

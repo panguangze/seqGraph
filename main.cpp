@@ -10,6 +10,8 @@ int VERBOSE = 0;
 void checkMatrixConjugate(double** matrix, int n) {
     for(int i = 1; i < n+1; i++) {
         for(int j = 1; j < n+1; j++) {
+            auto t1 = matrix[i][j];
+            auto t2 = matrix[conjugateIdx(j)][conjugateIdx(i)];
             if (matrix[i][j] != matrix[conjugateIdx(j)][conjugateIdx(i)]) {
                 std::cout<<"Error\n"<<std::endl;
                 break;
@@ -38,6 +40,14 @@ void tokenize(const std::string &str, std::vector<std::string> &tokens, const st
         lastPos = pos + 1;
     }
 }
+//recall paths from iteration result paths
+//void pathsRecall(std::vector<std::map<int, std::vector<int>*>*> & recallPaths) {
+//    for (auto iterPaths: *recallPaths.back()) {
+//        for (auto item : *iterPaths.second) {
+//
+//        }
+//    }
+//}
 
 int main(int argc, char *argv[]) {
     auto md = argv[1];
@@ -50,6 +60,8 @@ int main(int argc, char *argv[]) {
     char sDir, tDir;
     double weight;
     auto* g = new seqGraph::Graph;
+
+//    this used for path backtrack
 
     while (infile>>source>>sDir>>target>>tDir>>weight) {
         seqGraph::Vertex* v1;
@@ -70,11 +82,13 @@ int main(int argc, char *argv[]) {
     }
     std::cout<<"\nresolve path";
     auto paths = m->resolvePath(nullptr);
+//    recallPaths.push_back(paths);
     while (iterRounds !=0) {
         m->reconstructMatrix(paths);
         checkMatrixConjugate(m->getMatrix(), m->getN());
         m->hungarian();
         paths = m->resolvePath(paths);
+        if (paths->size() == 1) break;
         iterRounds--;
     }
     for(auto item : *paths) {
