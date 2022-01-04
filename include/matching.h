@@ -49,7 +49,7 @@ public:
     void reconstructMatrix(std::map<int, std::vector<int>*>* paths);
     void resetGraph(seqGraph::Graph* g);
     std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
-
+    std::vector<int>* breakCycle(std::vector<int> *);
 };
 
 int conjugateIdx(int idx);

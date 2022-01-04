@@ -16,6 +16,7 @@ Graph::Graph() {
     this->junctions = new std::vector<Junction *>();
     verticesIdx = new std::map<std::string, int>();
     junctionIdx = new std::map<std::string, int>();
+    ConjugateMatrix = nullptr;
     source = nullptr;
     sink = nullptr;
 }

@@ -281,7 +281,6 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
         std::cout<<"Conjugate not checked\n";
     else
         std::cout<<"check conjugate done\n";
-    std::cout<<"final paths\n";
     for(int i = 1; i < N + 1; i++) {
         if (visited[i]) continue;
         if (matrix[matched[i]][i] == 0) continue;
@@ -312,7 +311,8 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
                 break;
             }
             if(visited[matched[now]]){
-                if (matched[now] == i) currentPath->push_back(-1);
+//                if (matched[now] == i) currentPath->push_back(-1);
+                currentPath = breakCycle(currentPath);
                 break;
             }
             visited[matched[now]] = true;
@@ -348,10 +348,10 @@ double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix) {
         if (ip1 == -1) continue;
         for (auto ip2: *p2) {
             if (ip2 == -1) continue;
-            result[0] += matrix[ip1][ip2];
-            result[1] += matrix[ip1][conjugateIdx(ip2)];
-            result[3] += matrix[conjugateIdx(ip1)][ip2];
-            result[4] += matrix[conjugateIdx(ip1)][conjugateIdx(ip2)];
+            result[0] += matrix[ip2][ip1];
+            result[1] += matrix[conjugateIdx(ip2)][ip1];
+            result[3] += matrix[ip2][conjugateIdx(ip1)];
+            result[4] += matrix[conjugateIdx(ip2)][conjugateIdx(ip1)];
 //            if (ip1 % 2 == 1) {
 //                if (ip2 % 2 == 1) {//            ++
 //                    result[0] += matrix[ip1][ip2];
@@ -371,11 +371,12 @@ double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix) {
 }
 
 void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
-    auto resultG = new seqGraph::Graph;
+    auto* resultG = new seqGraph::Graph();
+//    auto tm = resultG->getConjugateMatrix() == nullptr;
     for (auto iPath: *paths) {
         for (auto jPath: *paths) {
             if (iPath.first == jPath.first) continue;
-            auto values = mergePath(iPath.second, jPath.second, currentMatrix);
+            auto values = mergePath(iPath.second, jPath.second, this->originalGraph->getConjugateMatrix());
 //            std::string v1Str, v2Str;
 //            for (auto item : *iPath.second) {
 //                v1Str+=idx2Str(item);
@@ -412,23 +413,55 @@ int matching::checkConjugateMatch() {
     return r;
 }
 
+std::vector<int>* matching::breakCycle(std::vector<int> * cyclePath) {
+    auto res = new std::vector<int>();
+    auto matrix = this->getMatrix();
+    int minIdx = cyclePath->size() - 1;
+    double minW = INF;
+    for (int i = 0; i < cyclePath->size(); i++) {
+        if (i == cyclePath->size() - 1 && matrix[i][0] < minW) {
+            minIdx = cyclePath->size() - 1;
+        }
+        if (matrix[i][i+1] < minW) {
+            minW = matrix[i][i+1];
+            minIdx = i;
+        }
+    }
+    if (minIdx == cyclePath->size() - 1) return cyclePath;
+    for (int i = minIdx + 1; i< cyclePath->size(); i++) {
+        res->push_back((*cyclePath)[i]);
+    }
+    for (int i = 0; i <= minIdx; ++i) {
+        res->push_back((*cyclePath)[i]);
+    }
+    return res;
+}
+
 std::vector<int>* matching::addPrevPath(std::map<int, std::vector<int>*>* prevPaths, std::vector<int>* curPath) {
     if (prevPaths == nullptr) return curPath;
     auto res = new std::vector<int>();
     for(auto item : *curPath) {
-        if (item == -1) continue;
+//        if (item == 0)
+//            int tmi = 9;
+//        if (item == -1) continue;
         int vIdx = (item + 1) / 2;
         int dir = item % 2;
         auto prevIdx = std::stoi((*this->graph->getVertices())[vIdx - 1]->getId());
+//        if (prevIdx == 2980)
+//            int mkh = 9;
         if(prevPaths->find(prevIdx) != prevPaths->end()) {
             auto pPath = (*prevPaths)[prevIdx];
 //            if +
             if (dir == 1) {
                 for (auto pItem: *pPath) {
+//                    if (pItem == 0)
+//                        int kh = 0;
                     res->push_back(pItem);
                 }
             } else { // if -, reverse add
                 for (auto it = pPath->rbegin(); it != pPath->rend(); ++it) {
+//                    if (*it == -1)
+//                        int kh = 0;
                     res->push_back(conjugateIdx(*it));
                 }
             }

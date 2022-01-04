@@ -7,13 +7,15 @@
 #include <fstream>
 #include <map>
 int VERBOSE = 0;
+const double ZERO = 0.00000001;
+
 void checkMatrixConjugate(double** matrix, int n) {
     for(int i = 1; i < n+1; i++) {
         for(int j = 1; j < n+1; j++) {
             auto t1 = matrix[i][j];
             auto t2 = matrix[conjugateIdx(j)][conjugateIdx(i)];
-            if (matrix[i][j] != matrix[conjugateIdx(j)][conjugateIdx(i)]) {
-                std::cout<<"Error\n"<<std::endl;
+            if (std::abs(matrix[i][j] - matrix[conjugateIdx(j)][conjugateIdx(i)]) > ZERO) {
+                std::cout<<"Error\n"<<i<<j<<std::endl;
                 break;
             }
         }
@@ -83,13 +85,16 @@ int main(int argc, char *argv[]) {
     std::cout<<"\nresolve path";
     auto paths = m->resolvePath(nullptr);
 //    recallPaths.push_back(paths);
+    int iterN = 2;
     while (iterRounds !=0) {
+        std::cout<<"Iteration "<<iterN<<"...\n";
         m->reconstructMatrix(paths);
         checkMatrixConjugate(m->getMatrix(), m->getN());
         m->hungarian();
         paths = m->resolvePath(paths);
         if (paths->size() == 1) break;
         iterRounds--;
+        iterN++;
     }
     for(auto item : *paths) {
         for(const auto& v: *item.second) {
