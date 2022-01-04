@@ -26,7 +26,8 @@ Graph::~Graph() {
 
 Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum) {
 //    create vertex add push
-
+    auto v1 = this->getVertexById(mId);
+    if(v1 != nullptr) return v1;
     auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum);
     vertex->setIdx(this->vertices->size());
     this->vertices->push_back(vertex);
