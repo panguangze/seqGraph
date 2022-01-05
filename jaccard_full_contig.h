@@ -20,7 +20,6 @@
 #include <algorithm>
 #include "htslib/sam.h"
 #include "htslib/faidx.h"
-#include "util.h"
 
 typedef std::unordered_map<std::string , std::vector<std::string>> BarcodeMap;
 typedef std::pair<std::string, std::string> ContigPair;
