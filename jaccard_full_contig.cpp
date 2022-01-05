@@ -3,7 +3,6 @@
 //
 
 #include "jaccard_full_contig.h"
-
 // arg1 输入bam，arg2输出jaccard
 int main(int argc, char **argv) {
     htsFile *in;
@@ -89,9 +88,9 @@ void readBAM(htsFile *in, const char* out_file, int readsLen) {
     std::string next;
     for (auto& it: iMap) {
         for(auto& it2 : it.second) {
-            if (it.first[-1] != '-') prev = it.first + " +";
+            if (it.first.back() != '-') prev = it.first + " +";
             else prev = it.first;
-            if (it2.first[-1] != '-') next = it2.first + " +";
+            if (it2.first.back() != '-') next = it2.first + " +";
             else next = it2.first;
             fout<<prev<<" "<<next<<" "<<it2.second<<"\n";
         }
