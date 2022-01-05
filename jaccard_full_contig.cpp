@@ -91,7 +91,7 @@ void readBAM(htsFile *in, const char* out_file, int readsLen) {
         for(auto& it2 : it.second) {
             if (it.first[-1] != '-') prev = it.first + " +";
             else prev = it.first;
-            if (it2.first[-1] != '-') prev = it2.first + " +";
+            if (it2.first[-1] != '-') next = it2.first + " +";
             else next = it2.first;
             fout<<prev<<" "<<next<<" "<<it2.second<<"\n";
         }
