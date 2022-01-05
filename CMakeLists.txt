@@ -24,8 +24,8 @@ set(SOURCE_FILES src/Edge.cpp
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
-add_executable(test main.cpp ${SOURCE_FILES})
-
+add_executable(matching main.cpp ${SOURCE_FILES})
+add_executable(eDistance jaccard_full_contig.cpp jaccard_full_contig.h)
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
