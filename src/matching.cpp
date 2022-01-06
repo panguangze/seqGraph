@@ -350,8 +350,8 @@ double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix) {
             if (ip2 == -1) continue;
             result[0] += matrix[ip2][ip1];
             result[1] += matrix[conjugateIdx(ip2)][ip1];
-            result[3] += matrix[ip2][conjugateIdx(ip1)];
-            result[4] += matrix[conjugateIdx(ip2)][conjugateIdx(ip1)];
+            result[2] += matrix[ip2][conjugateIdx(ip1)];
+            result[3] += matrix[conjugateIdx(ip2)][conjugateIdx(ip1)];
 //            if (ip1 % 2 == 1) {
 //                if (ip2 % 2 == 1) {//            ++
 //                    result[0] += matrix[ip1][ip2];
