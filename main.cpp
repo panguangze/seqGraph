@@ -86,15 +86,17 @@ int main(int argc, char *argv[]) {
     auto paths = m->resolvePath(nullptr);
 //    recallPaths.push_back(paths);
     int iterN = 2;
-    while (iterRounds !=0) {
-        std::cout<<"Iteration "<<iterN<<"...\n";
-        m->reconstructMatrix(paths);
-        checkMatrixConjugate(m->getMatrix(), m->getN());
-        m->hungarian();
-        paths = m->resolvePath(paths);
-        if (paths->size() == 1) break;
-        iterRounds--;
-        iterN++;
+    if (paths->size() != 1) {
+        while (iterRounds !=0) {
+            std::cout<<"Iteration "<<iterN<<"...\n";
+            m->reconstructMatrix(paths);
+            checkMatrixConjugate(m->getMatrix(), m->getN());
+            m->hungarian();
+            paths = m->resolvePath(paths);
+            if (paths->size() == 1) break;
+            iterRounds--;
+            iterN++;
+        }
     }
     for(auto item : *paths) {
         for(const auto& v: *item.second) {
