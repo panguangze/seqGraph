@@ -9,9 +9,12 @@
 #include <string>
 #include "EndPoint.h"
 #include "Weight.h"
+#include <vector>
+#include "Junction.h"
 
 namespace seqGraph {
     class EndPoint;
+    class Junction;
     class Vertex {
     protected:
         std::string Id;
@@ -21,6 +24,14 @@ namespace seqGraph {
         double credibility;
         int idx;
 
+        bool visited;
+    public:
+        bool isVisited() const;
+
+        void setIsVisited(bool isVisited);
+
+    protected:
+
         Weight *weight;
         EndPoint *EP3;
         EndPoint *EP5;
@@ -28,10 +39,20 @@ namespace seqGraph {
         EndPoint *rEP5;
         bool orphan;
         bool hasLowerBoundLimit;
+        std::vector<Junction*> nextJuncs;
+        std::vector<Junction*> prevJuncs;
+    public:
+        const std::vector<Junction *> &getNextJuncs() const;
+
+        const std::vector<Junction *> &getPrevJuncs() const;
     public:
         Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
 
         ~Vertex();
+
+        void setNextJunc(Junction*);
+        void setPrevJunc(Junction*);
+
 
         const std::string getId() const;
 

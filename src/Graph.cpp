@@ -25,6 +25,15 @@ Graph::~Graph() {
 
 }
 
+Graph* Graph::getSubgraph(int i) {
+    auto subG = new Graph();
+    auto idxs = connectedJunctionsIdx[i];
+    for(auto j : *idxs) {
+        auto junc = (*this->junctions)[j];
+        subG->addJunction(junc);
+    }
+    return subG;
+}
 Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum) {
 //    create vertex add push
     auto v1 = this->getVertexById(mId);
@@ -45,11 +54,15 @@ Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char so
 //        throw DuplicateJunctionException(junction);
         auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
         junction->junctionToEdge();
+        junction->setIdx(this->junctions->size());
+
         this->junctions->push_back(junction);
         this->junctionIdx->emplace(k, junctions->size());
     //    set vertex not orphan
         sourceVertex->setOrphan(false);
         targetVertex->setOrphan(false);
+        sourceVertex->setNextJunc(junction);
+        targetVertex->setPrevJunc(junction);
         return junction;
     }
     return jun;
@@ -85,7 +98,7 @@ Vertex *Graph::getVertexById(std::string Id) {
 }
 
 
-int Graph::BFS(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint) {
+int Graph::BFS_EndPoint(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint) {
     std::queue<EndPoint *> EPQueue;
     EPQueue.push(sourceEndpoint);
 
@@ -128,6 +141,36 @@ int Graph::BFS(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint) {
     this->resetShortestPrevEdge();
     return found;
 }
+
+void Graph::BFS_Vertices(Vertex* vertex, std::vector<int>* connectedIdx){
+    std::queue<Vertex*> VQueuen;
+    VQueuen.push(vertex);
+
+    while (!VQueuen.empty()) {
+        auto currentV = VQueuen.front();
+        VQueuen.pop();
+        for (auto e : currentV->getNextJuncs()) {
+            connectedIdx->push_back(e->getIdx());
+            // if (e->hasCopy()) {
+            auto *nextV = e->getTarget();
+            if (!nextV->isVisited()) {
+                nextV->setIsVisited(true);
+                VQueuen.push(nextV);
+            }
+        }
+        for (auto e : currentV->getPrevJuncs()) {
+            connectedIdx->push_back(e->getIdx());
+            // if (e->hasCopy()) {
+            auto *nextV = e->getSource();
+            if (!nextV->isVisited()) {
+                nextV->setIsVisited(true);
+                VQueuen.push(nextV);
+            }
+        }
+    }
+//    this->resetVertexVisitFlag();
+}
+
 
 
 Junction* Graph::doesJunctionExist(Junction *aJunction) {
@@ -245,8 +288,11 @@ double ** Graph::getConjugateMatrix(){
     int n = this->getVCount();
     this->ConjugateMatrix = new double *[2*n + 1];
     for(int i = 0; i < 2*n + 1; i++) {
-        this->ConjugateMatrix[i] = new double[2*n + 1];
+        auto t = new double[2*n + 1];
+        this->ConjugateMatrix[i] = t;
     }
+    double initV = 0;
+    std::fill_n(&this->ConjugateMatrix[0][0],(2*n + 1) * (2*n + 1), initV);
     for(auto junc : *junctions) {
         int i = junc->getSource()->getIdx();
         int j = junc->getTarget()->getIdx();
@@ -272,4 +318,36 @@ double ** Graph::getConjugateMatrix(){
         }
     }
     return ConjugateMatrix;
+}
+
+void Graph::parseConnectedComponents() {
+    int i = 0;
+    for(auto & vertice : *vertices) {
+        if (i == vertices->size()) break;
+        if (!vertice->isVisited()) {
+            auto * connectedIdx = new std::vector<int>;
+            BFS_Vertices(vertice, connectedIdx);
+            i += connectedIdx->size();
+            this->connectedJunctionsIdx.push_back(connectedIdx);
+        }
+    }
+}
+
+Vertex *Graph::addVertex(Vertex *v) {
+    auto v1 = this->getVertexById(v->getId());
+    if(v1 != nullptr) return v1;
+    v->setIdx(this->vertices->size());
+    this->vertices->push_back(v);
+    this->verticesIdx->emplace(v->getId(), v->getIdx());
+    return v;
+}
+
+Junction *Graph::addJunction(Junction *j) {
+    this->addVertex(j->getSource());
+    this->addVertex(j->getTarget());
+    auto k = j->getSource()->getId()+ j->getTarget()->getId()+j->getSourceDir()+j->getTargetDir();
+    this->junctions->push_back(j);
+    j->setIdx(this->junctions->size());
+    this->junctionIdx->emplace(k, junctions->size());
+    return j;
 }

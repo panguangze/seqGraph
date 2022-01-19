@@ -55,8 +55,9 @@ int main(int argc, char *argv[]) {
     auto md = argv[1];
     std::ifstream infile(argv[1]);
     std::ofstream resultFile(argv[2]);
-    int iterRounds = std::atoi(argv[3]);
-    VERBOSE = std::atoi(argv[4]);
+    int iterRounds = std::atoi(argv[4]);
+    std::ofstream cyclePathsFile(argv[3]);
+    VERBOSE = std::atoi(argv[5]);
 
     std::string source, target;
     char sDir, tDir;
@@ -74,40 +75,69 @@ int main(int argc, char *argv[]) {
         v2 = v2t == nullptr ? g->addVertex(target,"xx",1,2,1,1,2) : v2t;
         g->addJunction(v1, v2, sDir, tDir, weight, 1 , 1);
     }
-    auto* m = new matching(g);
-    checkMatrixConjugate(m->getMatrix(), m->getN());
+//    matching for each connected graph
+    int n = 0;
+    g->parseConnectedComponents();
+    int maxI = g->subGraphCount();
+    while (n< maxI) {
+        std::cout<<"process subgraph "<<n<<"\n";
+        auto subGraph = g->getSubgraph(n);
+        auto* m = new matching(subGraph);
+//        checkMatrixConjugate(m->getMatrix(), m->getN());
 //    m->main_steps();
-    m->hungarian();
-    std::cout<<"final matched relation\n";
-    for(int i = 0; i < m->getN() + 1; i++) {
-        std::cout<<m->getMatched()[i]<<"\t";
-    }
-    std::cout<<"\nresolve path";
-    auto paths = m->resolvePath(nullptr);
-//    recallPaths.push_back(paths);
-    int iterN = 2;
-    if (paths->size() != 1) {
-        while (iterRounds !=0) {
-            std::cout<<"Iteration "<<iterN<<"...\n";
-            m->reconstructMatrix(paths);
-            checkMatrixConjugate(m->getMatrix(), m->getN());
-            m->hungarian();
-            paths = m->resolvePath(paths);
-            if (paths->size() == 1) break;
-            iterRounds--;
-            iterN++;
+        m->hungarian();
+        std::cout<<"final matched relation\n";
+        for(int i = 0; i < m->getN() + 1; i++) {
+            std::cout<<m->getMatched()[i]<<"\t";
         }
-    }
-    for(auto item : *paths) {
-        for(const auto& v: *item.second) {
-            if (v == -1) {
-                resultFile<<'c';
-                continue;
+        std::cout<<"\nresolve path";
+//    TODO , make the path and cycles info into mathicng class
+        auto paths = m->resolvePath(nullptr);
+//        cyclePathsFile<<"sub\n";
+//        cyclePathsFile<<"iter 0\n";
+        for (auto item: *paths) {
+            if (m->isCycle(item.first)) {
+                for(const auto& v: *item.second) {
+                    cyclePathsFile<<m->idx2Str(v)<<"\t";
+                }
+                cyclePathsFile<<"\n";
             }
-            resultFile<<m->idx2Str(v)<<"\t";
         }
-        resultFile<<"\n";
+//    recallPaths.push_back(paths);
+        int iterN = 1;
+        if (paths->size() != 1) {
+            while (iterRounds !=0) {
+                std::cout<<"Iteration "<<iterN<<"...\n";
+                m->reconstructMatrix(paths);
+                checkMatrixConjugate(m->getMatrix(), m->getN());
+                m->hungarian();
+                paths = m->resolvePath(paths);
+                if (paths->size() == 1) break;
+                for (auto item: *paths) {
+                    if (m->isCycle(item.first)) {
+                        for(const auto& v: *item.second) {
+                            cyclePathsFile<<"iter "<<iterN<<"\n";
+                            cyclePathsFile<<m->idx2Str(v)<<"\t";
+                        }
+                    }
+                }
+                iterRounds--;
+                iterN++;
+            }
+        }
+        for(auto item : *paths) {
+            for(const auto& v: *item.second) {
+                if (v == -1) {
+                    resultFile<<'c';
+                    continue;
+                }
+                resultFile<<m->idx2Str(v)<<"\t";
+            }
+            resultFile<<"\n";
+        }
+        n++;
     }
     infile.close();
     resultFile.close();
+    cyclePathsFile.close();
 }

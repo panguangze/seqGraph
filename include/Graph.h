@@ -13,6 +13,7 @@
 namespace seqGraph {
     typedef std::vector<EndPoint *> EndPointPath;
 
+
     class Graph {
     protected:
         double mAvgCoverage;
@@ -23,13 +24,19 @@ namespace seqGraph {
         double ** ConjugateMatrix;
         std::map<std::string, int>* verticesIdx;
         std::map<std::string, int>* junctionIdx;
+        std::vector<std::vector<int>* > connectedJunctionsIdx;
     public:
         Graph();
 
         ~Graph();
+        Graph* getSubgraph(int i);
 
         inline int getVCount() const {
             return this->vertices->size();
+        }
+
+        inline int subGraphCount() {
+            return this->connectedJunctionsIdx.size();
         }
 
         Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
@@ -44,17 +51,26 @@ namespace seqGraph {
 
         Junction * addJunction(EndPoint* ep3, EndPoint* ep5, double copyNum, double converage, bool isBounded);
 
+        Junction *
+        addJunction(Junction* j);
+
+        Vertex *addVertex(Vertex *v);
+
         Vertex *getVertexById(std::string Id);
 
         bool doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);
 
-        int BFS(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint);
+        int BFS_EndPoint(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint);
+
+        void BFS_Vertices(Vertex* vertex,std::vector<int>* connectedIdx);
 
         Junction* doesJunctionExist(Junction *junction);
 
         Junction* doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d);
 
         void resetJunctionVisitFlag();
+
+        void parseConnectedComponents();
 
         void resetVertexVisitFlag();
 

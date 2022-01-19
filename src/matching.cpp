@@ -20,10 +20,13 @@ matching::matching(seqGraph::Graph* graph1) {
     this->graph = graph1;
     N = 2 * graph1->getVCount();
     this->matched = new int[N + 1];
-    for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
+    std::fill_n(this->matched,N+1, -1);
+//    for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
     currentMatrix = this->graph->getConjugateMatrix();
     this->originalGraph = graph1;
 }
+
+
 
 void matching::resetGraph(seqGraph::Graph* g) {
     this->graph =  g;
@@ -31,9 +34,10 @@ void matching::resetGraph(seqGraph::Graph* g) {
     this->matched = new int[N + 1];
     for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
     currentMatrix = this->graph->getConjugateMatrix();
+    this->cyclePaths.clear();
 }
 
-bool matching::kmDfs(int u, bool visity[],bool visitx[], std::vector<int>* pre, double ex[], double ey[], double slack[]) {
+bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, double ex[], double ey[], double slack[]) {
     auto matrix = getMatrix();
     visity[conjugateIdx(u)] = true;
     visitx[u] = true;
@@ -57,8 +61,8 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::vector<int>* pre, 
         if(std::abs(ex[u] + ey[i] - matrix[u][i]) <= ZERO) {
             visity[i] = true;
             if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
-                pre->push_back(u);
-                pre->push_back(conjugateIdx(i));
+                pre->insert(u);
+                pre->insert(conjugateIdx(i));
                 matched[i] = u;
                 matched[conjugateIdx(u)] = conjugateIdx(i);
                 return true;
@@ -197,15 +201,16 @@ void matching::hungarian() {
     memset(visity,0,sizeof visity);
 
     for( int i = 1 ; i <= N ; i++ ){
-        ex[i] = -INF;
-        for( int j = 1 ; j <= N ; j++ ){
-            if( ex[i] < matrix[i][j] ) ex[i] = matrix[i][j];
-        }
+        ex[i] = *std::max_element(matrix[i], matrix[i]+N);
+//        for( int j = 1 ; j <= N ; j++ ){
+//            if( ex[i] < matrix[i][j] ) ex[i] = matrix[i][j];
+//        }
     }
-    auto* pre = new std::vector<int>();
+    auto* pre = new std::set<int>();
     for (int i = 1; i < N + 1; i++) {
-        for( int l = 1 ; l <=N ; l++ ) slack[l] = 1000;
-        if (std::find(pre->begin(), pre->end(), i) != pre->end()) {
+        std::fill_n(slack, N+1, 1000);
+//        for( int l = 1 ; l <=N ; l++ ) slack[l] = 1000;
+        if (pre->find(i) != pre->end()) {
             continue;
         }
         while (true) {
@@ -231,9 +236,9 @@ void matching::hungarian() {
         }
         if (VERBOSE) {
             std::cout<<i<<"\t|";
-            for(int k = 0; k < N + 1; k++) {
-                std::cout<<matched[k]<<"\t";
-            }
+//            for(int k = 0; k < N + 1; k++) {
+//                std::cout<<matched[k]<<"\t";
+//            }
             std::cout<<std::endl;
         }
     }
@@ -281,6 +286,7 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
         std::cout<<"Conjugate not checked\n";
     else
         std::cout<<"check conjugate done\n";
+    std::vector<int> cyclePaths;
     for(int i = 1; i < N + 1; i++) {
         if (visited[i]) continue;
         if (matrix[matched[i]][i] == 0) continue;
@@ -297,7 +303,9 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
         visited[now] = true;
         visited[conjugateIdx(now)] = true;
         bool currentInsert = true;
+        bool isCycle = false;
         while (matrix[matched[now]][now] != double(0)) {
+//            如果连上之前断裂的路径
             if (resolvedPath->find(matched[now]) != resolvedPath->end()) {
                 auto oldPath = (*resolvedPath)[matched[now]];
 //                +"_"+ std::to_string(now)
@@ -310,7 +318,9 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
                 currentInsert = false;
                 break;
             }
+//            环状路径
             if(visited[matched[now]]){
+                isCycle = true;
 //                if (matched[now] == i) currentPath->push_back(-1);
                 currentPath = breakCycle(currentPath);
                 break;
@@ -323,8 +333,12 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
             currentPath->push_back(matched[now]);
             now = matched[now];
         }
-        if(currentInsert)
-            resolvedPath->emplace(i, currentPath);
+        if(currentInsert) {
+            resolvedPath->emplace((*currentPath)[0], currentPath);
+            if (isCycle) {
+                this->cyclePaths.push_back((*currentPath)[0]);
+            }
+        }
     }
     for (auto path : *resolvedPath) {
         auto extendPath = this->addPrevPath(prevPaths, path.second);

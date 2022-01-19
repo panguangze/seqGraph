@@ -6,6 +6,7 @@
 #ifndef SEQGRAPH_MATCHING_H
 #define SEQGRAPH_MATCHING_H
 #include "Graph.h"
+#include "algorithm"
 extern int VERBOSE;
 class matching {
 private:
@@ -18,6 +19,8 @@ private:
     double* lx;
     double* ly;
     int* matched;
+
+    std::vector<int> cyclePaths;
     void init_labels();
     void update_labels();
     void bfs(int i, double ex[], double ey[], bool visity[],int pre[], double []);
@@ -30,6 +33,9 @@ public:
     inline int getN() const {
         return N;
     }
+    inline bool isCycle(int i) {
+        return std::find(cyclePaths.begin(), cyclePaths.end(), i) != cyclePaths.end();
+    }
     inline double** getMatrix() const {
         return this->currentMatrix;
     };
@@ -38,7 +44,7 @@ public:
     }
     void hungarian();
     bool dfs(int u, bool visity[], std::vector<int>* pre);
-    bool kmDfs(int u, bool visity[],bool visitx[], std::vector<int>* pre, double ex[], double ey[], double slack[]);
+    bool kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, double ex[], double ey[], double slack[]);
     void main_steps();
 
     std::map<int, std::vector<int>*>* resolvePath(std::map<int, std::vector<int>*>* prevPaths);

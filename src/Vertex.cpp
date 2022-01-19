@@ -13,6 +13,7 @@ Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double 
     this->start = aStart;
     this->end = aEnd;
     this->credibility = aCredibility;
+    this->visited = false;
 //    create weight
     weight = new Weight(aCoverage);
     weight->setCopyNum(aCopyNum);
@@ -178,4 +179,27 @@ void Vertex::setMateEP() {
     this->EP3->setMateEp(this->EP5);
     this->rEP5->setMateEp(this->rEP3);
     this->rEP3->setMateEp(this->rEP5);
+}
+
+const std::vector<Junction *> &Vertex::getNextJuncs() const {
+    return nextJuncs;
+}
+
+const std::vector<Junction *> &Vertex::getPrevJuncs() const {
+    return prevJuncs;
+}
+
+void Vertex::setNextJunc(Junction* v) {
+    this->nextJuncs.push_back(v);
+}
+void Vertex::setPrevJunc(Junction* v){
+    this->prevJuncs.push_back(v);
+}
+
+bool Vertex::isVisited() const {
+    return visited;
+}
+
+void Vertex::setIsVisited(bool visited) {
+    Vertex::visited = visited;
 }

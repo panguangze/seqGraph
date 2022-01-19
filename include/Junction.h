@@ -15,6 +15,14 @@ namespace seqGraph {
     class Vertex;
     class Junction {
     protected:
+        int idx;
+    public:
+        int getIdx() const;
+
+        void setIdx(int idx);
+
+    protected:
+        //current idx in graph;
         char sourceDir;
         char targetDir;
         Vertex *source;
@@ -33,6 +41,7 @@ namespace seqGraph {
         ~Junction();
 
         void junctionToEdge();
+
 
         bool operator==(const Junction &otherJunc) const;
 

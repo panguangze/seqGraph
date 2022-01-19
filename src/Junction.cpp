@@ -43,9 +43,9 @@ void Junction::junctionToEdge() {
 }
 
 bool Junction::operator==(const Junction &otherJunc) const {
-    return(*this->source == *otherJunc.target && *this->target == *otherJunc.source  ||
-            *this->source == *otherJunc.source && *this->target == *otherJunc.target && this->sourceDir == otherJunc.sourceDir &&
-            this->targetDir != otherJunc.targetDir);
+    return((*this->source == *otherJunc.target && *this->target == *otherJunc.source)  ||
+            (*this->source == *otherJunc.source && *this->target == *otherJunc.target && this->sourceDir == otherJunc.sourceDir &&
+            this->targetDir != otherJunc.targetDir));
 //    return (this->oEdge->getInfo() == otherJunc.oEdge->getInfo() &&
 //            this->cEdge->getInfo() == otherJunc.cEdge->getInfo()) ||
 //           (this->oEdge->getInfo() == otherJunc.cEdge->getInfo() &&
@@ -110,4 +110,12 @@ bool Junction::isInferred() const {
 
 void Junction::setInferred(bool inferred) {
     Junction::inferred = inferred;
+}
+
+int Junction::getIdx() const {
+    return idx;
+}
+
+void Junction::setIdx(int idx) {
+    Junction::idx = idx;
 }
