@@ -76,13 +76,13 @@ int main(int argc, char *argv[]) {
         g->addJunction(v1, v2, sDir, tDir, weight, 1 , 1);
     }
 //    matching for each connected graph
-    int n = 1;
+    int n = 0;
     g->parseConnectedComponents();
     int maxI = g->subGraphCount();
     while (n< maxI) {
-        if(n==6){
-            int m = 9;
-        }
+//        if(n==6){
+//            int m = 9;
+//        }
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
         auto* m = new matching(subGraph);
