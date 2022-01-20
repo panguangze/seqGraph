@@ -288,11 +288,12 @@ double ** Graph::getConjugateMatrix(){
     int n = this->getVCount();
     this->ConjugateMatrix = new double *[2*n + 1];
     for(int i = 0; i < 2*n + 1; i++) {
+
         auto t = new double[2*n + 1];
+        std::fill_n(t,(2*n + 1), 0);
         this->ConjugateMatrix[i] = t;
     }
     double initV = 0;
-    std::fill_n(&this->ConjugateMatrix[0][0],(2*n + 1) * (2*n + 1), initV);
     for(auto junc : *junctions) {
         int i = junc->getSource()->getIdx();
         int j = junc->getTarget()->getIdx();

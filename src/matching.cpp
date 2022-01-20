@@ -197,11 +197,16 @@ void matching::hungarian() {
     bool visitx[N + 1];
     double slack[N + 1], ex[N + 1], ey[N + 1];
 
-    memset(ey,0,sizeof ey);
-    memset(visity,0,sizeof visity);
+    std::fill_n(ex,N+1,0);
+    std::fill_n(ey,N+1,0);
+//    std::fill_n(ex,N+1,0);
 
-    for( int i = 1 ; i <= N ; i++ ){
-        ex[i] = *std::max_element(matrix[i], matrix[i]+N);
+//    memset(ey,0,sizeof ey);
+//    memset(ex,0,sizeof ex);
+//    memset(visity,0,sizeof visity);
+
+    for( int i = 1 ; i < N +1 ; i++ ){
+        ex[i] = *std::max_element(matrix[i], matrix[i]+N+1);
 //        for( int j = 1 ; j <= N ; j++ ){
 //            if( ex[i] < matrix[i][j] ) ex[i] = matrix[i][j];
 //        }
