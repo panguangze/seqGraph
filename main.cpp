@@ -85,6 +85,10 @@ int main(int argc, char *argv[]) {
 //        }
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
+        if(subGraph->getJunctions()->size() == 1) {
+            n++;
+            continue;
+        }
         auto* m = new matching(subGraph);
 //        checkMatrixConjugate(m->getMatrix(), m->getN());
 //    m->main_steps();
