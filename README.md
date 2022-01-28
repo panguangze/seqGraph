@@ -11,10 +11,17 @@ cmake .. && make
 ```
 ## Running
 #### make input
+
+```
+Add tgs data into assembly process
+p_tgs -b tgs.bam -c contig.fasta -o out.fasta
+
+```
+tgs.bam aligned the tgs reads to the assemblied raw contigs.
 ```
 overlap_end input.bam graph.txt 500,
 ```
-The last parameters is the end length of contig for barcode statistic
+The input.bam is aligned NGS reads to the contigs. The last parameters is the end length of contig for barcode statistic
 ```
 seqGraph \
     -g  graph.txt\ // graph input
