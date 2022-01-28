@@ -11,11 +11,9 @@ cmake .. && make
 ```
 ## Running
 #### make input
-
 ```
 Add tgs data into assembly process
 p_tgs -b tgs.bam -c contig.fasta -o out.fasta
-
 ```
 tgs.bam aligned the tgs reads to the assemblied raw contigs.
 ```
