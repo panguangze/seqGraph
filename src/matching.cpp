@@ -71,7 +71,8 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, dou
 //            auto tt1 = ex[u];
 //            auto tt2 = ey[i];
 //            auto tt3 = matrix[u][i];
-            slack[i] = ex[u] + ey[i]  - matrix[u][i];
+//            if (ex[u] + ey[i]  - matrix[u][i] >= ZERO)
+                slack[i] = ex[u] + ey[i]  - matrix[u][i];
 //            auto tts = slack[i];
 //            auto ttttt = 99;
         }
@@ -213,7 +214,10 @@ void matching::hungarian() {
     }
     auto* pre = new std::set<int>();
     for (int i = 1; i < N + 1; i++) {
-        std::fill_n(slack, N+1, 1000);
+        if (i == 18013) {
+            int mmk = 1;
+        }
+        std::fill_n(slack, N+1, 10000000);
 //        for( int l = 1 ; l <=N ; l++ ) slack[l] = 1000;
         if (pre->find(i) != pre->end()) {
             continue;
