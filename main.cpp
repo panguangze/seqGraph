@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
                 checkMatrixConjugate(m->getMatrix(), m->getN());
                 m->hungarian();
                 paths = m->resolvePath(paths);
-                if (paths->size() == 1) break;
+                if (paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}
                 for (auto item: *paths) {
                     if (m->isCycle(item.first)) {
                         for(const auto& v: *item.second) {
