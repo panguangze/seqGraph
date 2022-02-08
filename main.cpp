@@ -74,6 +74,7 @@ int main(int argc, char *argv[]) {
     std::ifstream infile(argv[1]);
     std::ofstream resultFile(argv[2]);
     int iterRounds = std::atoi(argv[4]);
+    int iterRoundsBK = iterRounds;
     std::ofstream cyclePathsFile(argv[3]);
     VERBOSE = std::atoi(argv[5]);
 
@@ -131,6 +132,7 @@ int main(int argc, char *argv[]) {
         }
 //    recallPaths.push_back(paths);
         int iterN = 1;
+        iterRounds = iterRoundsBK;
         if (paths->size() != 1) {
             while (iterRounds !=0) {
                 std::cout<<"Iteration "<<iterN<<"...\n";
