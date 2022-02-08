@@ -55,11 +55,12 @@ void readBAM(htsFile *in, const char* out_file, int readsLen) {
         pos = b->core.pos;
         mpos = b->core.mpos;
         auto flags = b->core.flag;
+        if (flags & 0x80) continue;
         auto rev = flags & 0x10;
         auto mrev = flags & 0x20;
 //        refLen = sam_hdr_tid2len(hdr, b->core.tid);
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
-        if (refName == mRefName)continue;
+        if (refName == mRefName && rev == !mrev)continue;
         if (rev)
             refName = refName.append(" -");
         if (!mrev)
