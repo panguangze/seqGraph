@@ -133,6 +133,7 @@ int main(int argc, char *argv[]) {
 //    recallPaths.push_back(paths);
         int iterN = 1;
         iterRounds = iterRoundsBK;
+        int prevPathSize = paths->size();
         if (paths->size() != 1) {
             while (iterRounds !=0) {
                 std::cout<<"Iteration "<<iterN<<"...\n";
@@ -140,7 +141,7 @@ int main(int argc, char *argv[]) {
                 checkMatrixConjugate(m->getMatrix(), m->getN());
                 m->hungarian();
                 paths = m->resolvePath(paths);
-                if (paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}
+                if (paths->size() == prevPathSize || paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}
                 for (auto item: *paths) {
                     if (m->isCycle(item.first)) {
                         for(const auto& v: *item.second) {
@@ -149,6 +150,7 @@ int main(int argc, char *argv[]) {
                         }
                     }
                 }
+                prevPathSize = paths->size();
                 iterRounds--;
                 iterN++;
             }
