@@ -298,8 +298,18 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
     std::vector<int> cyclePaths;
     for(int i = 1; i < N + 1; i++) {
         if (visited[i]) continue;
-        if (matrix[matched[i]][i] == 0) continue;
         auto* currentPath = new std::vector<int>();
+        if (matrix[matched[i]][i] == 0){
+            if (matrix[matched[conjugateIdx(i)]][conjugateIdx(i)] == 0) {
+                currentPath->push_back(i); resolvedPath->emplace(i,currentPath);
+                visited[i] = true;
+                visited[conjugateIdx(i)] = true;
+            } else {
+                visited[i] = true;
+            }
+            continue;
+//            currentPath->push_back(i); resolvedPath->emplace(i,currentPath); continue;
+        }
         int now = i;
         int vIdx = (now + 1) / 2;
         char dir = now % 2 == 0 ? '-':'+';
