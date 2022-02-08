@@ -150,19 +150,19 @@ void Graph::BFS_Vertices(Vertex* vertex, std::vector<int>* connectedIdx){
         auto currentV = VQueuen.front();
         VQueuen.pop();
         for (auto e : currentV->getNextJuncs()) {
-            connectedIdx->push_back(e->getIdx());
             // if (e->hasCopy()) {
             auto *nextV = e->getTarget();
             if (!nextV->isVisited()) {
+                connectedIdx->push_back(e->getIdx());
                 nextV->setIsVisited(true);
                 VQueuen.push(nextV);
             }
         }
         for (auto e : currentV->getPrevJuncs()) {
-            connectedIdx->push_back(e->getIdx());
             // if (e->hasCopy()) {
             auto *nextV = e->getSource();
             if (!nextV->isVisited()) {
+                connectedIdx->push_back(e->getIdx());
                 nextV->setIsVisited(true);
                 VQueuen.push(nextV);
             }
