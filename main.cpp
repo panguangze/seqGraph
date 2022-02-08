@@ -103,6 +103,10 @@ int main(int argc, char *argv[]) {
 //        }
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
+        if(subGraph->getJunctions()->size() == 1) {
+            n++;
+            continue;
+        }
         std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<"\n";
         auto* m = new matching(subGraph);
 //        checkMatrixConjugate(m->getMatrix(), m->getN());
