@@ -25,8 +25,10 @@ set(SOURCE_FILES src/Edge.cpp
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
 add_executable(matching main.cpp ${SOURCE_FILES})
-add_executable(eDistance jaccard_full_contig.cpp jaccard_full_contig.h)
-target_link_libraries(eDistance -lhts)
+add_executable(rDistance utils/reads_overlap.cpp utils/reads_overlap.h)
+add_executable(bDistance utils/bDistance.cpp utils/bDistance.h)
+target_link_libraries(rDistance -lhts)
+target_link_libraries(bDistance -lhts)
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)

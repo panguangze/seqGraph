@@ -2,7 +2,7 @@
 // Created by caronkey on 27/11/2020.
 //
 
-#include "jaccard_full_contig.h"
+#include "reads_overlap.h"
 // arg1 输入bam，arg2输出jaccard
 int main(int argc, char **argv) {
     htsFile *in;
