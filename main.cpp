@@ -97,6 +97,7 @@ int main(int argc, char *argv[]) {
 //    matching for each connected graph
     int n = 0;
     g->parseConnectedComponents();
+    std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
     int maxI = g->subGraphCount();
     while (n< maxI) {
 //        if(n==6){
