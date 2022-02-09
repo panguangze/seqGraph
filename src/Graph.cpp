@@ -124,6 +124,19 @@ Vertex *Graph::getVertexById(std::string Id) {
     return nullptr;
 }
 
+Vertex *Graph::getVertexByIdQ(std::string Id) {
+//    if (verticesIdx->find(Id) != verticesIdx->end()){
+//        auto idx = (*verticesIdx)[Id];
+//    }
+    return (*this->vertices)[(*verticesIdx)[Id]];
+
+//    for (auto *vertex : *this->vertices) {
+//        if (vertex->getId() == Id) return vertex;
+//    }
+//    throw VertexDoesNotExistException(Id);
+//    return nullptr;
+}
+
 
 int Graph::BFS_EndPoint(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint) {
     std::queue<EndPoint *> EPQueue;

@@ -445,8 +445,15 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
 //    auto tm = resultG->getConjugateMatrix() == nullptr;
     auto* values = new double[4];
     for (auto iPath: *paths) {
+        resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2);
+    }
+    seqGraph::Vertex* v1;
+    seqGraph::Vertex* v2;
+    for (auto iPath: *paths) {
+        v1 = resultG->getVertexByIdQ(std::to_string(iPath.second->front()));
         for (auto jPath: *paths) {
             if (iPath.first == jPath.first) continue;
+            v2 = resultG->getVertexByIdQ(std::to_string(jPath.second->front()));
             if (iPath.second->size() == 1 && jPath.second->size() == 1) {
                 int i = iPath.second->front();
                 int j = jPath.second->front();
@@ -466,8 +473,6 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
 //                v2Str+= idx2Str(item);
 //            }
 
-            auto v1 = resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2);
-            auto v2 = resultG->addVertex(std::to_string(jPath.second->front()),"xx",1,2,1,1,2);
             resultG->addJunction(v1, v2, '+', '+', values[0], 1 , 1);
             resultG->addJunction(v1, v2, '+', '-', values[1], 1 , 1);
             resultG->addJunction(v1, v2, '-', '+', values[2], 1 , 1);
