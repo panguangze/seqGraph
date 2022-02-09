@@ -36,7 +36,7 @@ matching::matching(seqGraph::Graph* graph1) {
 }
 
 matching::~matching() {
-    delete this->matched;
+//    delete this->matched;
     for (auto item: *originalVertices) {
         delete item;
     }
@@ -460,7 +460,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
             resultG->addJunction(v1, v2, '+', '-', values[1], 1 , 1);
             resultG->addJunction(v1, v2, '-', '+', values[2], 1 , 1);
             resultG->addJunction(v1, v2, '-', '-', values[3], 1 , 1);
-            free(values);
+            delete values;
             values = nullptr;
         }
     }

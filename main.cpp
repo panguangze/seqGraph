@@ -113,12 +113,12 @@ int main(int argc, char *argv[]) {
 //        checkMatrixConjugate(m->getMatrix(), m->getN());
 //    m->main_steps();
         m->hungarian();
-        if (VERBOSE == 1) {
-            std::cout<<"final matched relation\n";
-            for(int i = 0; i < m->getN() + 1; i++) {
-                std::cout<<m->getMatched()[i]<<"\t";
-            }
-        }
+//        if (VERBOSE == 1) {
+//            std::cout<<"final matched relation\n";
+//            for(int i = 0; i < m->getN() + 1; i++) {
+//                std::cout<<m->getMatched()[i]<<"\t";
+//            }
+//        }
         std::cout<<"\nresolve path";
 //    TODO , make the path and cycles info into mathicng class
         auto paths = m->resolvePath(nullptr);
