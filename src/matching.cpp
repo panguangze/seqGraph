@@ -32,6 +32,10 @@ matching::matching(seqGraph::Graph* graph1) {
     for (auto item : *this->graph->getVertices()) {
         this->originalVertices->push_back(new seqGraph::Vertex(*item));
     }
+//    this->originalJunctions = new std::vector<seqGraph::Junction*>();
+//    for (auto item : *this->graph->getJunctions()) {
+//        this->originalJunctions->push_back(new seqGraph::Junction(*item));
+//    }
 //    this->originalVertices = this->graph->getVertices();
 }
 
@@ -451,6 +455,30 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
     }
     seqGraph::Vertex* v1;
     seqGraph::Vertex* v2;
+//    for(auto junc : *originalJunctions) {
+//        int i = junc->getSource()->getIdx();
+//        int j = junc->getTarget()->getIdx();
+//        int sDir = junc->getSourceDir();
+//        int tDir = junc->getTargetDir();
+//        double weightValue = junc->getWeight()->getCopyNum();
+//        if (sDir == '+') {
+//            if (tDir == '+') {
+//                this->ConjugateMatrix[2*j + 1][2*i + 1] = weightValue;
+//                this->ConjugateMatrix[2*(i+1)][2*(j+1)] = weightValue;
+//            } else {
+//                this->ConjugateMatrix[2*(j + 1)][2*i+1] = weightValue;
+//                this->ConjugateMatrix[2*(i+1)][2*j+1] = weightValue;
+//            }
+//        } else {
+//            if (tDir == '+') {
+//                this->ConjugateMatrix[2*j+1][2*(i + 1)] = weightValue;
+//                this->ConjugateMatrix[2*i+1][2*(j+1)] = weightValue;
+//            } else {
+//                this->ConjugateMatrix[2*i+1][2*j+1] = weightValue;
+//                this->ConjugateMatrix[2*(j+1)][2*(i+1)] = weightValue;
+//            }
+//        }
+//    }
     for (auto iPath: *paths) {
         v1 = resultG->getVertexByIdQ(std::to_string(iPath.second->front()));
         for (auto jPath: *paths) {
@@ -467,6 +495,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
             } else {
                 mergePath(iPath.second, jPath.second, this->originalMatrix, values);
             }
+            if (values[0] == 0 && values[1]==0 && values[2]==0 && values[3]==0) continue;
 //            std::string v1Str, v2Str;
 //            for (auto item : *iPath.second) {
 //                v1Str+=idx2Str(item);
