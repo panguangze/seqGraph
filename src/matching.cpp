@@ -23,12 +23,15 @@ matching::matching(seqGraph::Graph* graph1) {
     std::fill_n(this->matched,N+1, -1);
 //    for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
     currentMatrix = this->graph->getConjugateMatrix();
-    this->originalGraph = graph1;
+//    this->originalGraph = graph1;
+    this->originalMatrix = currentMatrix;
+    this->originalVertices = this->graph->getVertices();
 }
 
 
 
 void matching::resetGraph(seqGraph::Graph* g) {
+    free(this->graph);
     this->graph =  g;
     N = 2 *  g->getVCount();
     this->matched = new int[N + 1];
@@ -251,6 +254,7 @@ void matching::hungarian() {
             std::cout<<std::endl;
         }
     }
+    free(pre);
 }
 void matching::main_steps() {
     bool visity[N + 1];
@@ -281,7 +285,7 @@ std::string matching::idx2Str(int idx) {
     int now = idx;
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
-    auto idStr = (*this->originalGraph->getVertices())[vIdx - 1]->getId();
+    auto idStr = (*this->originalVertices)[vIdx - 1]->getId();
     return idStr+dir;
 }
 std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vector<int>*>* prevPaths) {
@@ -290,11 +294,11 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
     memset(visited, 0, sizeof visited);
     auto* resolvedPath = new std::map<int, std::vector<int> *>();
     auto* resPath = new std::map<int, std::vector<int> *>();
-    auto checkedC = checkConjugateMatch();
-    if(checkedC!= 0)
-        std::cout<<"Conjugate not checked\n";
-    else
-        std::cout<<"check conjugate done\n";
+//    auto checkedC = checkConjugateMatch();
+//    if(checkedC!= 0)
+//        std::cout<<"Conjugate not checked\n";
+//    else
+//        std::cout<<"check conjugate done\n";
     std::vector<int> cyclePaths;
     for(int i = 1; i < N + 1; i++) {
         if (visited[i]) continue;
@@ -362,7 +366,19 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
     for (auto path : *resolvedPath) {
         auto extendPath = this->addPrevPath(prevPaths, path.second);
         resPath->emplace(extendPath->front(),extendPath);
+//        path.second->clear();
+//        path.second->shrink_to_fit();
     }
+    free(resolvedPath);
+//    if(prevPaths != nullptr) {
+//        for(auto item: *prevPaths) {
+//            item.second->clear();
+//            item.second->shrink_to_fit();
+//        }
+//    }
+    free(prevPaths);
+
+    free(matched);
     return resPath;
 }
 
@@ -409,7 +425,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
     for (auto iPath: *paths) {
         for (auto jPath: *paths) {
             if (iPath.first == jPath.first) continue;
-            auto values = mergePath(iPath.second, jPath.second, this->originalGraph->getConjugateMatrix());
+            auto values = mergePath(iPath.second, jPath.second, this->originalMatrix);
 //            std::string v1Str, v2Str;
 //            for (auto item : *iPath.second) {
 //                v1Str+=idx2Str(item);
@@ -424,6 +440,8 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
             resultG->addJunction(v1, v2, '+', '-', values[1], 1 , 1);
             resultG->addJunction(v1, v2, '-', '+', values[2], 1 , 1);
             resultG->addJunction(v1, v2, '-', '-', values[3], 1 , 1);
+            free(values);
+            values = nullptr;
         }
     }
     resetGraph(resultG);

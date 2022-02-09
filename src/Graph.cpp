@@ -22,7 +22,19 @@ Graph::Graph() {
 }
 
 Graph::~Graph() {
-
+    for (auto item : *vertices) {
+        delete item;
+    }
+    for (auto item : *junctions) {
+        delete item;
+    }
+    vertices->clear();
+    vertices->shrink_to_fit();
+    junctions->clear();
+    junctions->shrink_to_fit();
+    verticesIdx->clear();
+    junctionIdx->clear();
+//    if (ConjugateMatrix != nullptr)
 }
 
 Graph* Graph::getSubgraph(int i) {

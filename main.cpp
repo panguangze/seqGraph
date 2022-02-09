@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
             while (iterRounds !=0) {
                 std::cout<<"Iteration "<<iterN<<"...\n";
                 m->reconstructMatrix(paths);
-                checkMatrixConjugate(m->getMatrix(), m->getN());
+//                checkMatrixConjugate(m->getMatrix(), m->getN());
                 m->hungarian();
                 paths = m->resolvePath(paths);
                 if (paths->size() == prevPathSize || paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}
