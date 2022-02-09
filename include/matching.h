@@ -12,7 +12,9 @@ class matching {
 private:
     seqGraph::Graph* graph;
     double** currentMatrix;
-    seqGraph::Graph* originalGraph;
+    double** originalMatrix;
+    std::vector<seqGraph::Vertex*>* originalVertices;
+//    seqGraph::Graph* originalGraph;
 
     int N;
 
