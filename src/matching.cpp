@@ -52,6 +52,7 @@ matching::~matching() {
 
 void matching::resetGraph(seqGraph::Graph* g) {
     free(this->graph);
+    std::cout<<"free done"<<std::endl;
     this->graph =  g;
     N = 2 *  g->getVCount();
     this->matched = new int[N + 1];
@@ -464,6 +465,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
             values = nullptr;
         }
     }
+    std::cout<<"start reset"<<std::endl;
     resetGraph(resultG);
 }
 
