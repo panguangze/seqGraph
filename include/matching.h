@@ -28,6 +28,8 @@ private:
     void bfs(int i, double ex[], double ey[], bool visity[],int pre[], double []);
 public:
     explicit matching(seqGraph::Graph* graph1);
+    ~matching();
+
     void printM(int i);
     inline int* getMatched() const {
         return matched;
@@ -41,9 +43,6 @@ public:
     inline double** getMatrix() const {
         return this->currentMatrix;
     };
-    ~matching() {
-        free(this->graph);
-    }
     void hungarian();
     bool dfs(int u, bool visity[], std::vector<int>* pre);
     bool kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, double ex[], double ey[], double slack[]);

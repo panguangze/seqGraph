@@ -19,7 +19,9 @@ Junction::Junction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, c
 }
 
 Junction::~Junction() {
-
+    delete oEdge;
+    delete cEdge;
+    delete weight;
 }
 
 void Junction::junctionToEdge() {

@@ -167,6 +167,7 @@ int main(int argc, char *argv[]) {
             }
             resultFile<<"\n";
         }
+        free(m);
         n++;
     }
     infile.close();

@@ -36,7 +36,15 @@ Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double 
 
 
 Vertex::~Vertex() {
-
+    delete EP3;
+    delete EP5;
+    delete rEP3;
+    delete rEP5;
+    prevJuncs.clear();
+    prevJuncs.shrink_to_fit();
+    nextJuncs.clear();
+    nextJuncs.shrink_to_fit();
+    delete weight;
 }
 
 bool Vertex::operator==(const Vertex &rhs) const {

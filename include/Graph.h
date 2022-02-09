@@ -30,7 +30,7 @@ namespace seqGraph {
 
         ~Graph();
         Graph* getSubgraph(int i);
-
+        void originalGraphFree();
         inline int getVCount() const {
             return this->vertices->size();
         }
