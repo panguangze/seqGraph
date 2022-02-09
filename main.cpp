@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
         int prevPathSize = paths->size();
         if (paths->size() != 1) {
             while (iterRounds !=0) {
-                std::cout<<"Iteration "<<iterN<<"...\n";
+                std::cout<<"Iteration "<<iterN<<",nodes count"<<paths->size()<<"...\n";
                 m->reconstructMatrix(paths);
 //                checkMatrixConjugate(m->getMatrix(), m->getN());
                 m->hungarian();
