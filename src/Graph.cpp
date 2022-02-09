@@ -22,6 +22,12 @@ Graph::Graph() {
 }
 
 Graph::~Graph() {
+    if (ConjugateMatrix != nullptr) {
+        for (int i = 0; i < 2*vertices->size(); ++i) {
+            free(ConjugateMatrix[i]);
+        }
+    }
+    free(ConjugateMatrix);
     for (auto item : *vertices) {
         delete item;
     }
@@ -34,8 +40,17 @@ Graph::~Graph() {
     junctions->shrink_to_fit();
     verticesIdx->clear();
     junctionIdx->clear();
-//    if (ConjugateMatrix != nullptr)
 }
+
+//void Graph::originalGraphFree(){
+//    for (auto item : *junctions) {
+//        delete item;
+//    }
+//    junctions->clear();
+//    junctions->shrink_to_fit();
+//    verticesIdx->clear();
+//    junctionIdx->clear();
+//}
 
 Graph* Graph::getSubgraph(int i) {
     auto subG = new Graph();

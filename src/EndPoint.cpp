@@ -16,7 +16,8 @@ EndPoint::EndPoint(Weight *weight, int type, std::string vId) {
 }
 
 EndPoint::~EndPoint() {
-
+    this->edges->clear();
+    this->edges->shrink_to_fit();
 }
 
 void EndPoint::addEdge(Edge *edge) {

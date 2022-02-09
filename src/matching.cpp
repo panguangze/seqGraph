@@ -24,8 +24,28 @@ matching::matching(seqGraph::Graph* graph1) {
 //    for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
     currentMatrix = this->graph->getConjugateMatrix();
 //    this->originalGraph = graph1;
-    this->originalMatrix = currentMatrix;
-    this->originalVertices = this->graph->getVertices();
+    this->originalMatrix = new double*[N+1];
+    for(int i = 0; i < N+1; ++i)
+        originalMatrix[i] = new double [N+1];
+    std::memcpy(originalMatrix, currentMatrix, sizeof(int)*(N+1)*(N+1));
+    this->originalVertices = new std::vector<seqGraph::Vertex*>();
+    for (auto item : *this->graph->getVertices()) {
+        this->originalVertices->push_back(new seqGraph::Vertex(*item));
+    }
+//    this->originalVertices = this->graph->getVertices();
+}
+
+matching::~matching() {
+    delete this->matched;
+    for (auto item: *originalVertices) {
+        delete item;
+    }
+    originalVertices->clear();
+    originalVertices->shrink_to_fit();
+    for (int i = 0; i < N+1; ++i) {
+        free(originalMatrix[i]);
+    }
+    free(originalMatrix);
 }
 
 
