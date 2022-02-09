@@ -56,9 +56,11 @@ void matching::resetGraph(seqGraph::Graph* g) {
     this->graph =  g;
     N = 2 *  g->getVCount();
     this->matched = new int[N + 1];
-    for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
+    std::fill_n(this->matched,N+1, -1);
+//    for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
     currentMatrix = this->graph->getConjugateMatrix();
     this->cyclePaths.clear();
+    this->cyclePaths.shrink_to_fit();
 }
 
 bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, double ex[], double ey[], double slack[]) {
