@@ -410,8 +410,8 @@ int conjugateIdx(int idx) {
     return cI;
 }
 
-double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix) {
-    auto result = new double[4];
+double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix, double* result) {
+//    auto result = new double[4];
     for(int i = 0 ; i< 4 ; i ++) result[i] = 0;
 
     for (auto ip1: *p1) {
@@ -443,10 +443,21 @@ double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix) {
 void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
     auto* resultG = new seqGraph::Graph();
 //    auto tm = resultG->getConjugateMatrix() == nullptr;
+    auto* values = new double[4];
     for (auto iPath: *paths) {
         for (auto jPath: *paths) {
             if (iPath.first == jPath.first) continue;
-            auto values = mergePath(iPath.second, jPath.second, this->originalMatrix);
+            if (iPath.second->size() == 1 && jPath.second->size() == 1) {
+                int i = iPath.second->front();
+                int j = jPath.second->front();
+                auto matrix = getMatrix();
+                values[0] += matrix[j][i];
+                values[1] += matrix[conjugateIdx(j)][i];
+                values[2] += matrix[j][conjugateIdx(i)];
+                values[3] += matrix[conjugateIdx(j)][conjugateIdx(i)];
+            } else {
+                mergePath(iPath.second, jPath.second, this->originalMatrix, values);
+            }
 //            std::string v1Str, v2Str;
 //            for (auto item : *iPath.second) {
 //                v1Str+=idx2Str(item);
@@ -461,10 +472,9 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
             resultG->addJunction(v1, v2, '+', '-', values[1], 1 , 1);
             resultG->addJunction(v1, v2, '-', '+', values[2], 1 , 1);
             resultG->addJunction(v1, v2, '-', '-', values[3], 1 , 1);
-            delete values;
-            values = nullptr;
         }
     }
+    delete[] values;
     std::cout<<"start reset"<<std::endl;
     resetGraph(resultG);
 }
