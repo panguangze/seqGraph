@@ -24,10 +24,10 @@ Graph::Graph() {
 Graph::~Graph() {
     if (ConjugateMatrix != nullptr) {
         for (int i = 0; i < 2*vertices->size(); ++i) {
-            free(ConjugateMatrix[i]);
+            delete[] ConjugateMatrix[i];
         }
     }
-    free(ConjugateMatrix);
+    delete[] ConjugateMatrix;
     for (auto item : *vertices) {
         delete item;
     }
