@@ -14,6 +14,7 @@ private:
     double** currentMatrix;
     double** originalMatrix;
     std::vector<seqGraph::Vertex*>* originalVertices;
+//    std::vector<seqGraph::Junction* >* originalJunctions;
 //    seqGraph::Graph* originalGraph;
 
     int N;
