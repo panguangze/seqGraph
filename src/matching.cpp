@@ -495,7 +495,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
             } else {
                 mergePath(iPath.second, jPath.second, this->originalMatrix, values);
             }
-            if (values[0] == 0 && values[1]==0 && values[2]==0 && values[3]==0) continue;
+//            if (values[0] == 0 && values[1]==0 && values[2]==0 && values[3]==0) continue;
 //            std::string v1Str, v2Str;
 //            for (auto item : *iPath.second) {
 //                v1Str+=idx2Str(item);
@@ -503,11 +503,19 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
 //            for (auto item : *jPath.second) {
 //                v2Str+= idx2Str(item);
 //            }
+            if (values[0] != 0) {
+                resultG->addJunction(v1, v2, '+', '+', values[0], 1 , 1);
+            }
 
-            resultG->addJunction(v1, v2, '+', '+', values[0], 1 , 1);
-            resultG->addJunction(v1, v2, '+', '-', values[1], 1 , 1);
-            resultG->addJunction(v1, v2, '-', '+', values[2], 1 , 1);
-            resultG->addJunction(v1, v2, '-', '-', values[3], 1 , 1);
+            if (values[1] != 0) {
+                resultG->addJunction(v1, v2, '+', '-', values[1], 1 , 1);
+            }
+            if (values[2] != 0) {
+                resultG->addJunction(v1, v2, '-', '+', values[2], 1 , 1);
+            }
+            if (values[3] != 0) {
+                resultG->addJunction(v1, v2, '-', '-', values[3], 1 , 1);
+            }
         }
     }
     delete[] values;
