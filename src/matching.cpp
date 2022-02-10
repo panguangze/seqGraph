@@ -330,17 +330,18 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
     for(int i = 1; i < N + 1; i++) {
         if (visited[i]) continue;
         auto* currentPath = new std::vector<int>();
-        if (matrix[matched[i]][i] == 0){
-            if (matrix[matched[conjugateIdx(i)]][conjugateIdx(i)] == 0) {
-                currentPath->push_back(i); resolvedPath->emplace(i,currentPath);
-                visited[i] = true;
-                visited[conjugateIdx(i)] = true;
-            } else {
-                visited[i] = true;
-            }
-            continue;
-//            currentPath->push_back(i); resolvedPath->emplace(i,currentPath); continue;
-        }
+
+//        if (matrix[matched[i]][i] == 0){
+//            if (matrix[matched[conjugateIdx(i)]][conjugateIdx(i)] == 0) {
+//                currentPath->push_back(i); resolvedPath->emplace(i,currentPath);
+//                visited[i] = true;
+//                visited[conjugateIdx(i)] = true;
+//            } else {
+//                visited[i] = true;
+//            }
+//            continue;
+////            currentPath->push_back(i); resolvedPath->emplace(i,currentPath); continue;
+//        }
         int now = i;
         int vIdx = (now + 1) / 2;
         char dir = now % 2 == 0 ? '-':'+';
@@ -354,40 +355,53 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
         visited[conjugateIdx(now)] = true;
         bool currentInsert = true;
         bool isCycle = false;
-        while (matrix[matched[now]][now] != double(0)) {
-//            如果连上之前断裂的路径
-            if (resolvedPath->find(matched[now]) != resolvedPath->end()) {
-                auto oldPath = (*resolvedPath)[matched[now]];
-//                +"_"+ std::to_string(now)
-                for (auto it = currentPath->rbegin(); it != currentPath->rend(); it++){
-                    oldPath->insert(oldPath->begin(), *it);
+        std::deque<int> zeroBreakPoint;
+        while (true) {
+            if (visited[matched[now]]) {
+                if (matrix[matched[now]][now] == 0) {
+                    zeroBreakPoint.push_back(matched[now]);
                 }
-                resolvedPath->erase(matched[now]);
-//                auto extendPath = this->addPrevPath(prevPaths, oldPath);
-                resolvedPath->emplace(i, oldPath);
-                currentInsert = false;
                 break;
             }
+//            如果连上之前断裂的路径
+//            if (resolvedPath->find(matched[now]) != resolvedPath->end()) {
+//                auto oldPath = (*resolvedPath)[matched[now]];
+////                +"_"+ std::to_string(now)
+//                for (auto it = currentPath->rbegin(); it != currentPath->rend(); it++){
+//                    oldPath->insert(oldPath->begin(), *it);
+//                }
+//                resolvedPath->erase(matched[now]);
+////                auto extendPath = this->addPrevPath(prevPaths, oldPath);
+//                resolvedPath->emplace(i, oldPath);
+//                currentInsert = false;
+//                break;
+//            }
 //            环状路径
-            if(visited[matched[now]]){
-                isCycle = true;
-//                if (matched[now] == i) currentPath->push_back(-1);
-                currentPath = breakCycle(currentPath);
-                break;
-            }
-            visited[matched[now]] = true;
-            visited[conjugateIdx(matched[now])] = true;
+//            if(visited[matched[now]]){
+//                isCycle = true;
+////                if (matched[now] == i) currentPath->push_back(-1);
+//                currentPath = breakCycle(currentPath);
+//                break;
+//            }
+//            visited[matched[now]] = true;
+//            visited[conjugateIdx(matched[now])] = true;
 //            vIdx = (matched[now] + 1) / 2;
 //            dir = matched[now] % 2 == 0 ? '-':'+';
 //            std::cout<<(*this->graph->getVertices())[vIdx - 1]->getId()<<dir<<'\t';
             currentPath->push_back(matched[now]);
+            if (matrix[matched[now]][now] == 0) {
+                zeroBreakPoint.push_back(matched[now]);
+            }
             now = matched[now];
+            visited[now] = true;
+            visited[conjugateIdx(now)] = true;
         }
         if(currentInsert) {
-            resolvedPath->emplace((*currentPath)[0], currentPath);
-            if (isCycle) {
-                this->cyclePaths.push_back((*currentPath)[0]);
-            }
+            breakCycle(currentPath, zeroBreakPoint, resolvedPath);
+//            resolvedPath->emplace((*currentPath)[0], currentPath);
+//            if (isCycle) {
+//                this->cyclePaths.push_back((*currentPath)[0]);
+//            }
         }
     }
     for (auto path : *resolvedPath) {
@@ -562,6 +576,26 @@ std::vector<int>* matching::breakCycle(std::vector<int> * cyclePath) {
         res->push_back((*cyclePath)[i]);
     }
     return res;
+}
+
+void matching::breakCycle(std::vector<int> *cur, std::deque<int> & zeroBK, std::map<int,std::vector<int>*> *result) {
+    if (zeroBK.empty()) {result->emplace((*cur)[0], cur);
+        this->cyclePaths.push_back((*cur)[0]); return;}
+    zeroBK.pop_back();
+    auto * tmp = new std::vector<int>();;
+    for(auto &item : *cur) {
+        if (!zeroBK.empty() && item == zeroBK.front()) {
+            result->emplace((*tmp)[0], tmp);
+            zeroBK.pop_front();
+            tmp = new std::vector<int>();
+            tmp->push_back(item);
+        } else {
+            tmp->push_back(item);
+        }
+    }
+    if (!tmp->empty()) {
+         result->emplace((*tmp)[0], tmp);
+    }
 }
 
 std::vector<int>* matching::addPrevPath(std::map<int, std::vector<int>*>* prevPaths, std::vector<int>* curPath) {

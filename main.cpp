@@ -127,6 +127,7 @@ int main(int argc, char *argv[]) {
 //        cyclePathsFile<<"iter 0\n";
         for (auto item: *paths) {
             if (m->isCycle(item.first)) {
+                cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
                 for(const auto& v: *item.second) {
                     cyclePathsFile<<m->idx2Str(v)<<"\t";
                 }
@@ -147,10 +148,11 @@ int main(int argc, char *argv[]) {
                 if (paths->size() == prevPathSize || paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}
                 for (auto item: *paths) {
                     if (m->isCycle(item.first)) {
+                        cyclePathsFile<<"iter "<<iterN<<",graph"<<n<<"\n";
                         for(const auto& v: *item.second) {
-                            cyclePathsFile<<"iter "<<iterN<<"\n";
                             cyclePathsFile<<m->idx2Str(v)<<"\t";
                         }
+                        cyclePathsFile<<"\n";
                     }
                 }
                 prevPathSize = paths->size();
