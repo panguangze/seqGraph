@@ -7,6 +7,7 @@
 #define SEQGRAPH_MATCHING_H
 #include "Graph.h"
 #include "algorithm"
+#include <deque>
 extern int VERBOSE;
 class matching {
 private:
@@ -57,6 +58,7 @@ public:
     void reconstructMatrix(std::map<int, std::vector<int>*>* paths);
     void resetGraph(seqGraph::Graph* g);
     std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
+    void breakCycle(std::vector<int>* cur, std::deque<int> & zereBK, std::map<int,std::vector<int>* >* result);
     std::vector<int>* breakCycle(std::vector<int> *);
 };
 
