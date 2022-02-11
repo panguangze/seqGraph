@@ -8,7 +8,6 @@
 #include <map>
 #include <string.h>
 #include <sstream>
-
 int VERBOSE = 0;
 const double ZERO = 0.00000001;
 const double M_WEIGHT = 1000000;
@@ -82,6 +81,8 @@ void parse_tgs(const char* f_name, seqGraph::Graph* g){
         int i = 1;
         while( std::getline(ss,course,' ') )
         {
+            course.erase(std::remove(course.begin(), course.end(), '\r'), course.end());
+            course.erase(std::remove(course.begin(), course.end(), '\n'), course.end());
             if (i == 1) {
                 dir1 = course[course.size()-1];
                 course.pop_back();
