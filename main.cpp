@@ -7,9 +7,11 @@
 #include <fstream>
 #include <map>
 #include <string.h>
+#include <sstream>
 
 int VERBOSE = 0;
 const double ZERO = 0.00000001;
+const double M_WEIGHT = 1000000;
 
 void checkMatrixConjugate(double** matrix, int n) {
     for(int i = 1; i < n+1; i++) {
@@ -65,6 +67,45 @@ void print_help() {
     std::cout<<"\t1: if output verbose information\n";
 }
 
+void parse_tgs(const char* f_name, seqGraph::Graph* g){
+    std::ifstream tgs(f_name);
+    std::string line;
+    seqGraph::Vertex* vertex1 = nullptr;
+    seqGraph::Vertex* vertex2 = nullptr;
+    while( std::getline(tgs,line) )
+    {
+        std::stringstream ss(line);
+
+        std::string v1, v2;
+        char dir1, dir2;
+        std::string course;
+        int i = 1;
+        while( std::getline(ss,course,' ') )
+        {
+            if (i == 1) {
+                dir1 = course[course.size()-1];
+                course.pop_back();
+                v1 = course;
+                vertex1 = g->addVertex(v1,"xx",1,2,1,1,2);
+            } else {
+                dir2 = course[course.size()-1];
+                course.pop_back();
+                v2 = course;
+//                add to grap
+                vertex2 = g->addVertex(v2,"xx",1,2,1,1,2);
+                g->addJunction(vertex1, vertex2, dir1, dir2, M_WEIGHT, 1 , 1);
+                vertex1 = vertex2;
+                vertex2 = nullptr;
+                dir1 = dir2;
+//              make
+            }
+            i++;
+        }
+        std::cout<<"parse tgs down"<<"\n";
+    }
+    tgs.close();
+}
+
 int main(int argc, char *argv[]) {
     auto md = argv[1];
     if (strcmp(md, "help") == 0) {
@@ -82,6 +123,7 @@ int main(int argc, char *argv[]) {
     char sDir, tDir;
     double weight;
     auto* g = new seqGraph::Graph;
+    parse_tgs(argv[6], g);
 
 //    this used for path backtrack
 
@@ -135,7 +177,7 @@ int main(int argc, char *argv[]) {
             }
         }
 //    recallPaths.push_back(paths);
-        int iterN = 1;
+        int iterN = 0;
         iterRounds = iterRoundsBK;
         int prevPathSize = paths->size();
         if (paths->size() != 1) {
