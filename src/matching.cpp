@@ -581,7 +581,12 @@ std::vector<int>* matching::breakCycle(std::vector<int> * cyclePath) {
 void matching::breakCycle(std::vector<int> *cur, std::deque<int> & zeroBK, std::map<int,std::vector<int>*> *result) {
     if (zeroBK.empty()) {result->emplace((*cur)[0], cur);
         this->cyclePaths.push_back((*cur)[0]); return;}
-    zeroBK.pop_back();
+//    如果最后断开
+    auto lastCfirst = false;
+    if (zeroBK.back() == cur->front()) zeroBK.pop_back();
+    else{ //如果最后一个链接第一个
+        lastCfirst = true;
+    }
     auto * tmp = new std::vector<int>();;
     for(auto &item : *cur) {
         if (!zeroBK.empty() && item == zeroBK.front()) {
@@ -594,7 +599,16 @@ void matching::breakCycle(std::vector<int> *cur, std::deque<int> & zeroBK, std::
         }
     }
     if (!tmp->empty()) {
-         result->emplace((*tmp)[0], tmp);
+        if(!lastCfirst)
+            result->emplace((*tmp)[0], tmp);
+        else{
+            auto oldPath = (*result)[cur->front()];
+            for (auto item : *oldPath) {
+                tmp->push_back(item);
+            }
+            result->erase(cur->front());
+            result->emplace((*tmp)[0], tmp);
+        }
     }
 }
 

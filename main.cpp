@@ -124,7 +124,8 @@ int main(int argc, char *argv[]) {
     char sDir, tDir;
     double weight;
     auto* g = new seqGraph::Graph;
-    parse_tgs(argv[6], g);
+    if (argc == 7)
+        parse_tgs(argv[6], g);
 
 //    this used for path backtrack
 
