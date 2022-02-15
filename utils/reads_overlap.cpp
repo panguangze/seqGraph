@@ -11,7 +11,11 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Error opening '%s'\n", argv[1]);
         return -1;
     }
-    readBAM(in, argv[2], 100);
+    bool selfLoop = false;
+    if (argc == 4) {
+        selfLoop = atoi(argv[3]) == 1;
+    }
+    readBAM(in, argv[2], 100, selfLoop);
 }
 
 void initIMap (sam_hdr_t *hdr,Interactions& iMap) {
@@ -27,7 +31,7 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap) {
     }
 }
 
-void readBAM(htsFile *in, const char* out_file, int readsLen) {
+void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop) {
     Interactions iMap;
     sam_hdr_t *hdr;
     bam1_t *b;
@@ -60,7 +64,11 @@ void readBAM(htsFile *in, const char* out_file, int readsLen) {
         auto mrev = flags & 0x20;
 //        refLen = sam_hdr_tid2len(hdr, b->core.tid);
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
-        if (refName == mRefName && rev == !mrev)continue;
+        if (refName == mRefName) {
+            if (!selfLoop) continue;
+            else if(rev == !mrev) continue;
+        }
+//        if (refName == mRefName && rev == !mrev)continue;
         if (rev)
             refName = refName.append(" -");
         if (!mrev)
