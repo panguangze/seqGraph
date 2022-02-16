@@ -182,7 +182,7 @@ int Graph::BFS_EndPoint(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint) {
     return found;
 }
 
-void Graph::BFS_Vertices(Vertex* vertex, std::vector<int>* connectedIdx){
+void Graph::BFS_Vertices(Vertex* vertex, std::set<int>* connectedIdx){
     std::queue<Vertex*> VQueuen;
     VQueuen.push(vertex);
 
@@ -192,8 +192,8 @@ void Graph::BFS_Vertices(Vertex* vertex, std::vector<int>* connectedIdx){
         for (auto e : currentV->getNextJuncs()) {
             // if (e->hasCopy()) {
             auto *nextV = e->getTarget();
+            connectedIdx->insert(e->getIdx());
             if (!nextV->isVisited()) {
-                connectedIdx->push_back(e->getIdx());
                 nextV->setIsVisited(true);
                 VQueuen.push(nextV);
             }
@@ -202,7 +202,6 @@ void Graph::BFS_Vertices(Vertex* vertex, std::vector<int>* connectedIdx){
             // if (e->hasCopy()) {
             auto *nextV = e->getSource();
             if (!nextV->isVisited()) {
-                connectedIdx->push_back(e->getIdx());
                 nextV->setIsVisited(true);
                 VQueuen.push(nextV);
             }
@@ -225,8 +224,16 @@ Junction* Graph::doesJunctionExist(Junction *aJunction) {
 
 Junction* Graph::doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d) {
     auto  k = v1.getId()+ v2.getId()+v1d+v2d;
+    if (v1d == '-') v1d = '+';
+    else v1d = '-';
+    if (v2d == '-') v2d = '+';
+    else v2d = '-';
+    auto rk = v2.getId()+v1.getId()+v2d+v1d;
     if (junctionIdx->find(k) != junctionIdx->end()) {
         auto idx = (*junctionIdx)[k];
+        return (*junctions)[idx];
+    } else if (junctionIdx->find(rk) != junctionIdx->end()) {
+        auto idx = (*junctionIdx)[rk];
         return (*junctions)[idx];
     }
 //    for(auto item: *this->junctions){
@@ -366,7 +373,7 @@ void Graph::parseConnectedComponents() {
     for(auto & vertice : *vertices) {
         if (i == vertices->size()) break;
         if (!vertice->isVisited()) {
-            auto * connectedIdx = new std::vector<int>;
+            auto * connectedIdx = new std::set<int>;
             BFS_Vertices(vertice, connectedIdx);
             i += connectedIdx->size();
             this->connectedJunctionsIdx.push_back(connectedIdx);
