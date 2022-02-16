@@ -14,6 +14,7 @@ const double M_WEIGHT = 1000000;
 
 void checkMatrixConjugate(double** matrix, int n) {
     for(int i = 1; i < n+1; i++) {
+        std::cout<<i<<" ";
         for(int j = 1; j < n+1; j++) {
             auto t1 = matrix[i][j];
             auto t2 = matrix[conjugateIdx(j)][conjugateIdx(i)];
@@ -21,7 +22,9 @@ void checkMatrixConjugate(double** matrix, int n) {
                 std::cout<<"Error\n"<<i<<j<<std::endl;
                 break;
             }
+            std::cout<<matrix[i][j]<<" ";
         }
+        std::cout<<"\n"<<std::endl;
     }
 }
 void tokenize(const std::string &str, std::vector<std::string> &tokens, const std::string &delimiters)
@@ -155,16 +158,17 @@ int main(int argc, char *argv[]) {
             continue;
         }
         auto* m = new matching(subGraph);
-//        checkMatrixConjugate(m->getMatrix(), m->getN());
+        if (VERBOSE == 1)
+            checkMatrixConjugate(m->getMatrix(), m->getN());
 //    m->main_steps();
         m->hungarian();
-//        if (VERBOSE == 1) {
-//            std::cout<<"final matched relation\n";
-//            for(int i = 0; i < m->getN() + 1; i++) {
-//                std::cout<<m->getMatched()[i]<<"\t";
-//            }
-//        }
-        std::cout<<"\nresolve path";
+        if (VERBOSE == 1) {
+            std::cout<<"final matched relation\n";
+            for(int i = 0; i < m->getN() + 1; i++) {
+                std::cout<<m->getMatched()[i]<<"\t";
+            }
+        }
+        std::cout<<"\nresolve path"<<std::endl;
 //    TODO , make the path and cycles info into mathicng class
         auto paths = m->resolvePath(nullptr);
 //        cyclePathsFile<<"sub\n";

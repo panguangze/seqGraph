@@ -147,6 +147,7 @@ void matching::bfs(int u, double ex[], double ey[], bool visity[], int pre[], do
         visity[y] = true;
         visity[conjugateIdx(x)] = true;
         for (int i = 1; i < N + 1; i++) {
+
             auto cI = conjugateIdx(i);
             if(!visity[i]) {
                 if(slack[i] > ex[x] + ey[i] - matrix[x][i]){
@@ -244,8 +245,8 @@ void matching::hungarian() {
     }
     auto* pre = new std::set<int>();
     for (int i = 1; i < N + 1; i++) {
-        if (i == 18013) {
-            int mmk = 1;
+        if (i>=6) {
+            int tm = 9;
         }
         std::fill_n(slack, N+1, 10000000);
 //        for( int l = 1 ; l <=N ; l++ ) slack[l] = 1000;
@@ -275,9 +276,9 @@ void matching::hungarian() {
         }
         if (VERBOSE) {
             std::cout<<i<<"\t|";
-//            for(int k = 0; k < N + 1; k++) {
-//                std::cout<<matched[k]<<"\t";
-//            }
+            for(int k = 0; k < N + 1; k++) {
+                std::cout<<matched[k]<<"\t";
+            }
             std::cout<<std::endl;
         }
     }
@@ -433,30 +434,40 @@ int conjugateIdx(int idx) {
 double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix, double* result) {
 //    auto result = new double[4];
 //    for(int i = 0 ; i< 4 ; i ++) result[i] = 0;
+//            TODO, only add end node
 
-    for (auto ip1: *p1) {
-        if (ip1 == -1) continue;
-        for (auto ip2: *p2) {
-            if (ip2 == -1) continue;
-            result[0] += matrix[ip2][ip1];
-            result[1] += matrix[conjugateIdx(ip2)][ip1];
-            result[2] += matrix[ip2][conjugateIdx(ip1)];
-            result[3] += matrix[conjugateIdx(ip2)][conjugateIdx(ip1)];
-//            if (ip1 % 2 == 1) {
-//                if (ip2 % 2 == 1) {//            ++
-//                    result[0] += matrix[ip1][ip2];
-//                } else {
-//                    result[1] += matrix[ip1][ip2];
-//                }
-//            } else {
-//                if (ip2 % 2 == 1) {//            -+
-//                    result[2] += matrix[ip1][ip2];
-//                } else {
-//                    result[3] += matrix[ip1][ip2];
-//                }
-//            }
-        }
-    }
+    auto front_1 = p1->front();
+    auto front_2 = p2->front();
+    auto back_1 = p1->back();
+    auto back_2 = p2->back();
+    result[0] = matrix[front_2][back_1];
+    result[1] = matrix[conjugateIdx(back_2)][back_1];
+    result[2] = matrix[front_2][conjugateIdx(front_1)];
+    result[3] = matrix[conjugateIdx(back_2)][conjugateIdx(front_1)];
+
+//    for (auto ip1: *p1) {
+//        if (ip1 == -1) continue;
+//        for (auto ip2: *p2) {
+//            if (ip2 == -1) continue;
+//            result[0] += matrix[ip2][ip1];
+//            result[1] += matrix[conjugateIdx(ip2)][ip1];
+//            result[2] += matrix[ip2][conjugateIdx(ip1)];
+//            result[3] += matrix[conjugateIdx(ip2)][conjugateIdx(ip1)];
+////            if (ip1 % 2 == 1) {
+////                if (ip2 % 2 == 1) {//            ++
+////                    result[0] += matrix[ip1][ip2];
+////                } else {
+////                    result[1] += matrix[ip1][ip2];
+////                }
+////            } else {
+////                if (ip2 % 2 == 1) {//            -+
+////                    result[2] += matrix[ip1][ip2];
+////                } else {
+////                    result[3] += matrix[ip1][ip2];
+////                }
+////            }
+//        }
+//    }
     return result;
 }
 

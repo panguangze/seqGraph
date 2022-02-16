@@ -24,7 +24,7 @@ namespace seqGraph {
         double ** ConjugateMatrix;
         std::map<std::string, int>* verticesIdx;
         std::map<std::string, int>* junctionIdx;
-        std::vector<std::vector<int>* > connectedJunctionsIdx;
+        std::vector<std::set<int>* > connectedJunctionsIdx;
     public:
         Graph();
 
@@ -63,7 +63,7 @@ namespace seqGraph {
 
         int BFS_EndPoint(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint);
 
-        void BFS_Vertices(Vertex* vertex,std::vector<int>* connectedIdx);
+        void BFS_Vertices(Vertex* vertex,std::set<int>* connectedIdx);
 
         Junction* doesJunctionExist(Junction *junction);
 
