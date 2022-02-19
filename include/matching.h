@@ -60,10 +60,10 @@ public:
     std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
     void breakCycle(std::vector<int>* cur, std::deque<int> & zereBK, std::map<int,std::vector<int>* >* result);
     std::vector<int>* breakCycle(std::vector<int> *);
+    double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix, double* result);
 };
 
 int conjugateIdx(int idx);
 //seqGraph::Graph* reconstructMatrix(double** matrix, std::map<int, std::vector<int>*>*);
-double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix);
 std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
 #endif //SEQGRAPH_MATCHING_H

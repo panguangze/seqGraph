@@ -109,7 +109,8 @@ void parse_tgs(const char* f_name, seqGraph::Graph* g){
     }
     tgs.close();
 }
-
+//TODO add args support
+// 1 graph 2 result 3 result.c 4 iteration 5 verbose 6 copy_num 7 tgs
 int main(int argc, char *argv[]) {
     auto md = argv[1];
     if (strcmp(md, "help") == 0) {
@@ -123,23 +124,50 @@ int main(int argc, char *argv[]) {
     std::ofstream cyclePathsFile(argv[3]);
     VERBOSE = std::atoi(argv[5]);
 
-    std::string source, target;
+    std::string source, target, startTag;
     char sDir, tDir;
+    int copyNum;
     double weight;
     auto* g = new seqGraph::Graph;
+
+//
     if (argc == 7)
         parse_tgs(argv[6], g);
 
 //    this used for path backtrack
-
-    while (infile>>source>>sDir>>target>>tDir>>weight) {
-        seqGraph::Vertex* v1;
-        seqGraph::Vertex* v2;
-        auto v1t = g->getVertexById(source);
-        auto v2t = g->getVertexById(target);
-        v1 = v1t == nullptr ? g->addVertex(source,"xx",1,2,1,1,2) : v1t;
-        v2 = v2t == nullptr ? g->addVertex(target,"xx",1,2,1,1,2) : v2t;
-        g->addJunction(v1, v2, sDir, tDir, weight, 1 , 1);
+    std::string line;
+    while (getline(infile, line)) {
+        std::istringstream iss(line);
+        if (line.rfind("SEG", 0) == 0) {
+            iss>>startTag>>source>>copyNum;
+            g->addVertex(source,"xx",1,2,1,1,copyNum);
+            if (copyNum > 1) {
+                for (int i = 1; i < copyNum; i++) {
+                    g->addVertex(source.append("_").append(std::to_string(i)),"xx",1,2,1,1,1);
+                }
+            }
+        } else {
+            iss>>startTag>>source>>sDir>>target>>tDir>>weight;
+//            seqGraph::Vertex* v1;
+//            seqGraph::Vertex* v2;
+            auto v1t = g->getVertexById(source);
+            auto v2t = g->getVertexById(target);
+//            v1 = v1t == nullptr ? g->addVertex(source,"xx",1,2,1,1,2) : v1t;
+//            v2 = v2t == nullptr ? g->addVertex(target,"xx",1,2,1,1,2) : v2t;
+            double c1 = v1t->getWeight()->getCopyNum();
+            double c2 = v2t->getWeight()->getCopyNum();
+            auto avg_weight = weight / (v1t->getWeight()->getCopyNum() * v2t->getWeight()->getCopyNum());
+            g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
+            for (int i = 1; i <  c1; i++) {
+                v1t = g->getVertexById(source.append("_").append(std::to_string(i)));
+                g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
+                for (int j = 1; j <  c2; j++) {
+                    v2t = g->getVertexById(target.append("_").append(std::to_string(j)));
+                    g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
+                }
+            }
+//            g->addJunction(v1t, v2t, sDir, tDir, weight, 1 , 1);
+        }
     }
 //    matching for each connected graph
     int n = 0;
