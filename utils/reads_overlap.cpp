@@ -15,7 +15,11 @@ int main(int argc, char **argv) {
     if (argc == 4) {
         selfLoop = atoi(argv[3]) == 1;
     }
-    readBAM(in, argv[2], 100, selfLoop);
+    int cutoff = 300;
+    if (argc == 5) {
+        cutoff = atoi(argv[4]);
+    }
+    readBAM(in, argv[2], 100, selfLoop, cutoff);
 }
 
 void initIMap (sam_hdr_t *hdr,Interactions& iMap) {
@@ -31,7 +35,7 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap) {
     }
 }
 
-void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop) {
+void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int cutoff) {
     Interactions iMap;
     sam_hdr_t *hdr;
     bam1_t *b;
@@ -54,6 +58,8 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop) {
         }
         if (b->core.tid == -1 || b->core.mtid == -1)
             continue;
+        refLen = sam_hdr_tid2len(hdr, b->core.tid);
+        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
         refName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
         mRefName = std::string(sam_hdr_tid2name(hdr, b->core.mtid));
         pos = b->core.pos;
@@ -62,6 +68,8 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop) {
         if (flags & 0x80) continue;
         auto rev = flags & 0x10;
         auto mrev = flags & 0x20;
+        if (pos < refLen - cutoff && pos > cutoff) continue;
+        if (mpos < mRefLen - cutoff && pos > cutoff) continue;
 //        refLen = sam_hdr_tid2len(hdr, b->core.tid);
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
         if (refName == mRefName) {
