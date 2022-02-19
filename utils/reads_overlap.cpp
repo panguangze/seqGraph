@@ -4,6 +4,7 @@
 
 #include "reads_overlap.h"
 // arg1 输入bam，arg2输出jaccard
+double DEPTH = -1;
 int main(int argc, char **argv) {
     htsFile *in;
 
@@ -20,6 +21,9 @@ int main(int argc, char **argv) {
         cutoff = atoi(argv[4]);
     }
     readBAM(in, argv[2], 100, selfLoop, cutoff);
+    if (argc == 6) {
+        DEPTH = std::stod(argv[5]);
+    }
 }
 
 void initIMap (sam_hdr_t *hdr,Interactions& iMap) {
@@ -40,6 +44,7 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int
     sam_hdr_t *hdr;
     bam1_t *b;
     int ret;
+    std::map<std::string, int> refCopys;
     if ((hdr = sam_hdr_read(in)) == nullptr) {
         fprintf(stderr, "[E::%s] couldn't read file header \n", __func__);
         return;
@@ -61,6 +66,16 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int
         refLen = sam_hdr_tid2len(hdr, b->core.tid);
         mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
         refName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
+        if (DEPTH != -1) {
+            std::stringstream ssf(refName);
+            std::string item;
+            while (std::getline(ssf,item,'_'));
+            double cov = std::stod(item);
+            int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
+            refCopys.emplace(refName, copy);
+        } else {
+            refCopys.emplace(refName, 1);
+        }
         mRefName = std::string(sam_hdr_tid2name(hdr, b->core.mtid));
         pos = b->core.pos;
         mpos = b->core.mpos;
@@ -103,13 +118,16 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int
     std::ofstream fout(out_file);
     std::string prev;
     std::string next;
+    for (const auto& item : refCopys ){
+        fout<<"SEG "<<item.first<<" "<<item.second<<"\n";
+    }
     for (auto& it: iMap) {
         for(auto& it2 : it.second) {
             if (it.first.back() != '-') prev = it.first + " +";
             else prev = it.first;
             if (it2.first.back() != '-') next = it2.first + " +";
             else next = it2.first;
-            fout<<prev<<" "<<next<<" "<<it2.second<<"\n";
+            fout<<"JUNC "<<prev<<" "<<next<<" "<<it2.second<<"\n";
         }
 //        if (it.second > 50) fout<<it.first.first<<"\t"<<it.first.second<<"\t"<<it.second<<"\t"<<"\n";
     }
