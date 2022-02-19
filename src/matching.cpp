@@ -431,11 +431,12 @@ int conjugateIdx(int idx) {
     return cI;
 }
 
-double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix, double* result) {
+double* matching::mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix, double* result) {
 //    auto result = new double[4];
 //    for(int i = 0 ; i< 4 ; i ++) result[i] = 0;
 //            TODO, only add end node
-
+    bool isCycle_1 = this->isCycle(p1->front());
+    bool isCycle_2 = this->isCycle(p2->front());
     auto front_1 = p1->front();
     auto front_2 = p2->front();
     auto back_1 = p1->back();
@@ -444,6 +445,10 @@ double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix, d
     result[1] = matrix[conjugateIdx(back_2)][back_1];
     result[2] = matrix[front_2][conjugateIdx(front_1)];
     result[3] = matrix[conjugateIdx(back_2)][conjugateIdx(front_1)];
+
+    if (isCycle_1) {
+
+    }
 
 //    for (auto ip1: *p1) {
 //        if (ip1 == -1) continue;
@@ -513,10 +518,10 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
                 int i = iPath.second->front();
                 int j = jPath.second->front();
                 auto matrix = this->originalMatrix;
-                values[0] += matrix[j][i];
-                values[1] += matrix[conjugateIdx(j)][i];
-                values[2] += matrix[j][conjugateIdx(i)];
-                values[3] += matrix[conjugateIdx(j)][conjugateIdx(i)];
+                values[0] = matrix[j][i];
+                values[1] = matrix[conjugateIdx(j)][i];
+                values[2] = matrix[j][conjugateIdx(i)];
+                values[3] = matrix[conjugateIdx(j)][conjugateIdx(i)];
             } else {
                 mergePath(iPath.second, jPath.second, this->originalMatrix, values);
             }
