@@ -20,10 +20,11 @@ int main(int argc, char **argv) {
     if (argc == 5) {
         cutoff = atoi(argv[4]);
     }
-    readBAM(in, argv[2], 100, selfLoop, cutoff);
     if (argc == 6) {
         DEPTH = std::stod(argv[5]);
     }
+    readBAM(in, argv[2], 100, selfLoop, cutoff);
+
 }
 
 void initIMap (sam_hdr_t *hdr,Interactions& iMap) {
@@ -66,15 +67,20 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int
         refLen = sam_hdr_tid2len(hdr, b->core.tid);
         mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
         refName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
-        if (DEPTH != -1) {
-            std::stringstream ssf(refName);
-            std::string item;
-            while (std::getline(ssf,item,'_'));
-            double cov = std::stod(item);
-            int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
-            refCopys.emplace(refName, copy);
-        } else {
-            refCopys.emplace(refName, 1);
+        if (refCopys.find(refName) == refCopys.end()) {
+            if (DEPTH != -1) {
+                if(refName == "EDGE_1185326_length_76_cov_140.714286") {
+                    int tm =0;
+                }
+                std::stringstream ssf(refName);
+                std::string item;
+                while (std::getline(ssf,item,'_'));
+                double cov = std::stod(item);
+                int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
+                refCopys.emplace(refName, copy);
+            } else {
+                refCopys.emplace(refName, 1);
+            }
         }
         mRefName = std::string(sam_hdr_tid2name(hdr, b->core.mtid));
         pos = b->core.pos;
@@ -83,8 +89,8 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int
         if (flags & 0x80) continue;
         auto rev = flags & 0x10;
         auto mrev = flags & 0x20;
-        if (pos < refLen - cutoff && pos > cutoff) continue;
-        if (mpos < mRefLen - cutoff && pos > cutoff) continue;
+//        if (pos < refLen - cutoff && pos > cutoff) continue;
+//        if (mpos < mRefLen - cutoff && pos > cutoff) continue;
 //        refLen = sam_hdr_tid2len(hdr, b->core.tid);
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
         if (refName == mRefName) {

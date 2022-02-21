@@ -8,7 +8,7 @@
 #include "Graph.h"
 #include "algorithm"
 #include <deque>
-extern int VERBOSE;
+extern bool VERBOSE;
 class matching {
 private:
     seqGraph::Graph* graph;
