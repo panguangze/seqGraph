@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
             ("b,bam", "Bam file", cxxopts::value<std::string>())
             ("o,out","Out file", cxxopts::value<std::string>())
             ("c,cut_off", "Cute off size", cxxopts::value<int>()->default_value("300"))
-            ("d,depth", "Bam depth", cxxopts::value<int>())
+            ("d,depth", "Bam depth", cxxopts::value<float>())
             ("t,threshold", "Threshold for graph weigh filter", cxxopts::value<int>()->default_value("0"))
             ("s,self_l", "If self_loop take into consideration", cxxopts::value<bool>()->default_value("false"))
             ("h,help", "Print usage");
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
         CUTOFF = result["cut_off"].as<int>();
     }
     if(result.count("depth")) {
-        DEPTH = result["depth"].as<int>();
+        DEPTH = result["depth"].as<float>();
     }
     if(result.count("self_l")) {
         SELFLOOP = result["self_l"].as<bool>();
