@@ -20,9 +20,9 @@ set(SOURCE_FILES src/Edge.cpp
         src/Junction.cpp
         src/Vertex.cpp
         src/Weight.cpp
-        src/matching.cpp)
+        src/matching.cpp include/cxxopts.hpp)
 
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} include/cxxopts.hpp)
 
 add_executable(matching main.cpp ${SOURCE_FILES})
 add_executable(rDistance utils/reads_overlap.cpp utils/reads_overlap.h)
