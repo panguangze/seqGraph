@@ -3,27 +3,58 @@
 //
 
 #include "reads_overlap.h"
+#include "../include/cxxopts.hpp"
 // arg1 输入bam，arg2输出jaccard
 double DEPTH = -1;
+int CUTOFF = 300;
+bool SELFLOOP = false;
+int THRESHOLD = 0;
 int main(int argc, char **argv) {
+
+    //    parse options
+    cxxopts::Options options("Reads overlap", "Extract reads overlap from bam");
+
+    options.add_options()
+            ("b,bam", "Bam file", cxxopts::value<std::string>())
+            ("o,out","Out file", cxxopts::value<std::string>())
+            ("c,cut_off", "Cute off size", cxxopts::value<int>()->default_value("300"))
+            ("d,depth", "Bam depth", cxxopts::value<int>())
+            ("t,threshold", "Threshold for graph weigh filter", cxxopts::value<int>()->default_value("0"))
+            ("s,self_l", "If self_loop take into consideration", cxxopts::value<bool>()->default_value("false"))
+            ("h,help", "Print usage");
+    auto result = options.parse(argc,argv);
+    if (result.count("help"))
+    {
+        std::cout << options.help() << std::endl;
+        exit(0);
+    }
+    std::string bamF = result["bam"].as<std::string>();
+    std::string resultF = result["out"].as<std::string>();
+    std::string resultCF = result["result_c"].as<std::string>();
+
+    if(result.count("cut_off")) {
+        CUTOFF = result["cut_off"].as<int>();
+    }
+    if(result.count("depth")) {
+        DEPTH = result["depth"].as<int>();
+    }
+    if(result.count("self_l")) {
+        SELFLOOP = result["self_l"].as<bool>();
+    }
+    if(result.count("threshold")) {
+        THRESHOLD = result["threshold"].as<int>();
+    }
+
+
+
     htsFile *in;
 
     if ((in = hts_open(argv[1], "r")) == nullptr) {
         fprintf(stderr, "Error opening '%s'\n", argv[1]);
         return -1;
     }
-    bool selfLoop = false;
-    if (argc == 4) {
-        selfLoop = atoi(argv[3]) == 1;
-    }
-    int cutoff = 300;
-    if (argc == 5) {
-        cutoff = atoi(argv[4]);
-    }
-    if (argc == 6) {
-        DEPTH = std::stod(argv[5]);
-    }
-    readBAM(in, argv[2], 100, selfLoop, cutoff);
+
+    readBAM(in, argv[2], 100);
 
 }
 
@@ -40,7 +71,7 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap) {
     }
 }
 
-void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int cutoff) {
+void readBAM(htsFile *in, const char* out_file, int readsLen) {
     Interactions iMap;
     sam_hdr_t *hdr;
     bam1_t *b;
@@ -95,12 +126,12 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int
         if (flags & 0x80) continue;
         auto rev = flags & 0x10;
         auto mrev = flags & 0x20;
-//        if (pos < refLen - cutoff && pos > cutoff) continue;
-//        if (mpos < mRefLen - cutoff && pos > cutoff) continue;
+        if (pos < refLen - CUTOFF && pos > CUTOFF) continue;
+        if (mpos < mRefLen - CUTOFF && pos > CUTOFF) continue;
 //        refLen = sam_hdr_tid2len(hdr, b->core.tid);
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
         if (refName == mRefName) {
-            if (!selfLoop) continue;
+            if (!SELFLOOP) continue;
             else if(rev == !mrev) continue;
         }
 //        if (refName == mRefName && rev == !mrev)continue;
@@ -135,6 +166,7 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int
     }
     for (auto& it: iMap) {
         for(auto& it2 : it.second) {
+            if (it2.second < THRESHOLD) continue;
             if (it.first.back() != '-') prev = it.first + " +";
             else prev = it.first;
             if (it2.first.back() != '-') next = it2.first + " +";
