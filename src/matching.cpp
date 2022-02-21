@@ -314,6 +314,11 @@ std::string matching::idx2Str(int idx) {
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
     auto idStr = (*this->originalVertices)[vIdx - 1]->getId();
+    auto len = idStr.size();
+    if (idStr[len - 2] == '_') {
+        idStr.pop_back();
+        idStr.pop_back();
+    }
     return idStr+dir;
 }
 std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vector<int>*>* prevPaths) {
