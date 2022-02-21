@@ -26,5 +26,5 @@ typedef std::pair<std::string, std::string> ContigPair;
 typedef std::map<ContigPair, int> ContigMap;
 typedef std::unordered_map<std::string, std::unordered_map<std::string, int>> Interactions;
 
-void readBAM(htsFile *in, const char* out_file, int readLen);
+void readBAM(htsFile *in, std::string &out_file, int readLen);
 #endif //JACCARD_BARCODE_H
