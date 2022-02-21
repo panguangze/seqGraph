@@ -75,7 +75,13 @@ void readBAM(htsFile *in, const char* out_file, int readsLen, bool selfLoop, int
                 std::stringstream ssf(refName);
                 std::string item;
                 while (std::getline(ssf,item,'_'));
-                double cov = std::stod(item);
+                int idx = item.find(':');
+                double cov = 0;
+                if (idx != -1) {
+                    cov = std::stod(item.substr(0,idx));
+                } else {
+                    cov = std::stod(item);
+                }
                 int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
                 refCopys.emplace(refName, copy);
             } else {
