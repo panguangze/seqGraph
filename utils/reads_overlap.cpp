@@ -30,7 +30,6 @@ int main(int argc, char **argv) {
     }
     std::string bamF = result["bam"].as<std::string>();
     std::string resultF = result["out"].as<std::string>();
-    std::string resultCF = result["result_c"].as<std::string>();
 
     if(result.count("cut_off")) {
         CUTOFF = result["cut_off"].as<int>();
@@ -49,12 +48,12 @@ int main(int argc, char **argv) {
 
     htsFile *in;
 
-    if ((in = hts_open(argv[1], "r")) == nullptr) {
-        fprintf(stderr, "Error opening '%s'\n", argv[1]);
+    if ((in = hts_open(bamF.c_str(), "r")) == nullptr) {
+        fprintf(stderr, "Error opening '%s'\n", bamF.c_str());
         return -1;
     }
 
-    readBAM(in, argv[2], 100);
+    readBAM(in, resultF, 100);
 
 }
 
@@ -71,7 +70,7 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap) {
     }
 }
 
-void readBAM(htsFile *in, const char* out_file, int readsLen) {
+void readBAM(htsFile *in, std::string& out_file, int readsLen) {
     Interactions iMap;
     sam_hdr_t *hdr;
     bam1_t *b;
