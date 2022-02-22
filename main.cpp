@@ -124,6 +124,7 @@ int main(int argc, char *argv[]) {
             ("i,iteration", "Iteration times", cxxopts::value<int>()->default_value("0"))
             ("v,verbose", "Verbose", cxxopts::value<bool>()->default_value("false"))
             ("l,local_order", "Local order information", cxxopts::value<std::string>())
+            ("m,result_m","Matching result", cxxopts::value<std::string>())
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
@@ -140,8 +141,13 @@ int main(int argc, char *argv[]) {
 
     std::ifstream infile(graphF);
     std::ofstream resultFile(resultF);
-    int iterRoundsBK = iterRounds;
     std::ofstream cyclePathsFile(resultCF);
+    std::ofstream matchResultFile;
+    int iterRoundsBK = iterRounds;
+    if (result.count("result_m")) {
+        std::string resultM = result["result_m"].as<std::string>();
+        matchResultFile.open(resultM);
+    }
 
     std::string source, target, startTag, originalSource, originalTarget;
     char sDir, tDir;
@@ -160,18 +166,22 @@ int main(int argc, char *argv[]) {
     while (getline(infile, line)) {
         std::istringstream iss(line);
         if (line.rfind("SEG", 0) == 0) {
+//            print result match
+            if (result.count("result_m")) {
+                matchResultFile<<line<<std::endl;
+            }
             iss>>startTag>>originalSource>>copyNum;
             source = originalSource;
-            if(source == "EDGE_2135_length_56_cov_1360.000000") {
-                int mm = 9;
-            }
+            source = source.append("_0");
+//            if(source == "EDGE_2135_length_56_cov_1360.000000") {
+//                int mm = 9;
+//            }
             g->addVertex(source,"xx",1,2,1,1,copyNum);
-            if (copyNum > 1) {
-                for (int i = 1; i < copyNum; i++) {
-                    source.append("_").append(std::to_string(i));
-                    g->addVertex(source,"xx",1,2,1,1,1);
-                    source = originalSource;
-                }
+            for (int i = 1; i < copyNum; i++) {
+                source.pop_back();
+                source.append(std::to_string(i));
+                g->addVertex(source,"xx",1,2,1,1,1);
+                source = originalSource;
             }
         } else {
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
@@ -179,18 +189,18 @@ int main(int argc, char *argv[]) {
 //            seqGraph::Vertex* v2;
             source = originalSource;
             target = originalTarget;
-            auto v1t = g->getVertexById(source);
-            auto v2t = g->getVertexById(target);
+            auto v1t = g->getVertexById(source+"_0");
+            auto v2t = g->getVertexById(target+"_0");
 //            v1 = v1t == nullptr ? g->addVertex(source,"xx",1,2,1,1,2) : v1t;
 //            v2 = v2t == nullptr ? g->addVertex(target,"xx",1,2,1,1,2) : v2t;
             double c1 = v1t->getWeight()->getCopyNum();
             double c2 = v2t->getWeight()->getCopyNum();
             auto avg_weight = weight / (v1t->getWeight()->getCopyNum() * v2t->getWeight()->getCopyNum());
-            g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
-            for (int i = 1; i <  c1; i++) {
+//            g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
+            for (int i = 0; i <  c1; i++) {
                 v1t = g->getVertexById(source.append("_").append(std::to_string(i)));
                 g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
-                for (int j = 1; j <  c2; j++) {
+                for (int j = 0; j <  c2; j++) {
                     v2t = g->getVertexById(target.append("_").append(std::to_string(j)));
                     g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
                     target = originalTarget;
@@ -229,7 +239,11 @@ int main(int argc, char *argv[]) {
         }
         std::cout<<"\nresolve path"<<std::endl;
 //    TODO , make the path and cycles info into mathicng class
+        if (result.count("result_m")) {
+            m->writeMatchResult(matchResultFile);
+        }
         auto paths = m->resolvePath(nullptr);
+
 //        cyclePathsFile<<"sub\n";
 //        cyclePathsFile<<"iter 0\n";
         for (auto item: *paths) {
@@ -283,4 +297,5 @@ int main(int argc, char *argv[]) {
     infile.close();
     resultFile.close();
     cyclePathsFile.close();
+    matchResultFile.close();
 }

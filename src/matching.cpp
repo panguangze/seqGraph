@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <queue>
 #include <iostream>
+#include <fstream>
+
 const double ZERO = 0.00000001;
 
 void matching::printM(int i){
@@ -244,6 +246,13 @@ void matching::hungarian() {
 //        }
     }
     auto* pre = new std::set<int>();
+    if(VERBOSE) {
+        std::cout<<"         ";
+        for (int i = 1; i < N+1;i++) {
+            std::cout<< this->idx2Str(i)<<"\t";
+        }
+        std::cout<<std::endl;
+    }
     for (int i = 1; i < N + 1; i++) {
         if (i>=6) {
             int tm = 9;
@@ -275,9 +284,13 @@ void matching::hungarian() {
             }
         }
         if (VERBOSE) {
-            std::cout<<i<<"\t|";
-            for(int k = 0; k < N + 1; k++) {
-                std::cout<<matched[k]<<"\t";
+            std::cout<<i<<" "<<this->idx2Str(i)<<"\t|";
+            for(int k = 1; k < N + 1; k++) {
+                if(this->matched[k] != -1)
+                    std::cout<< this->idx2Str(matched[k])<<"\t";
+                else
+                    std::cout<< this->matched[k]<<"\t";
+
             }
             std::cout<<std::endl;
         }
@@ -309,7 +322,7 @@ void matching::main_steps() {
     }
 }
 
-std::string matching::idx2Str(int idx) {
+std::string matching::idx2Str(int idx,const std::string& token) {
     int now = idx;
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
@@ -319,7 +332,7 @@ std::string matching::idx2Str(int idx) {
         idStr.pop_back();
         idStr.pop_back();
     }
-    return idStr+dir;
+    return idStr+token+dir;
 }
 std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vector<int>*>* prevPaths) {
     auto matrix = graph->getConjugateMatrix();
@@ -666,4 +679,11 @@ std::vector<int>* matching::addPrevPath(std::map<int, std::vector<int>*>* prevPa
         }
     }
     return res;
+}
+
+void matching::writeMatchResult(std::ofstream& outS) {
+//    std::ofstream outF(outFile);
+    for (int i = 1; i < this->N - 1;i++) {
+        outS<<"JUNC "<< this->idx2Str(i," ")<<" "<< this->idx2Str(this->matched[i]," ")<<" "<< this->getMatrix()[this->matched[i]][i]<<"\n";
+    }
 }
