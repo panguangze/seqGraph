@@ -54,7 +54,8 @@ public:
 
     int checkConjugateMatch();
 
-    std::string idx2Str(int idx);
+    std::string idx2Str(int idx, const std::string& token=std::string(""));
+    void writeMatchResult(std::ofstream& outS);
     void reconstructMatrix(std::map<int, std::vector<int>*>* paths);
     void resetGraph(seqGraph::Graph* g);
     std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
