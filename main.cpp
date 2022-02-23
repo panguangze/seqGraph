@@ -173,15 +173,15 @@ int main(int argc, char *argv[]) {
             iss>>startTag>>originalSource>>copyNum;
             source = originalSource;
             source = source.append("_0");
-//            if(source == "EDGE_2135_length_56_cov_1360.000000") {
-//                int mm = 9;
-//            }
+            if(source == "EDGE_1499493_length_56_cov_55.000000_0") {
+                int mm = 9;
+            }
             g->addVertex(source,"xx",1,2,1,1,copyNum);
             for (int i = 1; i < copyNum; i++) {
                 source.pop_back();
                 source.append(std::to_string(i));
                 g->addVertex(source,"xx",1,2,1,1,1);
-                source = originalSource;
+//                source = originalSource;
             }
         } else {
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
@@ -199,7 +199,7 @@ int main(int argc, char *argv[]) {
 //            g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
             for (int i = 0; i <  c1; i++) {
                 v1t = g->getVertexById(source.append("_").append(std::to_string(i)));
-                g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
+//                g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
                 for (int j = 0; j <  c2; j++) {
                     v2t = g->getVertexById(target.append("_").append(std::to_string(j)));
                     g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
