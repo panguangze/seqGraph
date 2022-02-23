@@ -23,12 +23,13 @@ set(SOURCE_FILES src/Edge.cpp
         src/matching.cpp include/cxxopts.hpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} include/cxxopts.hpp)
-
+include_directories(/usr/local/Cellar/htslib/1.15/include)
+link_directories(/usr/local/Cellar/htslib/1.15/lib)
 add_executable(matching main.cpp ${SOURCE_FILES})
 add_executable(rDistance utils/reads_overlap.cpp utils/reads_overlap.h)
 add_executable(bDistance utils/bDistance.cpp utils/bDistance.h)
-target_link_libraries(rDistance -lhts)
-target_link_libraries(bDistance -lhts)
+target_link_libraries(rDistance hts)
+target_link_libraries(bDistance hts)
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)

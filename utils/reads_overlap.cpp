@@ -59,6 +59,8 @@ int main(int argc, char **argv) {
 
 void initIMap (sam_hdr_t *hdr,Interactions& iMap) {
     int nRef = sam_hdr_nref(hdr);
+
+
     std::string refName, revRef;
     for(int i = 0; i< nRef; i++) {
         refName = sam_hdr_tid2name(hdr, i);
@@ -85,6 +87,33 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
     }
     std::string readName, refName, mRefName;
     initIMap(hdr, iMap);
+    for(auto &item: iMap){
+        if (item.first[item.first.length()-1]!='-'){
+            refName=item.first;
+            if (refCopys.find(refName) == refCopys.end()) {
+                if (DEPTH != -1) {
+//                    if(refName == "EDGE_1185326_length_76_cov_140.714286") {
+//                        int tm =0;
+//                    }
+                    std::stringstream ssf(refName);
+                    std::string item;
+                    while (std::getline(ssf,item,'_'));
+                    int idx = item.find(':');
+                    double cov = 0;
+                    if (idx != -1) {
+                        cov = std::stod(item.substr(0,idx));
+                    } else {
+                        cov = std::stod(item);
+                    }
+                    int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
+                    refCopys.emplace(refName, copy);
+                } else {
+                    refCopys.emplace(refName, 1);
+                }
+            }
+        }
+
+    }
     int pos, mpos, refLen, mRefLen;
     while ((ret = sam_read1(in, hdr, b)) >= 0) {
         if (ret < -1) {
@@ -97,27 +126,27 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
         refLen = sam_hdr_tid2len(hdr, b->core.tid);
         mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
         refName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
-        if (refCopys.find(refName) == refCopys.end()) {
-            if (DEPTH != -1) {
-                if(refName == "EDGE_1185326_length_76_cov_140.714286") {
-                    int tm =0;
-                }
-                std::stringstream ssf(refName);
-                std::string item;
-                while (std::getline(ssf,item,'_'));
-                int idx = item.find(':');
-                double cov = 0;
-                if (idx != -1) {
-                    cov = std::stod(item.substr(0,idx));
-                } else {
-                    cov = std::stod(item);
-                }
-                int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
-                refCopys.emplace(refName, copy);
-            } else {
-                refCopys.emplace(refName, 1);
-            }
-        }
+//        if (refCopys.find(refName) == refCopys.end()) {
+//            if (DEPTH != -1) {
+//                if(refName == "EDGE_1185326_length_76_cov_140.714286") {
+//                    int tm =0;
+//                }
+//                std::stringstream ssf(refName);
+//                std::string item;
+//                while (std::getline(ssf,item,'_'));
+//                int idx = item.find(':');
+//                double cov = 0;
+//                if (idx != -1) {
+//                    cov = std::stod(item.substr(0,idx));
+//                } else {
+//                    cov = std::stod(item);
+//                }
+//                int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
+//                refCopys.emplace(refName, copy);
+//            } else {
+//                refCopys.emplace(refName, 1);
+//            }
+//        }
         mRefName = std::string(sam_hdr_tid2name(hdr, b->core.mtid));
         pos = b->core.pos;
         mpos = b->core.mpos;
@@ -130,8 +159,9 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
 //        refLen = sam_hdr_tid2len(hdr, b->core.tid);
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
         if (refName == mRefName) {
-            if (!SELFLOOP) continue;
-            else if(rev == mrev) continue;
+//            if (!SELFLOOP) continue;
+//            else if(rev == mrev) continue;
+            continue;
         }
 //        if (refName == mRefName && rev == !mrev)continue;
         if (rev)

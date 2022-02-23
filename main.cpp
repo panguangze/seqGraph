@@ -125,6 +125,7 @@ int main(int argc, char *argv[]) {
             ("v,verbose", "Verbose", cxxopts::value<bool>()->default_value("false"))
             ("l,local_order", "Local order information", cxxopts::value<std::string>())
             ("m,result_m","Matching result", cxxopts::value<std::string>())
+            ("s,self_loop", "",  cxxopts::value<bool>()->default_value("false"))
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
@@ -163,6 +164,7 @@ int main(int argc, char *argv[]) {
 
 //    this used for path backtrack
     std::string line;
+    std::set<std::string> visited_self_loop;
     while (getline(infile, line)) {
         std::istringstream iss(line);
         if (line.rfind("SEG", 0) == 0) {
@@ -177,14 +179,23 @@ int main(int argc, char *argv[]) {
                 int mm = 9;
             }
             g->addVertex(source,"xx",1,2,1,1,copyNum);
+            source = originalSource;
             for (int i = 1; i < copyNum; i++) {
-                source.pop_back();
-                source.append(std::to_string(i));
+//                source.pop_back();
+                source.append("_").append(std::to_string(i));
                 g->addVertex(source,"xx",1,2,1,1,1);
-//                source = originalSource;
+                source = originalSource;
             }
         } else {
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
+            if(originalSource==originalTarget){
+                // print self loop
+                if (visited_self_loop.find(originalSource) == visited_self_loop.end()){
+                    cyclePathsFile<< "self loop: "<<originalSource<<std::endl;
+                    visited_self_loop.insert(originalSource);
+                }
+                continue;
+            }
 //            seqGraph::Vertex* v1;
 //            seqGraph::Vertex* v2;
             source = originalSource;
