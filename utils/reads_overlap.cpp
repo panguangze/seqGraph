@@ -131,7 +131,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
         if (refName == mRefName) {
             if (!SELFLOOP) continue;
-            else if(rev == !mrev) continue;
+            else if(rev == mrev) continue;
         }
 //        if (refName == mRefName && rev == !mrev)continue;
         if (rev)
