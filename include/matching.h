@@ -9,6 +9,7 @@
 #include "algorithm"
 #include <deque>
 extern bool VERBOSE;
+extern bool BREAK_C;
 class matching {
 private:
     seqGraph::Graph* graph;
@@ -54,12 +55,17 @@ public:
 
     int checkConjugateMatch();
 
-    std::string idx2Str(int idx, const std::string& token=std::string(""));
+//
+    std::string idx2StrDir(int idx, const std::string& token= std::string(""));
+    std::string idx2Str(int idx);
+//    idx to current graph vertex
+    seqGraph::Vertex* idx2Vertex(int idx);
     void writeMatchResult(std::ofstream& outS);
     void reconstructMatrix(std::map<int, std::vector<int>*>* paths);
     void resetGraph(seqGraph::Graph* g);
     std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
-    void breakCycle(std::vector<int>* cur, std::deque<int> & zereBK, std::map<int,std::vector<int>* >* result);
+    void breakResolvedPaths(std::vector<int>* cur, std::deque<int> & zereBK, std::map<int,std::vector<int>* >* result);
+    void breakAndMergeCycle(std::map<int,std::vector<int>*> *result);
     std::vector<int>* breakCycle(std::vector<int> *);
     double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix, double* result);
 };

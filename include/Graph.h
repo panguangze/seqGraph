@@ -58,6 +58,7 @@ namespace seqGraph {
 
         Vertex *getVertexById(std::string Id);
         Vertex *getVertexByIdQ(std::string Id);
+        Vertex *getVertexByIdx(int idx);
 
         bool doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);
 

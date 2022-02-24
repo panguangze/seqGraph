@@ -12,6 +12,7 @@
 bool VERBOSE = true;
 const double ZERO = 0.00000001;
 const double M_WEIGHT = 1000000;
+bool BREAK_C = false;
 
 void checkMatrixConjugate(double** matrix, int n) {
     for(int i = 1; i < n+1; i++) {
@@ -125,6 +126,7 @@ int main(int argc, char *argv[]) {
             ("v,verbose", "Verbose", cxxopts::value<bool>()->default_value("false"))
             ("l,local_order", "Local order information", cxxopts::value<std::string>())
             ("m,result_m","Matching result", cxxopts::value<std::string>())
+            ("b,break_c", "Whether break and merge cycle into line paths", cxxopts::value<bool>()->default_value("false"))
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
@@ -147,6 +149,9 @@ int main(int argc, char *argv[]) {
     if (result.count("result_m")) {
         std::string resultM = result["result_m"].as<std::string>();
         matchResultFile.open(resultM);
+    }
+    if (result.count("break_c")) {
+        BREAK_C = true;
     }
 
     std::string source, target, startTag, originalSource, originalTarget;
@@ -180,7 +185,7 @@ int main(int argc, char *argv[]) {
             for (int i = 1; i < copyNum; i++) {
                 source.pop_back();
                 source.append(std::to_string(i));
-                g->addVertex(source,"xx",1,2,1,1,1);
+                g->addVertex(source,"xx",1,2,1,1,copyNum);
 //                source = originalSource;
             }
         } else {
@@ -250,7 +255,7 @@ int main(int argc, char *argv[]) {
             if (m->isCycle(item.first)) {
                 cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
                 for(const auto& v: *item.second) {
-                    cyclePathsFile<<m->idx2Str(v)<<"\t";
+                    cyclePathsFile << m->idx2StrDir(v) << "\t";
                 }
                 cyclePathsFile<<"\n";
             }
@@ -271,7 +276,7 @@ int main(int argc, char *argv[]) {
                     if (m->isCycle(item.first)) {
                         cyclePathsFile<<"iter "<<iterN<<",graph"<<n<<"\n";
                         for(const auto& v: *item.second) {
-                            cyclePathsFile<<m->idx2Str(v)<<"\t";
+                            cyclePathsFile << m->idx2StrDir(v) << "\t";
                         }
                         cyclePathsFile<<"\n";
                     }
@@ -282,12 +287,13 @@ int main(int argc, char *argv[]) {
             }
         }
         for(auto item : *paths) {
+            if (BREAK_C && m->isCycle(item.first)) continue;
             for(const auto& v: *item.second) {
                 if (v == -1) {
                     resultFile<<'c';
                     continue;
                 }
-                resultFile<<m->idx2Str(v)<<"\t";
+                resultFile << m->idx2StrDir(v) << "\t";
             }
             resultFile<<"\n";
         }

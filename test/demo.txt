@@ -5,6 +5,6 @@ SEG d 1
 SEG e 1
 JUNC a + b + 1
 JUNC b + c + 1
-JUNC c + d + 1
-JUNC d + c + 1
+JUNC c + d + 4
 JUNC c + e + 2
+JUNC d + c + 1

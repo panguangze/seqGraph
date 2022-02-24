@@ -10,6 +10,27 @@
 #include <fstream>
 
 const double ZERO = 0.00000001;
+//
+bool cmp(std::pair<int, std::vector<int>* >& a,
+         std::pair<int, std::vector<int>* >& b)
+{
+    return a.second->size() < b.second->size();
+}
+
+// Function to sort the map according
+// to value in a (key-value) pairs
+void sort(std::map<int, std::vector<int>*>& M, std::vector<std::pair<int, std::vector<int>*>>& A)
+{
+    // Copy key-value pair from Map
+    // to vector of pairs
+    A.reserve(M.size());
+    for (auto& it : M) {
+        A.emplace_back(it);
+    }
+
+    // Sort using comparator function
+    std::sort(A.begin(), A.end(), cmp);
+}
 
 void matching::printM(int i){
     std::cout<<i<<"|";
@@ -249,7 +270,7 @@ void matching::hungarian() {
     if(VERBOSE) {
         std::cout<<"         ";
         for (int i = 1; i < N+1;i++) {
-            std::cout<< this->idx2Str(i)<<"\t";
+            std::cout << this->idx2StrDir(i) << "\t";
         }
         std::cout<<std::endl;
     }
@@ -284,10 +305,10 @@ void matching::hungarian() {
             }
         }
         if (VERBOSE) {
-            std::cout<<i<<" "<<this->idx2Str(i)<<"\t|";
+            std::cout << i << " " << this->idx2StrDir(i) << "\t|";
             for(int k = 1; k < N + 1; k++) {
                 if(this->matched[k] != -1)
-                    std::cout<< this->idx2Str(matched[k])<<"\t";
+                    std::cout << this->idx2StrDir(matched[k]) << "\t";
                 else
                     std::cout<< this->matched[k]<<"\t";
 
@@ -322,7 +343,7 @@ void matching::main_steps() {
     }
 }
 
-std::string matching::idx2Str(int idx,const std::string& token) {
+std::string matching::idx2StrDir(int idx, const std::string& token) {
     int now = idx;
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
@@ -333,6 +354,20 @@ std::string matching::idx2Str(int idx,const std::string& token) {
         idStr.pop_back();
     }
     return idStr+token+dir;
+}
+
+std::string matching::idx2Str(int idx) {
+    int now = idx;
+    int vIdx = (now + 1) / 2;
+    auto idStr = (*this->originalVertices)[vIdx - 1]->getId();
+    return idStr;
+}
+
+seqGraph::Vertex *matching::idx2Vertex(int idx) {
+    int vIdx = (idx + 1) / 2;
+    auto idStr = (*this->graph->getVertices())[vIdx - 1]->getId();
+    auto v = this->graph->getVertexByIdQ(idStr);
+    return v;
 }
 std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vector<int>*>* prevPaths) {
     auto matrix = graph->getConjugateMatrix();
@@ -399,7 +434,7 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
 //            if(visited[matched[now]]){
 //                isCycle = true;
 ////                if (matched[now] == i) currentPath->push_back(-1);
-//                currentPath = breakCycle(currentPath);
+//                currentPath = breakResolvedPaths(currentPath);
 //                break;
 //            }
 //            visited[matched[now]] = true;
@@ -416,12 +451,15 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
             visited[conjugateIdx(now)] = true;
         }
         if(currentInsert) {
-            breakCycle(currentPath, zeroBreakPoint, resolvedPath);
+            breakResolvedPaths(currentPath, zeroBreakPoint, resolvedPath);
 //            resolvedPath->emplace((*currentPath)[0], currentPath);
 //            if (isCycle) {
 //                this->cyclePaths.push_back((*currentPath)[0]);
 //            }
         }
+    }
+    if (BREAK_C) {
+        breakAndMergeCycle(resolvedPath);
     }
     for (auto path : *resolvedPath) {
         auto extendPath = this->addPrevPath(prevPaths, path.second);
@@ -546,10 +584,10 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
 //            if (values[0] == 0 && values[1]==0 && values[2]==0 && values[3]==0) continue;
 //            std::string v1Str, v2Str;
 //            for (auto item : *iPath.second) {
-//                v1Str+=idx2Str(item);
+//                v1Str+=idx2StrDir(item);
 //            }
 //            for (auto item : *jPath.second) {
-//                v2Str+= idx2Str(item);
+//                v2Str+= idx2StrDir(item);
 //            }
             if (values[0] != 0) {
                 resultG->addJunction(v1, v2, '+', '+', values[0], 1 , 1);
@@ -612,20 +650,63 @@ std::vector<int>* matching::breakCycle(std::vector<int> * cyclePath) {
     return res;
 }
 
-void matching::breakCycle(std::vector<int> *cur, std::deque<int> & zeroBK, std::map<int,std::vector<int>*> *result) {
-    if (zeroBK.empty()) {result->emplace((*cur)[0], cur);
-        this->cyclePaths.push_back((*cur)[0]); return;}
+void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
+    if (this->cyclePaths.empty()) return;
+    std::vector<std::pair<int, std::vector<int>*>> A;
+    sort(*result,A);
+    for (auto item: this->cyclePaths) {
+        auto v1 = idx2Vertex(item);
+        auto cPath = (*result)[item];
+        for (auto& p : *result) {
+            if (p.first == item) continue;
+            bool hit = false;
+            for (int i = 0 ; i < p.second->size(); i++) {
+                auto idx = (*p.second)[i];
+                auto v2 = idx2Vertex(idx);
+                if(v1->sameVertex(*v2)) {
+//
+                    auto pos = p.second->begin() + i;
+                    p.second->insert(pos, cPath->begin(), cPath->end());
+                    hit = true;
+                    break;
+                }
+            }
+            if (hit) break;
+        }
+    }
+}
+
+void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereBK, std::map<int,std::vector<int>*> *result) {
+//    环状路,找到有拷贝数的地方断开
+    if (zereBK.empty()) {
+        auto cSize = cur->size();
+        for (int i = 0; i < cSize;i++){
+            if (this->idx2Vertex((*cur)[i])->getWeight()->getCopyNum() >= 2) {
+                this->cyclePaths.push_back((*cur)[i]);
+                result->emplace((*cur)[0], cur);
+                break;
+            }
+            cur->push_back(cur->front());
+            cur->erase(cur->begin());
+        }
+        return;
+    }
 //    如果最后断开
     auto lastCfirst = false;
-    if (zeroBK.back() == cur->front()) zeroBK.pop_back();
+    if (zereBK.back() == cur->front()) zereBK.pop_back();
     else{ //如果最后一个链接第一个
         lastCfirst = true;
     }
     auto * tmp = new std::vector<int>();;
     for(auto &item : *cur) {
-        if (!zeroBK.empty() && item == zeroBK.front()) {
+        if (!zereBK.empty() && item == zereBK.front()) {
+            //            if front v same back v
+            if (tmp->size() != 1 && this->idx2Vertex(tmp->front())->sameVertex(*this->idx2Vertex(tmp->back()))) {
+                this->cyclePaths.push_back((*tmp)[0]);
+                tmp->pop_back();
+            }
             result->emplace((*tmp)[0], tmp);
-            zeroBK.pop_front();
+            zereBK.pop_front();
             tmp = new std::vector<int>();
             tmp->push_back(item);
         } else {
@@ -633,14 +714,25 @@ void matching::breakCycle(std::vector<int> *cur, std::deque<int> & zeroBK, std::
         }
     }
     if (!tmp->empty()) {
-        if(!lastCfirst)
+        if(!lastCfirst) {
+            //            if front v same back v
+            if (tmp->size() != 1 && this->idx2Vertex(tmp->front())->sameVertex(*this->idx2Vertex(tmp->back()))) {
+                this->cyclePaths.push_back((*tmp)[0]);
+                tmp->pop_back();
+            }
             result->emplace((*tmp)[0], tmp);
+        }
         else{
             auto oldPath = (*result)[cur->front()];
             for (auto item : *oldPath) {
                 tmp->push_back(item);
             }
             result->erase(cur->front());
+            //            if front v same back v
+            if (tmp->size() != 1 && this->idx2Vertex(tmp->front())->sameVertex(*this->idx2Vertex(tmp->back()))) {
+                this->cyclePaths.push_back((*tmp)[0]);
+                tmp->pop_back();
+            }
             result->emplace((*tmp)[0], tmp);
         }
     }
@@ -684,6 +776,6 @@ std::vector<int>* matching::addPrevPath(std::map<int, std::vector<int>*>* prevPa
 void matching::writeMatchResult(std::ofstream& outS) {
 //    std::ofstream outF(outFile);
     for (int i = 1; i < this->N - 1;i++) {
-        outS<<"JUNC "<< this->idx2Str(i," ")<<" "<< this->idx2Str(this->matched[i]," ")<<" "<< this->getMatrix()[this->matched[i]][i]<<"\n";
+        outS << "JUNC " << this->idx2StrDir(i, " ") << " " << this->idx2StrDir(this->matched[i], " ") << " " << this->getMatrix()[this->matched[i]][i] << "\n";
     }
 }
