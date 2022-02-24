@@ -376,7 +376,9 @@ void Graph::parseConnectedComponents() {
             auto * connectedIdx = new std::set<int>;
             BFS_Vertices(vertice, connectedIdx);
             i += connectedIdx->size();
-            this->connectedJunctionsIdx.push_back(connectedIdx);
+            if (!connectedIdx->empty()){
+                this->connectedJunctionsIdx.push_back(connectedIdx);
+            }
         }
     }
 }
