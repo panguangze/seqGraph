@@ -129,10 +129,10 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
         if (mpos < mRefLen - CUTOFF && pos > CUTOFF) continue;
 //        refLen = sam_hdr_tid2len(hdr, b->core.tid);
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
-        if (refName == mRefName) {
-            if (!SELFLOOP) continue;
-            else if(rev == mrev) continue;
-        }
+//        if (refName == mRefName) {
+//            if (!SELFLOOP) continue;
+//            else if(rev == mrev) continue;
+//        }
 //        if (refName == mRefName && rev == !mrev)continue;
         if (rev)
             refName = refName.append(" -");
