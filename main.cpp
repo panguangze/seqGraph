@@ -176,6 +176,7 @@ int main(int argc, char *argv[]) {
                 matchResultFile<<line<<std::endl;
             }
             iss>>startTag>>originalSource>>copyNum;
+//            TODO consider optimize the copied vertices.
             source = originalSource;
             source = source.append("_0");
             if(source == "EDGE_1499493_length_56_cov_55.000000_0") {

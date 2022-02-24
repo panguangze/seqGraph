@@ -59,7 +59,8 @@ public:
     std::string idx2StrDir(int idx, const std::string& token= std::string(""));
     std::string idx2Str(int idx);
 //    idx to current graph vertex
-    seqGraph::Vertex* idx2Vertex(int idx);
+    seqGraph::Vertex* idx2VertexInCurrentGraph(int idx);
+    seqGraph::Vertex* idx2VertexInOriginalGraph(int idx);
     void writeMatchResult(std::ofstream& outS);
     void reconstructMatrix(std::map<int, std::vector<int>*>* paths);
     void resetGraph(seqGraph::Graph* g);

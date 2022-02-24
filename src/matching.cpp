@@ -363,9 +363,15 @@ std::string matching::idx2Str(int idx) {
     return idStr;
 }
 
-seqGraph::Vertex *matching::idx2Vertex(int idx) {
+seqGraph::Vertex *matching::idx2VertexInCurrentGraph(int idx) {
     int vIdx = (idx + 1) / 2;
     auto idStr = (*this->graph->getVertices())[vIdx - 1]->getId();
+    auto v = this->graph->getVertexByIdQ(idStr);
+    return v;
+}
+seqGraph::Vertex *matching::idx2VertexInOriginalGraph(int idx) {
+//    int vIdx = (idx + 1) / 2;
+    auto idStr = idx2Str(idx);
     auto v = this->graph->getVertexByIdQ(idStr);
     return v;
 }
@@ -382,6 +388,9 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
 //        std::cout<<"check conjugate done\n";
     std::vector<int> cyclePaths;
     for(int i = 1; i < N + 1; i++) {
+        if(i == 77) {
+            int m = 88;
+        }
         if (visited[i]) continue;
         auto* currentPath = new std::vector<int>();
 
@@ -411,6 +420,9 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
         bool isCycle = false;
         std::deque<int> zeroBreakPoint;
         while (true) {
+            if (now == 77 || matched[now] == 77) {
+                int mmd = 99;
+            }
             if (visited[matched[now]]) {
                 if (matrix[matched[now]][now] == 0) {
                     zeroBreakPoint.push_back(matched[now]);
@@ -629,22 +641,27 @@ int matching::checkConjugateMatch() {
 std::vector<int>* matching::breakCycle(std::vector<int> * cyclePath) {
     auto res = new std::vector<int>();
     auto matrix = this->getMatrix();
-    int minIdx = cyclePath->size() - 1;
+    int minI = cyclePath->size() - 1;
     double minW = INF;
     for (int i = 0; i < cyclePath->size(); i++) {
-        if (i == cyclePath->size() - 1 && matrix[i][0] < minW) {
-            minIdx = cyclePath->size() - 1;
+        int idx = (*cyclePath)[i];
+        int nextIdx = (*cyclePath)[i+1];
+        if (i == cyclePath->size() - 1) {
+            if(matrix[cyclePath->front()][idx] < minW) {
+                minI = cyclePath->size() - 1;
+            }
+            continue;
         }
-        if (matrix[i][i+1] < minW) {
-            minW = matrix[i][i+1];
-            minIdx = i;
+        if (matrix[nextIdx][idx] < minW) {
+            minW = matrix[nextIdx][idx];
+            minI = i;
         }
     }
-    if (minIdx == cyclePath->size() - 1) return cyclePath;
-    for (int i = minIdx + 1; i< cyclePath->size(); i++) {
+    if (minI == cyclePath->size() - 1) return cyclePath;
+    for (int i = minI + 1; i < cyclePath->size(); i++) {
         res->push_back((*cyclePath)[i]);
     }
-    for (int i = 0; i <= minIdx; ++i) {
+    for (int i = 0; i <= minI; ++i) {
         res->push_back((*cyclePath)[i]);
     }
     return res;
@@ -655,14 +672,14 @@ void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
     std::vector<std::pair<int, std::vector<int>*>> A;
     sort(*result,A);
     for (auto item: this->cyclePaths) {
-        auto v1 = idx2Vertex(item);
+        auto v1 = idx2VertexInCurrentGraph(item);
         auto cPath = (*result)[item];
         for (auto& p : *result) {
             if (p.first == item) continue;
             bool hit = false;
             for (int i = 0 ; i < p.second->size(); i++) {
                 auto idx = (*p.second)[i];
-                auto v2 = idx2Vertex(idx);
+                auto v2 = idx2VertexInCurrentGraph(idx);
                 if(v1->sameVertex(*v2)) {
 //
                     auto pos = p.second->begin() + i;
@@ -679,9 +696,11 @@ void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
 void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereBK, std::map<int,std::vector<int>*> *result) {
 //    环状路,找到有拷贝数的地方断开
     if (zereBK.empty()) {
+        bool isNoCopyCycle = true;
         auto cSize = cur->size();
         for (int i = 0; i < cSize;i++){
-            if (this->idx2Vertex((*cur)[i])->getWeight()->getCopyNum() >= 2) {
+            if (this->idx2VertexInOriginalGraph((*cur)[i])->getWeight()->getCopyNum() >= 2) {
+                isNoCopyCycle = false;
                 this->cyclePaths.push_back((*cur)[i]);
                 result->emplace((*cur)[0], cur);
                 break;
@@ -689,6 +708,14 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
             cur->push_back(cur->front());
             cur->erase(cur->begin());
         }
+//        如果环中没有任何一个点拷贝数大于1那就是一个单纯环，无法merge到任何上面，直接再权重最小处断开
+        if(isNoCopyCycle) {
+            auto tmp = breakCycle(cur);
+//            this->cyclePaths.push_back((*tmp)[0]);
+            result->emplace((*tmp)[0],tmp);
+        }
+        cur->clear();
+        cur->shrink_to_fit();
         return;
     }
 //    如果最后断开
@@ -701,7 +728,8 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
     for(auto &item : *cur) {
         if (!zereBK.empty() && item == zereBK.front()) {
             //            if front v same back v
-            if (tmp->size() != 1 && this->idx2Vertex(tmp->front())->sameVertex(*this->idx2Vertex(tmp->back()))) {
+            if (tmp->size() != 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
+                    tmp->back()))) {
                 this->cyclePaths.push_back((*tmp)[0]);
                 tmp->pop_back();
             }
@@ -716,7 +744,8 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
     if (!tmp->empty()) {
         if(!lastCfirst) {
             //            if front v same back v
-            if (tmp->size() != 1 && this->idx2Vertex(tmp->front())->sameVertex(*this->idx2Vertex(tmp->back()))) {
+            if (tmp->size() != 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
+                    tmp->back()))) {
                 this->cyclePaths.push_back((*tmp)[0]);
                 tmp->pop_back();
             }
@@ -729,7 +758,8 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
             }
             result->erase(cur->front());
             //            if front v same back v
-            if (tmp->size() != 1 && this->idx2Vertex(tmp->front())->sameVertex(*this->idx2Vertex(tmp->back()))) {
+            if (tmp->size() != 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
+                    tmp->back()))) {
                 this->cyclePaths.push_back((*tmp)[0]);
                 tmp->pop_back();
             }
