@@ -28,7 +28,7 @@ for line in inp2:
         tmp[k].remove(v)
     elif (vc in tmp.keys() and kc in tmp[vc]):
         outs.write(" ".join(vs)+"\n")
-        tmp[k].remove(v)
+        tmp[vc].remove(kc)
 for item in tmp.keys():
     first = item
     fdir = "+"
