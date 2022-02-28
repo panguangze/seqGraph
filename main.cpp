@@ -185,12 +185,20 @@ int main(int argc, char *argv[]) {
             g->addVertex(source,"xx",1,2,1,1,copyNum);
             for (int i = 1; i < copyNum; i++) {
                 source.pop_back();
+                if (i>=11)
+                    source.pop_back();
+                if (i>=101)
+                    source.pop_back();
                 source.append(std::to_string(i));
                 g->addVertex(source,"xx",1,2,1,1,copyNum);
 //                source = originalSource;
             }
         } else {
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
+            if(originalSource == originalTarget) {
+                cyclePathsFile<<originalSource<<"\n";
+                continue;
+            }
 //            seqGraph::Vertex* v1;
 //            seqGraph::Vertex* v2;
             source = originalSource;

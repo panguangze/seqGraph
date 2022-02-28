@@ -713,7 +713,7 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
             auto tmp = breakCycle(cur);
 //            this->cyclePaths.push_back((*tmp)[0]);
             result->emplace((*tmp)[0],tmp);
-            cur->clear();
+//            cur->clear();
             cur->shrink_to_fit();
         }
         return;
