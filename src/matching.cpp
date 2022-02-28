@@ -334,6 +334,8 @@ std::string matching::idx2Str(int idx,const std::string& token) {
     }
     return idStr+token+dir;
 }
+
+
 std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vector<int>*>* prevPaths) {
     auto matrix = graph->getConjugateMatrix();
     bool visited[N+1];
@@ -624,6 +626,10 @@ void matching::breakCycle(std::vector<int> *cur, std::deque<int> & zeroBK, std::
     auto * tmp = new std::vector<int>();;
     for(auto &item : *cur) {
         if (!zeroBK.empty() && item == zeroBK.front()) {
+                //            if front v same back v
+                if (tmp->size() > 1 && graph->getVertexByIdQ(idx2IdStr(tmp->front()))->sameVertex(*graph->getVertexByIdQ(idx2IdStr(tmp->back())))) {
+                    this->cyclePaths.push_back((*tmp)[0]);
+                }
             result->emplace((*tmp)[0], tmp);
             zeroBK.pop_front();
             tmp = new std::vector<int>();
@@ -633,14 +639,23 @@ void matching::breakCycle(std::vector<int> *cur, std::deque<int> & zeroBK, std::
         }
     }
     if (!tmp->empty()) {
-        if(!lastCfirst)
-            result->emplace((*tmp)[0], tmp);
-        else{
+        if(!lastCfirst) {
+                //            if front v same back v
+                if (tmp->size() > 1 && graph->getVertexByIdQ(idx2IdStr(tmp->front()))->sameVertex(
+                        *graph->getVertexByIdQ(idx2IdStr(tmp->back())))) {
+                    this->cyclePaths.push_back((*tmp)[0]);
+                }
+                result->emplace((*tmp)[0], tmp);
+        }else{
             auto oldPath = (*result)[cur->front()];
             for (auto item : *oldPath) {
                 tmp->push_back(item);
             }
             result->erase(cur->front());
+            if (tmp->size() > 1 && graph->getVertexByIdQ(idx2IdStr(tmp->front()))->sameVertex(
+                    *graph->getVertexByIdQ(idx2IdStr(tmp->back())))) {
+                this->cyclePaths.push_back((*tmp)[0]);
+            }
             result->emplace((*tmp)[0], tmp);
         }
     }

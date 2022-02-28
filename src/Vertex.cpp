@@ -5,7 +5,11 @@
 #include "../include/Vertex.h"
 
 using namespace seqGraph;
-
+bool Vertex::sameVertex(const seqGraph::Vertex &v2) {
+    auto idx1 = this->Id.find_last_of('_');
+    auto idx2 = v2.getId().find_last_of('_');
+    return this->Id.substr(0, idx1) == v2.getId().substr(0,idx2);
+}
 Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double aCredibility, int aCopyNum) {
     this->Id = mId;
     this->orphan = true;

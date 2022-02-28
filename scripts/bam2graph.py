@@ -31,8 +31,10 @@ def calCrossReads(bam_name):
         if (read.reference_name == read.next_reference_name):
             continue
 
-        ref_len = int(read.reference_name.split(':')[1].split('-')[1]) - int(read.reference_name.split(':')[1].split('-')[0])
-        mate_len = int(read.next_reference_name.split(':')[1].split('-')[1]) - int(read.next_reference_name.split(':')[1].split('-')[0])
+        ref_len = int(read.reference_name.split("_")[3])
+        mate_len = int(read.next_reference_name.split("_")[3])
+            # int(read.reference_name.split(':')[1].split('-')[1]) - int(read.reference_name.split(':')[1].split('-')[0])
+        # mate_len = int(read.next_reference_name.split(':')[1].split('-')[1]) - int(read.next_reference_name.split(':')[1].split('-')[0])
 
         if not (abs(read.reference_start) < insert_size or abs(ref_len - read.reference_start)< insert_size):
             continue
@@ -83,6 +85,10 @@ def cal_copy_number():
     median_depth = np.median(all_depth)
     chrom_copy = {}
     for chrom in depth_dict:
+        # if chrom == "EDGE_5337_length_61_cov_813.166667":
+        #     print(depth_dict[chrom])
+        #     print(float(np.median(depth_dict[chrom])))
+        #     print(round(float(np.median(depth_dict[chrom]))/median_depth))
         chrom_copy[chrom] = round(float(np.median(depth_dict[chrom]))/median_depth)
     return chrom_copy, median_depth
 

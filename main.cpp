@@ -49,6 +49,16 @@ void tokenize(const std::string &str, std::vector<std::string> &tokens, const st
         lastPos = pos + 1;
     }
 }
+
+std::vector<std::string> split(std::string &text, char &delim) {
+    std::string line;
+    std::vector<std::string> vec;
+    std::stringstream ss(text);
+    while(std::getline(ss, line, delim)) {
+        vec.push_back(line);
+    }
+    return vec;
+}
 //recall paths from iteration result paths
 //void pathsRecall(std::vector<std::map<int, std::vector<int>*>*> & recallPaths) {
 //    for (auto iterPaths: *recallPaths.back()) {
@@ -191,7 +201,17 @@ int main(int argc, char *argv[]) {
             if(originalSource==originalTarget){
                 // print self loop
                 if (visited_self_loop.find(originalSource) == visited_self_loop.end()){
-                    cyclePathsFile<< "self loop: "<<originalSource<<std::endl;
+                    std::vector<std::string> tokens;
+                    tokenize(originalSource, tokens, "_");
+                    std::cout<<originalSource<<std::endl;
+                    int length = std::stoi(tokens[3]);
+//                    if (length>500){
+                        std::cout<<"pass for: "<<originalSource<<std::endl;
+                        cyclePathsFile<< "self loop: "<<std::endl;
+                        cyclePathsFile<<originalSource+"+"<<std::endl;
+//                    }else{
+//                        std::cout<<"not pass for: "<<originalSource<<std::endl;
+//                    }
                     visited_self_loop.insert(originalSource);
                 }
                 continue;
@@ -259,6 +279,9 @@ int main(int argc, char *argv[]) {
 //        cyclePathsFile<<"iter 0\n";
         for (auto item: *paths) {
             if (m->isCycle(item.first)) {
+                if (m->graph->getVertexByIdQ(m->idx2IdStr(item.second->front()))->sameVertex(*m->graph->getVertexByIdQ(m->idx2IdStr(item.second->back()))) ){
+                    item.second->pop_back();
+                }
                 cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
                 for(const auto& v: *item.second) {
                     cyclePathsFile<<m->idx2Str(v)<<"\t";

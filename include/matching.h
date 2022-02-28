@@ -11,7 +11,6 @@
 extern bool VERBOSE;
 class matching {
 private:
-    seqGraph::Graph* graph;
     double** currentMatrix;
     double** originalMatrix;
     std::vector<seqGraph::Vertex*>* originalVertices;
@@ -29,6 +28,8 @@ private:
     void update_labels();
     void bfs(int i, double ex[], double ey[], bool visity[],int pre[], double []);
 public:
+    seqGraph::Graph* graph;
+
     explicit matching(seqGraph::Graph* graph1);
     ~matching();
 
@@ -55,6 +56,13 @@ public:
     int checkConjugateMatch();
 
     std::string idx2Str(int idx, const std::string& token=std::string(""));
+    inline  std::string idx2IdStr(int idx){
+        int now = idx;
+        int vIdx = (now + 1) / 2;
+        char dir = now % 2 == 0 ? '-':'+';
+        auto idStr = (*this->originalVertices)[vIdx - 1]->getId();
+        return idStr;
+    }
     void writeMatchResult(std::ofstream& outS);
     void reconstructMatrix(std::map<int, std::vector<int>*>* paths);
     void resetGraph(seqGraph::Graph* g);

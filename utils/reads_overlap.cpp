@@ -154,7 +154,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
         if (flags & 0x80) continue;
         auto rev = flags & 0x10;
         auto mrev = flags & 0x20;
-        if (pos < refLen - CUTOFF && pos > CUTOFF) continue;
+        if (pos < refLen - CUTOFF && mpos > CUTOFF) continue;
         if (mpos < mRefLen - CUTOFF && pos > CUTOFF) continue;
 //        refLen = sam_hdr_tid2len(hdr, b->core.tid);
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);

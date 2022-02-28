@@ -47,7 +47,7 @@ namespace seqGraph {
         const std::vector<Junction *> &getPrevJuncs() const;
     public:
         Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
-
+        bool sameVertex(const seqGraph::Vertex &v2);
         ~Vertex();
 
         void setNextJunc(Junction*);

@@ -1,0 +1,6 @@
+iter 0,graph0
+EDGE_293_length_17759_cov_84.913056+	EDGE_1395_length_1172_cov_153.963636-	
+iter 0,graph0
+EDGE_1097_length_28155_cov_259.642607+	EDGE_941719_length_148_cov_178.476190-	
+iter 0,graph0
+EDGE_1557_length_248_cov_191.793388+	EDGE_1555_length_5993_cov_126.292022+
