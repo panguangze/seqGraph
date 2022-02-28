@@ -131,7 +131,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
 //            if (!SELFLOOP) continue;
 //            else if(rev == mrev) continue;
 //        }
-//        if (refName == mRefName && rev == !mrev)continue;
+        if (refName == mRefName)continue;
         if (rev)
             refName = refName.append(" -");
         if (!mrev)
