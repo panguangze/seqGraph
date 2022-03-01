@@ -84,6 +84,7 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, int>& re
             } else {
                 copy = hapdF;
             }
+            if (copy == 0) copy = 1;
 //            int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
             refCopys.emplace(refName, copy);
         } else {
