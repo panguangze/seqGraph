@@ -10,6 +10,7 @@
 #include <sstream>
 #include "include/cxxopts.hpp"
 bool VERBOSE = true;
+int MIN_LENGTH = 1000;
 const double ZERO = 0.00000001;
 const double M_WEIGHT = 1000000;
 
@@ -205,13 +206,13 @@ int main(int argc, char *argv[]) {
                     tokenize(originalSource, tokens, "_");
                     std::cout<<originalSource<<std::endl;
                     int length = std::stoi(tokens[3]);
-//                    if (length>500){
+                    if (length>500){
                         std::cout<<"pass for: "<<originalSource<<std::endl;
                         cyclePathsFile<< "self loop: "<<std::endl;
                         cyclePathsFile<<originalSource+"+"<<std::endl;
-//                    }else{
-//                        std::cout<<"not pass for: "<<originalSource<<std::endl;
-//                    }
+                    }else{
+                        std::cout<<"not pass for: "<<originalSource<<std::endl;
+                    }
                     visited_self_loop.insert(originalSource);
                 }
                 continue;
@@ -281,6 +282,16 @@ int main(int argc, char *argv[]) {
             if (m->isCycle(item.first)) {
                 if (m->graph->getVertexByIdQ(m->idx2IdStr(item.second->front()))->sameVertex(*m->graph->getVertexByIdQ(m->idx2IdStr(item.second->back()))) ){
                     item.second->pop_back();
+                }
+                int total_length = 0;
+                for(const auto& v: *item.second) {
+                    std::vector<std::string> tokens;
+                    tokenize(m->idx2Str(v).substr(0, m->idx2Str(v).length()-1), tokens, "_");
+                    int length = std::stoi(tokens[3]);
+                    total_length+=length;
+                }
+                if(total_length<MIN_LENGTH){
+                    continue;
                 }
                 cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
                 for(const auto& v: *item.second) {
