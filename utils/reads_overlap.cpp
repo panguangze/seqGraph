@@ -78,10 +78,11 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, int>& re
 
             int copy;
             auto hapd = cov/DEPTH;
-            if (hapd - std::ceil(hapd) > 0.7) {
-                copy = std::ceil(hapd) + 1;
+            auto hapdF = std::floor(hapd);
+            if (hapd - hapdF > 0.7) {
+                copy = hapdF + 1;
             } else {
-                copy = std::ceil(hapd);
+                copy = hapdF;
             }
 //            int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
             refCopys.emplace(refName, copy);
