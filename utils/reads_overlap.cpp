@@ -4,6 +4,7 @@
 
 #include "reads_overlap.h"
 #include "../include/cxxopts.hpp"
+#include <math.h>
 // arg1 输入bam，arg2输出jaccard
 double DEPTH = -1;
 int CUTOFF = 300;
@@ -74,7 +75,15 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, int>& re
             } else {
                 cov = std::stod(item);
             }
-            int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
+
+            int copy;
+            auto hapd = cov/DEPTH;
+            if (hapd - std::ceil(hapd) > 0.7) {
+                copy = std::ceil(hapd) + 1;
+            } else {
+                copy = std::ceil(hapd);
+            }
+//            int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
             refCopys.emplace(refName, copy);
         } else {
             refCopys.emplace(refName, 1);
