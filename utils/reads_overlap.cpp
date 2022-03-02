@@ -58,39 +58,22 @@ int main(int argc, char **argv) {
 
 }
 
-void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, int>& refCopys) {
+void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, double>& refCopys) {
     int nRef = sam_hdr_nref(hdr);
     std::string refName, revRef;
     for(int i = 0; i< nRef; i++) {
         refName = sam_hdr_tid2name(hdr, i);
-
-        if (DEPTH != -1) {
-            std::stringstream ssf(refName);
-            std::string item;
-            while (std::getline(ssf,item,'_'));
-            int idx = item.find(':');
-            double cov = 0;
-            if (idx != -1) {
-                cov = std::stod(item.substr(0,idx));
-            } else {
-                cov = std::stod(item);
-            }
-
-            int copy;
-            auto hapd = cov/DEPTH;
-            auto hapdF = std::floor(hapd);
-            if (hapd - hapdF > 0.7) {
-                copy = hapdF + 1;
-            } else {
-                copy = hapdF;
-            }
-            if (copy == 0) copy = 1;
-//            int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
-            refCopys.emplace(refName, copy);
+        std::stringstream ssf(refName);
+        std::string item;
+        while (std::getline(ssf,item,'_'));
+        int idx = item.find(':');
+        double cov = 0;
+        if (idx != -1) {
+            cov = std::stod(item.substr(0,idx));
         } else {
-            refCopys.emplace(refName, 1);
+            cov = std::stod(item);
         }
-
+        refCopys.emplace(refName, cov);
         revRef = refName+" -";
         std::unordered_map<std::string, int> tmp;
         std::unordered_map<std::string, int> rvtmp;
@@ -104,7 +87,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
     sam_hdr_t *hdr;
     bam1_t *b;
     int ret;
-    std::map<std::string, int> refCopys;
+    std::map<std::string, double> refCopys;
     if ((hdr = sam_hdr_read(in)) == nullptr) {
         fprintf(stderr, "[E::%s] couldn't read file header \n", __func__);
         return;
@@ -172,7 +155,24 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
     std::string prev;
     std::string next;
     for (const auto& item : refCopys ){
-        fout<<"SEG "<<item.first<<" "<<item.second<<"\n";
+
+        int copy;
+        if (DEPTH != -1) {
+            auto hapd = item.second/DEPTH;
+            auto hapdF = std::floor(hapd);
+            if (hapd - hapdF > 0.7) {
+                copy = hapdF + 1;
+            } else {
+                copy = hapdF;
+            }
+            if (copy == 0) copy = 1;
+//            int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
+            refCopys.emplace(refName, copy);
+        } else {
+            copy = 1;
+        }
+
+        fout<<"SEG "<<item.first<<" "<<item.second<<"\t"<<copy<<"\n";
     }
     for (auto& it: iMap) {
         for(auto& it2 : it.second) {

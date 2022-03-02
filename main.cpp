@@ -179,9 +179,9 @@ int main(int argc, char *argv[]) {
 //            TODO consider optimize the copied vertices.
             source = originalSource;
             source = source.append("_0");
-            if(source == "EDGE_1499493_length_56_cov_55.000000_0") {
-                int mm = 9;
-            }
+//            if(source == "EDGE_1499493_length_56_cov_55.000000_0") {
+//                int mm = 9;
+//            }
             g->addVertex(source,"xx",1,2,1,1,copyNum);
             for (int i = 1; i < copyNum; i++) {
                 source.pop_back();

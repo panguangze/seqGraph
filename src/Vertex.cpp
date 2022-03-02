@@ -18,6 +18,8 @@ Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double 
     this->chrom = aChrom;
     this->start = aStart;
     this->end = aEnd;
+    this->length = this->end - this->start;
+    this->depth = aCoverage;
     this->credibility = aCredibility;
     this->visited = false;
 //    create weight
