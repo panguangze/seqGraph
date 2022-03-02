@@ -1,8 +1,8 @@
 from Bio import SeqIO
 import sys
 fain = sys.argv[1]
-orderin = sys.argv[2]
-faout= sys.argvs[3]
+orderin = open(sys.argv[2])
+faout= open(sys.argv[3],"w")
 record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 for line in orderin.readlines():
     seq = ""
