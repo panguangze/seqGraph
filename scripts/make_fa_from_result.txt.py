@@ -12,4 +12,4 @@ for line in orderin.readlines():
         if t[-1] == '-':
             tmp_seq = record_dict[t[0:-1]].seq.reverse_complement()
         seq = seq + tmp_seq
-    faout.write(str(seq)+"\n")
+    faout.write(">"+tmp[0]+str(seq)+"\n")
