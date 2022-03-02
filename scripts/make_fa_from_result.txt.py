@@ -6,7 +6,7 @@ faout= open(sys.argv[3],"w")
 record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 for line in orderin.readlines():
     seq = ""
-    tmp = line.split("\t")
+    tmp = line.split(" ")
     for t in tmp:
         tmp_seq = record_dict[t[0:-1]].seq
         if t[-1] == '-':
