@@ -13,6 +13,7 @@ bool VERBOSE = true;
 const double ZERO = 0.00000001;
 const double M_WEIGHT = 1000000;
 bool BREAK_C = false;
+int TYPE = 0;
 
 void checkMatrixConjugate(double** matrix, int n) {
     for(int i = 1; i < n+1; i++) {
@@ -157,6 +158,7 @@ int main(int argc, char *argv[]) {
     std::string source, target, startTag, originalSource, originalTarget;
     char sDir, tDir;
     int copyNum;
+    double coverage = 1;
     double weight;
     auto* g = new seqGraph::Graph;
 
@@ -175,18 +177,21 @@ int main(int argc, char *argv[]) {
             if (result.count("result_m")) {
                 matchResultFile<<line<<std::endl;
             }
+//            TODO, take coverage into consideration
+//            iss>>startTag>>originalSource>>coverage>>copyNum;
             iss>>startTag>>originalSource>>copyNum;
+
 //            TODO consider optimize the copied vertices.
             source = originalSource;
             source = source.append("_0");
 //            if(source == "EDGE_1499493_length_56_cov_55.000000_0") {
 //                int mm = 9;
 //            }
-            g->addVertex(source,"xx",1,2,1,1,copyNum);
+            g->addVertex(source,"xx",1,2,coverage,1,copyNum);
             for (int i = 1; i < copyNum; i++) {
                 source.pop_back();
                 source.append(std::to_string(i));
-                g->addVertex(source,"xx",1,2,1,1,copyNum);
+                g->addVertex(source,"xx",1,2,coverage,1,copyNum);
 //                source = originalSource;
             }
         } else {
