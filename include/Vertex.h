@@ -21,6 +21,8 @@ namespace seqGraph {
         std::string chrom;
         int start;
         int end;
+        int length;
+        double depth;
         double credibility;
         int idx;
         int copy_idx; //

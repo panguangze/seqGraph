@@ -16,7 +16,39 @@ bool cmp(std::pair<int, std::vector<int>* >& a,
 {
     return a.second->size() < b.second->size();
 }
+//TODO, 需要在迭代过程中加入这个过程
 
+int Partition(matching* m,double uCov, std::vector<int> &v, int start, int end){
+
+    int pivot = end;
+    int j = start;
+    for(int i=start;i<end;++i){
+        if( uCov - m->idx2VertexInCurrentGraph(v[i])->getWeight()->getCoverage() < uCov - m->idx2VertexInCurrentGraph(v[pivot])->getWeight()->getCoverage()){
+            std::swap(v[i],v[j]);
+            ++j;
+        }
+    }
+    std::swap(v[j],v[pivot]);
+    return j;
+
+}
+
+void Quicksort(matching* m ,double uCov, std::vector<int> &v, int start, int end ){
+
+    if(start<end){
+        int p = Partition(m,uCov, v,start,end);
+        Quicksort(m,uCov, v,start,p-1);
+        Quicksort(m,uCov, v,p+1,end);
+    }
+
+}
+
+
+//bool matching::cmpVertex (int i,int j) {
+//    auto v1 = this->idx2VertexInCurrentGraph(i)->getWeight()->getCoverage();
+//    auto v2 = this->idx2VertexInCurrentGraph(j)->getWeight()->getCoverage();
+//    return v1 < v2;
+//}
 // Function to sort the map according
 // to value in a (key-value) pairs
 void sort(std::map<int, std::vector<int>*>& M, std::vector<std::pair<int, std::vector<int>*>>& A)
@@ -94,6 +126,7 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, dou
     auto matrix = getMatrix();
     visity[conjugateIdx(u)] = true;
     visitx[u] = true;
+    std::vector<int> candidates;
     for (int i = 1; i < N+1; i++) {
         if(i == u) continue;
 //        auto t1 = ex[u];
@@ -113,13 +146,7 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, dou
 //        }
         if(std::abs(ex[u] + ey[i] - matrix[u][i]) <= ZERO) {
             visity[i] = true;
-            if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
-                pre->insert(u);
-                pre->insert(conjugateIdx(i));
-                matched[i] = u;
-                matched[conjugateIdx(u)] = conjugateIdx(i);
-                return true;
-            }
+            candidates.push_back(i);
         } else if(slack[i] > ex[u] + ey[i] - matrix[u][i]) {
 //            auto tt1 = ex[u];
 //            auto tt2 = ey[i];
@@ -130,6 +157,18 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, dou
 //            auto ttttt = 99;
         }
     }
+//    sort(candidates.begin(),candidates.end(), this->cmpVertex());
+    Quicksort(this, this->idx2VertexInCurrentGraph(u)->getOutCoverage(), candidates, 0, candidates.size() - 1);
+    for (auto i : candidates) {
+        if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
+            pre->insert(u);
+            pre->insert(conjugateIdx(i));
+            matched[i] = u;
+            matched[conjugateIdx(u)] = conjugateIdx(i);
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -714,7 +753,7 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
 //            this->cyclePaths.push_back((*tmp)[0]);
             result->emplace((*tmp)[0],tmp);
 //            cur->clear();
-            cur->shrink_to_fit();
+//            cur->shrink_to_fit();
         }
         return;
     }

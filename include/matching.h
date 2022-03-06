@@ -37,6 +37,7 @@ public:
     inline int* getMatched() const {
         return matched;
     }
+    static bool cmpVertex (int i,int j);
     inline int getN() const {
         return N;
     }
