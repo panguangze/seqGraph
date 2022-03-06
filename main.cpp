@@ -178,8 +178,8 @@ int main(int argc, char *argv[]) {
                 matchResultFile<<line<<std::endl;
             }
 //            TODO, take coverage into consideration
-//            iss>>startTag>>originalSource>>coverage>>copyNum;
-            iss>>startTag>>originalSource>>copyNum;
+            iss>>startTag>>originalSource>>coverage>>copyNum;
+//            iss>>startTag>>originalSource>>copyNum;
 
 //            TODO consider optimize the copied vertices.
             source = originalSource;
