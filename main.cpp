@@ -246,7 +246,13 @@ int main(int argc, char *argv[]) {
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
         std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<"\n";
-        if(subGraph->getVertices()->size() == 1 || subGraph->getJunctions()->size() == 1) {
+        if(subGraph->getVertices()->size() == 1) {
+            resultFile<<subGraph->getVertices()->front()->getId()<<"\n";
+            n++;
+            continue;
+        }
+        if (subGraph->getJunctions()->size() == 1) {
+            resultFile<<subGraph->getJunctions()->front()->getSource()->getId()<<subGraph->getJunctions()->front()->getSourceDir()<<"\t"<<subGraph->getJunctions()->front()->getTarget()->getId()<<subGraph->getJunctions()->front()->getTargetDir()<<"\n";
             n++;
             continue;
         }
