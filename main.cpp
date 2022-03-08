@@ -14,6 +14,7 @@ const double ZERO = 0.00000001;
 const double M_WEIGHT = 1000000;
 bool BREAK_C = false;
 int TYPE = 0;
+bool SELF_L = false;
 
 void checkMatrixConjugate(double** matrix, int n) {
     for(int i = 1; i < n+1; i++) {
@@ -128,6 +129,7 @@ int main(int argc, char *argv[]) {
             ("l,local_order", "Local order information", cxxopts::value<std::string>())
             ("m,result_m","Matching result", cxxopts::value<std::string>())
             ("b,break_c", "Whether break and merge cycle into line paths", cxxopts::value<bool>()->default_value("false"))
+            ("s,self_l", "Cycle result", cxxopts::value<bool>()->default_value("true"))
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
@@ -153,6 +155,9 @@ int main(int argc, char *argv[]) {
     }
     if (result.count("break_c")) {
         BREAK_C = true;
+    }
+    if (result.count("self_l")) {
+        SELF_L = true;
     }
 
     std::string source, target, startTag, originalSource, originalTarget;
@@ -200,7 +205,7 @@ int main(int argc, char *argv[]) {
             }
         } else {
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
-            if(originalSource == originalTarget) {
+            if(SELF_L && originalSource == originalTarget) {
                 cyclePathsFile<<originalSource<<"\n";
                 continue;
             }
