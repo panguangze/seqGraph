@@ -8,7 +8,7 @@
 #include "Graph.h"
 #include "algorithm"
 #include <deque>
-extern bool VERBOSE;
+extern int VERBOSE;
 extern bool BREAK_C;
 class matching {
 private:

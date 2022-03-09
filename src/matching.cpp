@@ -313,7 +313,7 @@ void matching::hungarian() {
 //        }
     }
     auto* pre = new std::set<int>();
-    if(VERBOSE) {
+    if(VERBOSE >= 2) {
         std::cout<<"         ";
         for (int i = 1; i < N+1;i++) {
             std::cout << this->idx2StrDir(i) << "\t";
@@ -350,7 +350,7 @@ void matching::hungarian() {
                 }
             }
         }
-        if (VERBOSE) {
+        if (VERBOSE >= 2) {
             std::cout << i << " " << this->idx2StrDir(i) << "\t|";
             for(int k = 1; k < N + 1; k++) {
                 if(this->matched[k] != -1)
@@ -360,6 +360,9 @@ void matching::hungarian() {
 
             }
             std::cout<<std::endl;
+        }
+        if (VERBOSE >= 1) {
+            std::cout << i << " " << this->idx2StrDir(i) <<std::endl;
         }
     }
     free(pre);

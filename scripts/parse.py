@@ -3,15 +3,23 @@ import re
 inp = open(sys.argv[1])
 inp2 = open(sys.argv[2])
 outs = open(sys.argv[3],"w")
+depth = sys.argv[4]
+f_th = sys.argv[5]
 tmp = {}
 for line in inp:
     vs = line.split("\t")
     a = re.split(":|,|;",vs[0])
     tmp[a[0]]=a[1:]
+all_segs = {}
+write_segs = set()
+write_juncs = []
 for line in inp2:
     vs = line.rstrip().split(" ")
     if vs[0] == "SEG":
-        outs.write(line)
+        all_segs[vs[1]] = line
+        # outs.write(line)
+        continue
+    if vs[-1] < f_th:
         continue
     k = vs[1]
     kc = vs[1]+"'"
@@ -24,11 +32,20 @@ for line in inp2:
         v = vs[3]+"'"
         vc = vs[3]
     if (k in tmp.keys() and v in tmp[k]):
-        outs.write(" ".join(vs)+"\n")
+        if int(depth) > int(v[-1]):
+            vs[-1] = depth
+        #write_juncs.append(" ".join(vs)+"\n")
+        # outs.write(" ".join(vs)+"\n")
         tmp[k].remove(v)
     elif (vc in tmp.keys() and kc in tmp[vc]):
-        outs.write(" ".join(vs)+"\n")
+        if int(depth) > int(v[-1]):
+            vs[-1] = depth
+        #write_juncs.append(" ".join(vs)+"\n")
+        # outs.write(" ".join(vs)+"\n")
         tmp[vc].remove(kc)
+    write_juncs.append(" ".join(vs)+"\n")
+    write_segs.add(all_segs[vs[1]])
+    write_segs.add(all_segs[vs[3]])
 for item in tmp.keys():
     first = item
     fdir = "+"
@@ -43,4 +60,8 @@ for item in tmp.keys():
         if i[-1] == "'":
             second = i[0:-1]
             sdir = "-"
-        outs.write("JUNC {} {} {} {} 1\n".format(first,fdir,second,sdir,))
+        write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,depth/2))
+for item in write_segs:
+    outs.write(item)
+for item in write_juncs:
+    outs.write(item)

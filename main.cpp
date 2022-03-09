@@ -9,7 +9,7 @@
 #include <cstring>
 #include <sstream>
 #include "include/cxxopts.hpp"
-bool VERBOSE = true;
+int VERBOSE = 0;
 const double ZERO = 0.00000001;
 const double M_WEIGHT = 1000000;
 bool BREAK_C = false;
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
             ("r,result","Result", cxxopts::value<std::string>())
             ("c,result_c", "Cycle result", cxxopts::value<std::string>())
             ("i,iteration", "Iteration times", cxxopts::value<int>()->default_value("0"))
-            ("v,verbose", "Verbose", cxxopts::value<bool>()->default_value("false"))
+            ("v,verbose", "Verbose", cxxopts::value<int>()->default_value("0"))
             ("l,local_order", "Local order information", cxxopts::value<std::string>())
             ("m,result_m","Matching result", cxxopts::value<std::string>())
             ("b,break_c", "Whether break and merge cycle into line paths", cxxopts::value<bool>()->default_value("false"))
@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
     std::string resultF = result["result"].as<std::string>();
     std::string resultCF = result["result_c"].as<std::string>();
     int iterRounds = result["iteration"].as<int>();
-    VERBOSE = result["verbose"].as<bool>();
+    VERBOSE = result["verbose"].as<int>();
 
 
     std::ifstream infile(graphF);
@@ -245,7 +245,7 @@ int main(int argc, char *argv[]) {
 //        }
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
-        std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<"\n";
+        std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<std::endl;
         if(subGraph->getVertices()->size() == 1) {
             resultFile<<subGraph->getVertices()->front()->getId()<<"\n";
             n++;
@@ -257,11 +257,11 @@ int main(int argc, char *argv[]) {
             continue;
         }
         auto* m = new matching(subGraph);
-        if (VERBOSE)
+        if (VERBOSE >= 2)
             checkMatrixConjugate(m->getMatrix(), m->getN());
 //    m->main_steps();
         m->hungarian();
-        if (VERBOSE) {
+        if (VERBOSE >= 2) {
             std::cout<<"final matched relation\n";
             for(int i = 0; i < m->getN() + 1; i++) {
                 std::cout<<m->getMatched()[i]<<"\t";
