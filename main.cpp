@@ -253,7 +253,7 @@ int main(int argc, char *argv[]) {
             n++;
             continue;
         }
-        if (subGraph->getJunctions()->size() == 1) {
+        if (subGraph->getJuncSize() == 1) {
             auto sV = subGraph->getJunctions()->front()->getSource()->getOriginId();
             auto tV = subGraph->getJunctions()->front()->getTarget()->getOriginId();
             auto sD = subGraph->getJunctions()->front()->getSourceDir();
@@ -298,7 +298,8 @@ int main(int argc, char *argv[]) {
         if (paths->size() != 1) {
             while (iterRounds !=0) {
                 std::cout<<"Iteration "<<iterN<<",nodes count"<<paths->size()<<"...\n";
-                m->reconstructMatrix(paths);
+//                TODO if v==1 or juncs ==1 continue
+                m->reconstructMatrix(paths, subGraph);
 //                checkMatrixConjugate(m->getMatrix(), m->getN());
                 m->hungarian();
                 paths = m->resolvePath(paths);

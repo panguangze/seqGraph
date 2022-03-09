@@ -39,6 +39,10 @@ namespace seqGraph {
             return this->connectedJunctionsIdx.size();
         }
 
+        inline int getJuncSize() {
+            return this->junctionIdx->size();
+        }
+
         Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
 
         Junction *

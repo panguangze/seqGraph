@@ -82,7 +82,7 @@ matching::matching(seqGraph::Graph* graph1) {
     this->originalMatrix = new double*[N+1];
     for(int i = 0; i < N+1; ++i)
         originalMatrix[i] = new double [N+1];
-    std::memcpy(originalMatrix, currentMatrix, sizeof(int)*(N+1)*(N+1));
+//    std::memcpy(originalMatrix, currentMatrix, sizeof(int)*(N+1)*(N+1));
     this->originalVertices = new std::vector<seqGraph::Vertex*>();
     for (auto item : *this->graph->getVertices()) {
         this->originalVertices->push_back(new seqGraph::Vertex(*item));
@@ -594,12 +594,12 @@ double* matching::mergePath(std::vector<int>* p1, std::vector<int>* p2, double**
     return result;
 }
 
-void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
+void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGraph::Graph* originGraph) {
     auto* resultG = new seqGraph::Graph();
 //    auto tm = resultG->getConjugateMatrix() == nullptr;
     auto* values = new double[4];
     for (auto iPath: *paths) {
-        if (this->isCycle((*iPath.second)[0])) continue;
+//        if (this->isCycle((*iPath.second)[0])) continue;
         resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2);
     }
     seqGraph::Vertex* v1;
@@ -636,13 +636,13 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
             if (iPath.second->size() == 1 && jPath.second->size() == 1) {
                 int i = iPath.second->front();
                 int j = jPath.second->front();
-                auto matrix = this->originalMatrix;
+                auto matrix = originGraph->getConjugateMatrix();
                 values[0] = matrix[j][i];
                 values[1] = matrix[conjugateIdx(j)][i];
                 values[2] = matrix[j][conjugateIdx(i)];
                 values[3] = matrix[conjugateIdx(j)][conjugateIdx(i)];
             } else {
-                mergePath(iPath.second, jPath.second, this->originalMatrix, values);
+                mergePath(iPath.second, jPath.second, originGraph->getConjugateMatrix(), values);
             }
 //            if (values[0] == 0 && values[1]==0 && values[2]==0 && values[3]==0) continue;
 //            std::string v1Str, v2Str;

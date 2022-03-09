@@ -63,7 +63,7 @@ public:
     seqGraph::Vertex* idx2VertexInCurrentGraph(int idx);
     seqGraph::Vertex* idx2VertexInOriginalGraph(int idx);
     void writeMatchResult(std::ofstream& outS);
-    void reconstructMatrix(std::map<int, std::vector<int>*>* paths);
+    void reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGraph::Graph* originGraph);
     void resetGraph(seqGraph::Graph* g);
     std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
     void breakResolvedPaths(std::vector<int>* cur, std::deque<int> & zereBK, std::map<int,std::vector<int>* >* result);
