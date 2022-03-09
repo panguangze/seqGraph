@@ -15,6 +15,7 @@ const double M_WEIGHT = 1000000;
 bool BREAK_C = false;
 int TYPE = 0;
 bool SELF_L = false;
+int MIN_L = -1;
 
 void checkMatrixConjugate(double** matrix, int n) {
     for(int i = 1; i < n+1; i++) {
@@ -130,6 +131,7 @@ int main(int argc, char *argv[]) {
             ("m,result_m","Matching result", cxxopts::value<std::string>())
             ("b,break_c", "Whether break and merge cycle into line paths", cxxopts::value<bool>()->default_value("false"))
             ("s,self_l", "Cycle result", cxxopts::value<bool>()->default_value("true"))
+            ("min_l", "Min length to print", cxxopts::value<int>()->default_value("-1"))
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
@@ -252,7 +254,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
         if (subGraph->getJunctions()->size() == 1) {
-            resultFile<<subGraph->getJunctions()->front()->getSource()->getId()<<subGraph->getJunctions()->front()->getSourceDir()<<"\t"<<subGraph->getJunctions()->front()->getTarget()->getId()<<subGraph->getJunctions()->front()->getTargetDir()<<"\n";
+            resultFile<<source<<sDir<<"\t"<<target<<tDir<<"\n";
             n++;
             continue;
         }
@@ -280,7 +282,7 @@ int main(int argc, char *argv[]) {
             if (m->isCycle(item.first)) {
                 cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
                 for(const auto& v: *item.second) {
-                    cyclePathsFile << m->idx2StrDir(v) << "\t";
+                    cyclePathsFile<<m->idx2StrDir(v)<<"\t";
                 }
                 cyclePathsFile<<"\n";
             }
@@ -313,11 +315,17 @@ int main(int argc, char *argv[]) {
         }
         for(auto item : *paths) {
             if (BREAK_C && m->isCycle(item.first)) continue;
+            int total_length = 0;
             for(const auto& v: *item.second) {
+                std::vector<std::string> tokens;
+                tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
+                int length = std::stoi(tokens[3]);
+                total_length+=length;
                 if (v == -1) {
                     resultFile<<'c';
                     continue;
                 }
+                if (MIN_L != -1 && total_length < MIN_L) continue;
                 resultFile << m->idx2StrDir(v) << "\t";
             }
             resultFile<<"\n";
