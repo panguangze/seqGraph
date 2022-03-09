@@ -32,13 +32,13 @@ for line in inp2:
         v = vs[3]+"'"
         vc = vs[3]
     if (k in tmp.keys() and v in tmp[k]):
-        if int(depth) > int(v[-1]):
+        if int(depth) > int(vs[-1]):
             vs[-1] = depth
         #write_juncs.append(" ".join(vs)+"\n")
         # outs.write(" ".join(vs)+"\n")
         tmp[k].remove(v)
     elif (vc in tmp.keys() and kc in tmp[vc]):
-        if int(depth) > int(v[-1]):
+        if int(depth) > int(vs[-1]):
             vs[-1] = depth
         #write_juncs.append(" ".join(vs)+"\n")
         # outs.write(" ".join(vs)+"\n")
