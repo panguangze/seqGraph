@@ -1,0 +1,266 @@
+self loop:
+EDGE_11341_length_3446_cov_7.410508+
+self loop:
+EDGE_11385_length_4388_cov_7.857110+
+self loop:
+EDGE_11357_length_5198_cov_12.801015+
+self loop:
+EDGE_11299_length_2723_cov_10.649282+
+self loop:
+EDGE_11417_length_2416_cov_29.025224+
+self loop:
+EDGE_11223_length_1410_cov_38.225056+
+self loop:
+EDGE_11351_length_5777_cov_7.197544+
+self loop:
+EDGE_11381_length_4598_cov_5.942048+
+self loop:
+EDGE_11323_length_4801_cov_45.462743+
+self loop:
+EDGE_11241_length_5167_cov_27.651081+
+self loop:
+EDGE_11273_length_2924_cov_11.025641+
+self loop:
+EDGE_11283_length_4525_cov_10.995953+
+self loop:
+EDGE_11359_length_17559_cov_7.123784+
+self loop:
+EDGE_11225_length_5297_cov_13.621073+
+self loop:
+EDGE_11377_length_2429_cov_249.292517+
+self loop:
+EDGE_11389_length_2132_cov_12.646229+
+self loop:
+EDGE_11217_length_9076_cov_6.359818+
+self loop:
+EDGE_11367_length_1086_cov_40.949455+
+self loop:
+EDGE_11287_length_6956_cov_16.342492+
+self loop:
+EDGE_11363_length_9847_cov_22.385670+
+self loop:
+EDGE_11285_length_5120_cov_5.877057+
+self loop:
+EDGE_11397_length_3029_cov_234.579268+
+self loop:
+EDGE_11407_length_1113_cov_613.453668+
+self loop:
+EDGE_11277_length_2293_cov_15.153430+
+self loop:
+EDGE_11303_length_5278_cov_6.091521+
+self loop:
+EDGE_11339_length_6606_cov_4.472354+
+self loop:
+EDGE_11333_length_9020_cov_8.946439+
+self loop:
+EDGE_11219_length_12895_cov_3.439850+
+self loop:
+EDGE_11315_length_4283_cov_47.625297+
+self loop:
+EDGE_11251_length_2855_cov_24.123110+
+self loop:
+EDGE_11403_length_5900_cov_6.719560+
+self loop:
+EDGE_11279_length_4485_cov_6.856171+
+self loop:
+EDGE_11233_length_10014_cov_4.290228+
+self loop:
+EDGE_11215_length_7249_cov_178.367540+
+self loop:
+EDGE_11349_length_5467_cov_12.243414+
+self loop:
+EDGE_11401_length_5932_cov_14.637404+
+self loop:
+EDGE_11405_length_6825_cov_6.036455+
+self loop:
+EDGE_11353_length_4069_cov_10.606212+
+self loop:
+EDGE_11369_length_12482_cov_10.274728+
+self loop:
+EDGE_11207_length_4734_cov_13.324028+
+self loop:
+EDGE_11371_length_7408_cov_37.859228+
+self loop:
+EDGE_11361_length_5726_cov_642.978934+
+self loop:
+EDGE_11257_length_2853_cov_57.221902+
+self loop:
+EDGE_11211_length_4024_cov_14.611097+
+self loop:
+EDGE_11355_length_4074_cov_6.136602+
+self loop:
+EDGE_11229_length_2010_cov_14.728401+
+self loop:
+EDGE_11235_length_3592_cov_7.725747+
+self loop:
+EDGE_11375_length_3231_cov_28.144578+
+self loop:
+EDGE_11391_length_8404_cov_24.897322+
+self loop:
+EDGE_11267_length_15709_cov_566.945496+
+self loop:
+EDGE_11313_length_13738_cov_5.621550+
+self loop:
+EDGE_11209_length_3166_cov_26.798964+
+self loop:
+EDGE_11295_length_5197_cov_6.159375+
+self loop:
+EDGE_11311_length_15107_cov_26.936660+
+self loop:
+EDGE_11335_length_1316_cov_234.142050+
+self loop:
+EDGE_11213_length_2801_cov_9.754772+
+self loop:
+EDGE_11343_length_5093_cov_14.844498+
+self loop:
+EDGE_11319_length_4148_cov_6.060919+
+self loop:
+EDGE_11329_length_3493_cov_91.079040+
+self loop:
+EDGE_11395_length_3194_cov_10.070581+
+self loop:
+EDGE_11227_length_5125_cov_7.577655+
+self loop:
+EDGE_11347_length_4523_cov_11.066577+
+self loop:
+EDGE_11419_length_2025_cov_34.626283+
+self loop:
+EDGE_11263_length_5917_cov_33.175000+
+self loop:
+EDGE_11409_length_2387_cov_11.060606+
+self loop:
+EDGE_11413_length_3700_cov_14.225228+
+self loop:
+EDGE_11399_length_4600_cov_20.949370+
+self loop:
+EDGE_11393_length_2138_cov_26.281417+
+self loop:
+EDGE_11337_length_3817_cov_8.666310+
+self loop:
+EDGE_11243_length_5607_cov_71.125497+
+self loop:
+EDGE_11245_length_2758_cov_12.307348+
+self loop:
+EDGE_11239_length_11414_cov_13.084237+
+self loop:
+EDGE_11411_length_1161_cov_73.269373+
+self loop:
+EDGE_11293_length_10286_cov_26.042316+
+self loop:
+EDGE_11301_length_1484_cov_177.648898+
+self loop:
+EDGE_11271_length_15506_cov_6.709054+
+self loop:
+EDGE_11291_length_3773_cov_14.931818+
+self loop:
+EDGE_11297_length_3154_cov_19.596360+
+self loop:
+EDGE_11265_length_5462_cov_48.368431+
+self loop:
+EDGE_11247_length_5972_cov_7.529092+
+self loop:
+EDGE_11281_length_12644_cov_14.928782+
+self loop:
+EDGE_11307_length_4422_cov_6.518757+
+self loop:
+EDGE_11275_length_19062_cov_12.412115+
+self loop:
+EDGE_11231_length_15365_cov_8.537677+
+self loop:
+EDGE_11415_length_3483_cov_7.715796+
+self loop:
+EDGE_11249_length_7321_cov_4.877416+
+self loop:
+EDGE_11259_length_13549_cov_88.573189+
+self loop:
+EDGE_11345_length_5671_cov_11.013944+
+self loop:
+EDGE_11321_length_5590_cov_6.514783+
+self loop:
+EDGE_11379_length_3537_cov_285.586127+
+self loop:
+EDGE_11383_length_2055_cov_53.366026+
+self loop:
+EDGE_11331_length_3605_cov_34.886054+
+self loop:
+EDGE_11269_length_1442_cov_81.503297+
+self loop:
+EDGE_11325_length_6378_cov_4.170767+
+self loop:
+EDGE_11387_length_4374_cov_6.387712+
+self loop:
+EDGE_11261_length_4137_cov_6.832512+
+self loop:
+EDGE_11253_length_6859_cov_19.482454+
+self loop:
+EDGE_11237_length_6988_cov_3.527999+
+self loop:
+EDGE_11289_length_12946_cov_33.399953+
+self loop:
+EDGE_11373_length_11039_cov_4.515052+
+self loop:
+EDGE_11305_length_4042_cov_15.023455+
+self loop:
+EDGE_11365_length_2697_cov_13.652672+
+self loop:
+EDGE_11317_length_2125_cov_11.620117+
+self loop:
+EDGE_11327_length_3242_cov_32.013902+
+self loop:
+EDGE_11309_length_2641_cov_35.588924+
+self loop:
+EDGE_11255_length_3316_cov_11.268910+
+self loop:
+EDGE_11221_length_18823_cov_2814.577190+
+self loop:
+EDGE_11423_length_1825_cov_434.324943+
+self loop:
+EDGE_11425_length_1603_cov_199.099607+
+self loop:
+EDGE_11421_length_1809_cov_220.770208+
+self loop:
+EDGE_11429_length_2122_cov_231.244010+
+self loop:
+EDGE_11427_length_3167_cov_8.032362+
+self loop:
+EDGE_3029_length_1511_cov_36.856346+
+self loop:
+EDGE_10343_length_6295_cov_18.854616+
+self loop:
+EDGE_10046_length_5343_cov_7.179833+
+self loop:
+EDGE_7480_length_5979_cov_12.912911+
+self loop:
+EDGE_10001_length_4516_cov_82.784861+
+self loop:
+EDGE_8852_length_4473_cov_20.558235+
+self loop:
+EDGE_10739_length_6876_cov_17.887631+
+iter 0,graph1
+EDGE_47_length_175_cov_181.959184+	EDGE_51_length_5900_cov_45.898334-
+iter 0,graph1
+EDGE_5901_length_14763_cov_11.183508+	EDGE_5905_length_229_cov_162.236842-
+iter 0,graph1
+EDGE_5415_length_543_cov_25.266094+	EDGE_3923_length_162_cov_1609.247059+	EDGE_10281_length_1459_cov_27.616498+	EDGE_6105_length_187_cov_39.345455+
+iter 0,graph1
+EDGE_9068_length_604_cov_16.573055+	EDGE_5369_length_3828_cov_7.082378-
+iter 0,graph1
+EDGE_3324_length_112_cov_3230.285714+	EDGE_2087_length_203_cov_3198.603175_15+	EDGE_10635_length_85_cov_3140.125000+	EDGE_6220_length_360_cov_3179.159011_15+	EDGE_6160_length_155_cov_3209.166667-	EDGE_1845_length_155_cov_3231.679487_15+	EDGE_4627_length_140_cov_3217.412698-	EDGE_4619_length_159_cov_3133.817073_15-	EDGE_7213_length_170_cov_3404.397849+	EDGE_7203_length_119_cov_3391.738095_15+	EDGE_7263_length_412_cov_3466.005970+	EDGE_7039_length_105_cov_3433.035714_14-	EDGE_7037_length_423_cov_3162.352601+	EDGE_5273_length_115_cov_3473.131579_13+	EDGE_5947_length_78_cov_3348.000000-	EDGE_7137_length_95_cov_4743.388889_14-	EDGE_7939_length_80_cov_3244.000000+	EDGE_3881_length_84_cov_3214.857143_14+	EDGE_6213_length_92_cov_4792.466667_14+	EDGE_687_length_4824_cov_3151.655572+	EDGE_9405_length_82_cov_3238.200000_14-	EDGE_9793_length_433_cov_3118.528090-	EDGE_4765_length_140_cov_3113.904762_13+	EDGE_3324_length_112_cov_3230.285714+	EDGE_2087_length_203_cov_3198.603175_13+	EDGE_10635_length_85_cov_3140.125000+	EDGE_6220_length_360_cov_3179.159011_13+	EDGE_6160_length_155_cov_3209.166667-	EDGE_1845_length_155_cov_3231.679487_13+	EDGE_4627_length_140_cov_3217.412698-	EDGE_4619_length_159_cov_3133.817073_13-	EDGE_7213_length_170_cov_3404.397849+	EDGE_7203_length_119_cov_3391.738095_13+	EDGE_7263_length_412_cov_3466.005970+	EDGE_7039_length_105_cov_3433.035714_12-	EDGE_7037_length_423_cov_3162.352601+	EDGE_5273_length_115_cov_3473.131579_11+	EDGE_5947_length_78_cov_3348.000000-	EDGE_7137_length_95_cov_4743.388889_12-	EDGE_7939_length_80_cov_3244.000000+	EDGE_3881_length_84_cov_3214.857143_12+	EDGE_6213_length_92_cov_4792.466667_16+	EDGE_687_length_4824_cov_3151.655572+	EDGE_9405_length_82_cov_3238.200000_16-	EDGE_9793_length_433_cov_3118.528090-	EDGE_4765_length_140_cov_3113.904762_15+
+iter 0,graph1
+EDGE_3324_length_112_cov_3230.285714+	EDGE_2087_length_203_cov_3198.603175_14+	EDGE_10635_length_85_cov_3140.125000+	EDGE_6220_length_360_cov_3179.159011_14+	EDGE_6160_length_155_cov_3209.166667-	EDGE_1845_length_155_cov_3231.679487_14+	EDGE_4627_length_140_cov_3217.412698-	EDGE_4619_length_159_cov_3133.817073_14-	EDGE_7213_length_170_cov_3404.397849+	EDGE_7203_length_119_cov_3391.738095_14+	EDGE_7263_length_412_cov_3466.005970+	EDGE_7039_length_105_cov_3433.035714_13-	EDGE_7037_length_423_cov_3162.352601+	EDGE_5273_length_115_cov_3473.131579_12+	EDGE_5947_length_78_cov_3348.000000-	EDGE_7137_length_95_cov_4743.388889_13-	EDGE_7939_length_80_cov_3244.000000+	EDGE_3881_length_84_cov_3214.857143_13+	EDGE_6213_length_92_cov_4792.466667_15+	EDGE_687_length_4824_cov_3151.655572+	EDGE_9405_length_82_cov_3238.200000_15-	EDGE_9793_length_433_cov_3118.528090-	EDGE_4765_length_140_cov_3113.904762_14+
+iter 0,graph1
+EDGE_10687_length_337_cov_6.300000+	EDGE_1151_length_551_cov_610.113924+	EDGE_10683_length_152_cov_3.506667-
+iter 0,graph12
+EDGE_10273_length_404_cov_346.700306+	EDGE_1216_length_370_cov_343.692833+	EDGE_10215_length_637_cov_11.530357+	EDGE_10275_length_112_cov_355.000000-
+iter 0,graph19
+EDGE_4635_length_251_cov_18.120690+	EDGE_9523_length_1265_cov_5.906566+
+iter 0,graph32
+EDGE_8295_length_78_cov_130.000000+	EDGE_10997_length_5682_cov_93.521320+
+iter 0,graph181
+EDGE_2021_length_140_cov_110.698413+	EDGE_2019_length_2268_cov_10.968964-
+iter 0,graph195
+EDGE_7177_length_107_cov_12.966667+	EDGE_2291_length_7616_cov_12.891100+
+iter 0,graph204
+EDGE_2905_length_3864_cov_72.565355+	EDGE_8987_length_368_cov_62.048110+	EDGE_3546_length_3146_cov_74.412186+	EDGE_3011_length_435_cov_62.832402+
+iter 0,graph261
+EDGE_6967_length_98_cov_20.380952+	EDGE_9175_length_2091_cov_9.365442-	EDGE_9173_length_94_cov_23.529412+	EDGE_9177_length_3892_cov_8.150459+

@@ -147,6 +147,13 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, dou
         if(std::abs(ex[u] + ey[i] - matrix[u][i]) <= ZERO) {
             visity[i] = true;
             candidates.push_back(i);
+//            if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
+//                pre->insert(u);
+//                pre->insert(conjugateIdx(i));
+//                matched[i] = u;
+//                matched[conjugateIdx(u)] = conjugateIdx(i);
+//                return true;
+//            }
         } else if(slack[i] > ex[u] + ey[i] - matrix[u][i]) {
 //            auto tt1 = ex[u];
 //            auto tt2 = ey[i];
@@ -314,8 +321,8 @@ void matching::hungarian() {
         std::cout<<std::endl;
     }
     for (int i = 1; i < N + 1; i++) {
-        if (i>=6) {
-            int tm = 9;
+        if (this->idx2Str(i) == "EDGE_1557_length_248_cov_191.793388_0") {
+            auto im = 33;
         }
         std::fill_n(slack, N+1, 10000000);
 //        for( int l = 1 ; l <=N ; l++ ) slack[l] = 1000;
@@ -388,11 +395,12 @@ std::string matching::idx2StrDir(int idx, const std::string& token) {
     char dir = now % 2 == 0 ? '-':'+';
     auto idStr = (*this->originalVertices)[vIdx - 1]->getId();
     auto len = idStr.size();
-    if (idStr[len - 2] == '_') {
-        idStr.pop_back();
-        idStr.pop_back();
-    }
-    return idStr+token+dir;
+    auto pos = idStr.find_last_of('_');
+//    if (idStr[len - 2] == '_') {
+//        idStr.pop_back();
+//        idStr.pop_back();
+//    }
+    return idStr.substr(0,pos)+token+dir;
 }
 
 std::string matching::idx2Str(int idx) {
@@ -588,6 +596,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
 //    auto tm = resultG->getConjugateMatrix() == nullptr;
     auto* values = new double[4];
     for (auto iPath: *paths) {
+        if(isCycle((*iPath.second)[0])) continue;
         resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2);
     }
     seqGraph::Vertex* v1;
@@ -617,8 +626,11 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths) {
 //        }
 //    }
     for (auto iPath: *paths) {
+        if(isCycle((*iPath.second)[0])) continue;
         v1 = resultG->getVertexByIdQ(std::to_string(iPath.second->front()));
+
         for (auto jPath: *paths) {
+            if(isCycle((*jPath.second)[0])) continue;
             if (iPath.first == jPath.first) continue;
             v2 = resultG->getVertexByIdQ(std::to_string(jPath.second->front()));
             if (iPath.second->size() == 1 && jPath.second->size() == 1) {
@@ -748,12 +760,15 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
             cur->erase(cur->begin());
         }
 //        如果环中没有任何一个点拷贝数大于1那就是一个单纯环，无法merge到任何上面，直接再权重最小处断开
-        if(isNoCopyCycle) {
+        if(BREAK_C && isNoCopyCycle) {
             auto tmp = breakCycle(cur);
 //            this->cyclePaths.push_back((*tmp)[0]);
             result->emplace((*tmp)[0],tmp);
 //            cur->clear();
 //            cur->shrink_to_fit();
+        } else {
+            this->cyclePaths.push_back((*cur)[0]);
+            result->emplace((*cur)[0], cur);
         }
         return;
     }

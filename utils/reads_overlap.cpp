@@ -172,7 +172,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
             copy = 1;
         }
 
-        fout<<"SEG "<<item.first<<" "<<item.second<<"\t"<<copy<<"\n";
+        fout<<"SEG "<<item.first<<" "<<item.second<<" "<<copy<<"\n";
     }
     for (auto& it: iMap) {
         for(auto& it2 : it.second) {

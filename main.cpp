@@ -170,6 +170,7 @@ int main(int argc, char *argv[]) {
 
 //    this used for path backtrack
     std::string line;
+    std::set<std::string> visited_self_loop;
     while (getline(infile, line)) {
         std::istringstream iss(line);
         if (line.rfind("SEG", 0) == 0) {
@@ -179,6 +180,7 @@ int main(int argc, char *argv[]) {
             }
 //            TODO, take coverage into consideration
             iss>>startTag>>originalSource>>coverage>>copyNum;
+//            coverage = 1;
 //            iss>>startTag>>originalSource>>copyNum;
 
 //            TODO consider optimize the copied vertices.
@@ -201,7 +203,20 @@ int main(int argc, char *argv[]) {
         } else {
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
             if(originalSource == originalTarget) {
-                cyclePathsFile<<originalSource<<"\n";
+                if (visited_self_loop.find(originalSource) == visited_self_loop.end()){
+                std::vector<std::string> tokens;
+                tokenize(originalSource, tokens, "_");
+                std::cout<<originalSource<<std::endl;
+                int length = std::stoi(tokens[3]);
+                if (length>1000){
+                    std::cout<<"pass for: "<<originalSource<<std::endl;
+                    cyclePathsFile<< "self loop: "<<std::endl;
+                    cyclePathsFile<<originalSource+"+"<<std::endl;
+                }else{
+                    std::cout<<"not pass for: "<<originalSource<<std::endl;
+                }
+                    visited_self_loop.insert(originalSource);
+                }
                 continue;
             }
 //            seqGraph::Vertex* v1;
@@ -267,9 +282,22 @@ int main(int argc, char *argv[]) {
 //        cyclePathsFile<<"iter 0\n";
         for (auto item: *paths) {
             if (m->isCycle(item.first)) {
+//                if (m->graph->getVertexByIdQ(m->idx2IdStr(item.second->front()))->sameVertex(*m->graph->getVertexByIdQ(m->idx2IdStr(item.second->back()))) ){
+//                    item.second->pop_back();
+//                }
+                int total_length = 0;
+                for(const auto& v: *item.second) {
+                    std::vector<std::string> tokens;
+                    tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
+                    int length = std::stoi(tokens[3]);
+                    total_length+=length;
+                }
+                if(total_length<1000){
+                    continue;
+                }
                 cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
                 for(const auto& v: *item.second) {
-                    cyclePathsFile << m->idx2StrDir(v) << "\t";
+                    cyclePathsFile<<m->idx2StrDir(v)<<"\t";
                 }
                 cyclePathsFile<<"\n";
             }
@@ -301,7 +329,22 @@ int main(int argc, char *argv[]) {
             }
         }
         for(auto item : *paths) {
-            if (BREAK_C && m->isCycle(item.first)) continue;
+            if (BREAK_C && m->isCycle(item.first)) {
+//                int total_length = 0;
+//                for(const auto& v: *item.second) {
+//                    std::vector<std::string> tokens;
+//                    tokenize(m->idx2Str(v).substr(0, m->idx2Str(v).length()-1), tokens, "_");
+//                    int length = std::stoi(tokens[3]);
+//                    total_length+=length;
+//                }
+//                if(total_length<1000){
+//                    std::cout<< "notpass len; "<< total_length<< std::endl;
+//                    continue;
+//                }else{
+//                    std::cout<< "pass len; "<< total_length<< std::endl;
+//                }
+            continue;
+            };
             for(const auto& v: *item.second) {
                 if (v == -1) {
                     resultFile<<'c';
