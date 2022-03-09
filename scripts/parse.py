@@ -19,7 +19,7 @@ for line in inp2:
         all_segs[vs[1]] = line
         # outs.write(line)
         continue
-    if vs[-1] < f_th:
+    if int(vs[-1]) < int(f_th):
         continue
     k = vs[1]
     kc = vs[1]+"'"
