@@ -61,6 +61,8 @@ for item in tmp.keys():
             second = i[0:-1]
             sdir = "-"
         write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
+        write_segs.add(all_segs[second])
+        write_segs.add(all_segs[first])
 for item in write_segs:
     outs.write(item)
 for item in write_juncs:
