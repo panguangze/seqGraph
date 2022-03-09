@@ -60,7 +60,7 @@ for item in tmp.keys():
         if i[-1] == "'":
             second = i[0:-1]
             sdir = "-"
-        write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,depth/2))
+        write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
 for item in write_segs:
     outs.write(item)
 for item in write_juncs:
