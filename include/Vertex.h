@@ -59,6 +59,7 @@ namespace seqGraph {
 
 
         const std::string getId() const;
+        const std::string getOriginId() const;
 
         bool operator ==(const Vertex &otherVertex) const;
 

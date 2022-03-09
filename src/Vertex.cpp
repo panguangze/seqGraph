@@ -71,6 +71,11 @@ const std::string Vertex::getId() const {
     return Id;
 }
 
+const std::string Vertex::getOriginId() const {
+    auto idx1 = this->Id.find_last_of('_');
+    return this->Id.substr(0, idx1);
+}
+
 void Vertex::setId(const int mId) {
     Vertex::Id = mId;
 }

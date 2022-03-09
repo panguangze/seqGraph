@@ -249,12 +249,16 @@ int main(int argc, char *argv[]) {
         auto subGraph = g->getSubgraph(n);
         std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<std::endl;
         if(subGraph->getVertices()->size() == 1) {
-            resultFile<<subGraph->getVertices()->front()->getId()<<"\n";
+            resultFile<<subGraph->getVertices()->front()->getOriginId()<<"\n";
             n++;
             continue;
         }
         if (subGraph->getJunctions()->size() == 1) {
-            resultFile<<source<<sDir<<"\t"<<target<<tDir<<"\n";
+            auto sV = subGraph->getJunctions()->front()->getSource()->getOriginId();
+            auto tV = subGraph->getJunctions()->front()->getTarget()->getOriginId();
+            auto sD = subGraph->getJunctions()->front()->getSourceDir();
+            auto tD = subGraph->getJunctions()->front()->getTargetDir();
+            resultFile<<sV<<sD<<"\t"<<tV<<tD<<"\n";
             n++;
             continue;
         }
