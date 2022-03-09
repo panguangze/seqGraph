@@ -249,7 +249,7 @@ int main(int argc, char *argv[]) {
         auto subGraph = g->getSubgraph(n);
         std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<std::endl;
         if(subGraph->getVertices()->size() == 1) {
-            resultFile<<subGraph->getVertices()->front()->getOriginId()<<"\n";
+            resultFile<<subGraph->getVertices()->front()->getOriginId()<<"+"<<"\n";
             n++;
             continue;
         }
