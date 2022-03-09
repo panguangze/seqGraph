@@ -96,6 +96,8 @@ matching::matching(seqGraph::Graph* graph1) {
 
 matching::~matching() {
 //    delete this->matched;
+    if (graph != nullptr)
+        free(graph);
     for (auto item: *originalVertices) {
         delete item;
     }
@@ -110,7 +112,8 @@ matching::~matching() {
 
 
 void matching::resetGraph(seqGraph::Graph* g) {
-    free(this->graph);
+    if (this->graph->isReconstructed)
+        free(this->graph);
     std::cout<<"free done"<<std::endl;
     this->graph =  g;
     N = 2 *  g->getVCount();
@@ -596,6 +599,7 @@ double* matching::mergePath(std::vector<int>* p1, std::vector<int>* p2, double**
 
 void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGraph::Graph* originGraph) {
     auto* resultG = new seqGraph::Graph();
+    resultG->isReconstructed = true;
 //    auto tm = resultG->getConjugateMatrix() == nullptr;
     auto* values = new double[4];
     for (auto iPath: *paths) {

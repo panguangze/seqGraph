@@ -26,6 +26,7 @@ namespace seqGraph {
         std::map<std::string, int>* junctionIdx;
         std::vector<std::set<int>* > connectedJunctionsIdx;
     public:
+        bool isReconstructed;
         Graph();
 
         ~Graph();

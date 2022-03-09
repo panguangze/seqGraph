@@ -336,6 +336,7 @@ int main(int argc, char *argv[]) {
             resultFile<<"\n";
         }
         free(m);
+        free(subGraph);
         n++;
     }
     infile.close();

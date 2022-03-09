@@ -59,6 +59,7 @@ Graph* Graph::getSubgraph(int i) {
         auto junc = (*this->junctions)[j];
         subG->addJunction(junc);
     }
+    subG->isReconstructed = false;
     return subG;
 }
 Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum) {
