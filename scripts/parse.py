@@ -50,7 +50,7 @@ for line in inp2:
     write_juncs.append(" ".join(vs)+"\n")
     write_segs.add(all_segs[vs[1]])
     write_segs.add(all_segs[vs[3]])
-print(tmp['EDGE_5369_length_3828_cov_7.082378'])
+# print(tmp['EDGE_5369_length_3828_cov_7.082378'])
 
 for item in tmp.keys():
     first = item
@@ -71,6 +71,7 @@ for item in tmp.keys():
         write_segs.add(all_segs[second])
 
 for item in write_segs:
+    print(item)
     outs.write(item)
 for item in write_juncs:
     outs.write(item)
