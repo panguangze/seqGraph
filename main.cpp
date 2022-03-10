@@ -297,18 +297,18 @@ int main(int argc, char *argv[]) {
                 if(total_length<1000){
                     continue;
                 }
-                bool self_loop_flag = false;
+//                bool self_loop_flag = false;
                 cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
-//                for(const auto& v: *item.second) {
-//                    std::cout<<m->idx2Str(v)<<std::endl;
-//                    std::string idStr = m->idx2Str(v);
-//                    auto pos = idStr.find_last_of('_');
-//                    std::string true_name = idStr.substr(0,pos);
-//                    if (visited_self_loop.find(true_name)!=visited_self_loop.end()){
-//                        to_be_remove_sl.emplace_back(m->idx2Str(v));
+                for(const auto& v: *item.second) {
+                    std::cout<<m->idx2Str(v)<<std::endl;
+                    std::string idStr = m->idx2Str(v);
+                    auto pos = idStr.find_last_of('_');
+                    std::string true_name = idStr.substr(0,pos);
+                    if (visited_self_loop.find(true_name)!=visited_self_loop.end()){
+                        to_be_remove_sl.emplace_back(true_name);
 //                        self_loop_flag = true;
-//                    }
-//                }
+                    }
+                }
 //                if(self_loop_flag) continue;
                 for(const auto& v: *item.second) {
 
