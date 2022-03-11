@@ -79,14 +79,15 @@ matching::matching(seqGraph::Graph* graph1) {
 //    for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
     currentMatrix = this->graph->getConjugateMatrix();
 //    this->originalGraph = graph1;
-    this->originalMatrix = new double*[N+1];
-    for(int i = 0; i < N+1; ++i)
-        originalMatrix[i] = new double [N+1];
+//    this->originalMatrix = new double*[N+1];
+//    for(int i = 0; i < N+1; ++i)
+//        originalMatrix[i] = new double [N+1];
 //    std::memcpy(originalMatrix, currentMatrix, sizeof(int)*(N+1)*(N+1));
-    this->originalVertices = new std::vector<seqGraph::Vertex*>();
-    for (auto item : *this->graph->getVertices()) {
-        this->originalVertices->push_back(new seqGraph::Vertex(*item));
-    }
+//    this->originalVertices = new std::vector<seqGraph::Vertex*>();
+    this->originalGraph = graph1;
+//    for (auto item : *this->graph->getVertices()) {
+//        this->originalVertices->push_back(new seqGraph::Vertex(*item));
+//    }
 //    this->originalJunctions = new std::vector<seqGraph::Junction*>();
 //    for (auto item : *this->graph->getJunctions()) {
 //        this->originalJunctions->push_back(new seqGraph::Junction(*item));
@@ -98,15 +99,15 @@ matching::~matching() {
 //    delete this->matched;
     if (graph != nullptr)
         free(graph);
-    for (auto item: *originalVertices) {
-        delete item;
-    }
-    originalVertices->clear();
-    originalVertices->shrink_to_fit();
-    for (int i = 0; i < N+1; ++i) {
-        free(originalMatrix[i]);
-    }
-    free(originalMatrix);
+//    for (auto item: *originalVertices) {
+//        delete item;
+//    }
+//    originalVertices->clear();
+//    originalVertices->shrink_to_fit();
+//    for (int i = 0; i < N+1; ++i) {
+//        free(originalMatrix[i]);
+//    }
+//    free(originalMatrix);
 }
 
 
@@ -399,7 +400,7 @@ std::string matching::idx2StrDir(int idx, const std::string& token) {
     int now = idx;
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
-    auto idStr = (*this->originalVertices)[vIdx - 1]->getId();
+    auto idStr = (*this->originalGraph->getVertices())[vIdx - 1]->getId();
     auto len = idStr.size();
     auto pos = idStr.find_last_of('_');
 //    if (idStr[len - 2] == '_') {
@@ -412,7 +413,7 @@ std::string matching::idx2StrDir(int idx, const std::string& token) {
 std::string matching::idx2Str(int idx) {
     int now = idx;
     int vIdx = (now + 1) / 2;
-    auto idStr = (*this->originalVertices)[vIdx - 1]->getId();
+    auto idStr = (*this->originalGraph->getVertices())[vIdx - 1]->getId();
     return idStr;
 }
 
@@ -757,7 +758,7 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
             if (this->idx2VertexInOriginalGraph((*cur)[i])->getWeight()->getCopyNum() >= 2) {
                 isNoCopyCycle = false;
                 this->cyclePaths.push_back((*cur)[i]);
-                result->emplace((*cur)[0], cur);
+                result->emplace((*cur)[i], cur);
                 break;
             }
             cur->push_back(cur->front());

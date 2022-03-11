@@ -301,6 +301,7 @@ int main(int argc, char *argv[]) {
 //                TODO if v==1 or juncs ==1 continue
                 m->reconstructMatrix(paths, subGraph);
 //                checkMatrixConjugate(m->getMatrix(), m->getN());
+                std::cout<<"start hungarian"<<std::endl;
                 m->hungarian();
                 paths = m->resolvePath(paths);
                 if (paths->size() == prevPathSize || paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}

@@ -14,10 +14,10 @@ class matching {
 private:
     seqGraph::Graph* graph;
     double** currentMatrix;
-    double** originalMatrix;
+//    double** originalMatrix;
     std::vector<seqGraph::Vertex*>* originalVertices;
 //    std::vector<seqGraph::Junction* >* originalJunctions;
-//    seqGraph::Graph* originalGraph;
+    seqGraph::Graph* originalGraph;
 
     int N;
 
