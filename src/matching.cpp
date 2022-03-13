@@ -169,7 +169,7 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, dou
         }
     }
 //    sort(candidates.begin(),candidates.end(), this->cmpVertex());
-    Quicksort(this, this->idx2VertexInCurrentGraph(u)->getOutCoverage(), candidates, 0, candidates.size() - 1);
+//    Quicksort(this, this->idx2VertexInCurrentGraph(u)->getOutCoverage(), candidates, 0, candidates.size() - 1);
     for (auto i : candidates) {
         if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
             pre->insert(u);

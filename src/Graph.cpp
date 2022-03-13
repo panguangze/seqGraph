@@ -388,6 +388,7 @@ void Graph::parseConnectedComponents() {
             std::set<std::string> write_segs;
             std::set<std::string> write_juncs;
             auto item = connectedJunctionsIdx[i];
+            if (item->size() < 500) continue;
             auto outfile = SUB_ONLY + std::to_string(i) + ".subg";
             std::ofstream out(outfile);
 //            auto idxs = connectedJunctionsIdx[i];
@@ -395,7 +396,7 @@ void Graph::parseConnectedComponents() {
                 auto junc = (*this->junctions)[j];
                 write_segs.emplace("SEG "+junc->getSource()->getOriginId()+" "+ std::to_string(junc->getSource()->getWeight()->getCoverage())+" " + std::to_string(junc->getSource()->getWeight()->getCopyNum()));
                 write_segs.emplace("SEG "+junc->getTarget()->getOriginId()+" "+ std::to_string(junc->getTarget()->getWeight()->getCoverage()) + " "+ std::to_string(junc->getTarget()->getWeight()->getCopyNum()));
-                write_juncs.emplace("JUNC "+ junc->getSource()->getOriginId()+" "+junc->getSourceDir()+" "+junc->getTarget()->getOriginId()+" "+junc->getTargetDir() + " "+ std::to_string(junc->getWeight()->getCoverage()));
+                write_juncs.emplace("JUNC "+ junc->getSource()->getOriginId()+" "+junc->getSourceDir()+" "+junc->getTarget()->getOriginId()+" "+junc->getTargetDir() + " "+ std::to_string(junc->getWeight()->getCopyNum()));
             }
             for(const auto& j : write_segs) {
                 out<<j<<"\n";

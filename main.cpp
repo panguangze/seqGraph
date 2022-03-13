@@ -331,7 +331,7 @@ int main(int argc, char *argv[]) {
             for(const auto& v: *item.second) {
                 std::vector<std::string> tokens;
                 tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
-                int length = std::stoi(tokens[3]);
+                int length = std::stoi(tokens[0]);
                 total_length+=length;
                 if (v == -1) {
                     resultFile<<'c';
