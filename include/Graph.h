@@ -9,6 +9,7 @@
 #include "Junction.h"
 #include  <set>
 #include "map"
+extern std::string SUB_ONLY;
 
 namespace seqGraph {
     typedef std::vector<EndPoint *> EndPointPath;

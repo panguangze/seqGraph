@@ -7,6 +7,7 @@
 #include <iostream>
 #include <algorithm>
 #include <queue>
+#include <fstream>
 
 using namespace seqGraph;
 
@@ -380,6 +381,29 @@ void Graph::parseConnectedComponents() {
             if (!connectedIdx->empty()){
                 this->connectedJunctionsIdx.push_back(connectedIdx);
             }
+        }
+    }
+    if (!SUB_ONLY.empty()) {
+        for(i= 0;i < this->connectedJunctionsIdx.size(); i++) {
+            std::set<std::string> write_segs;
+            std::set<std::string> write_juncs;
+            auto item = connectedJunctionsIdx[i];
+            auto outfile = SUB_ONLY + std::to_string(i) + ".subg";
+            std::ofstream out(outfile);
+//            auto idxs = connectedJunctionsIdx[i];
+            for(auto j : *item) {
+                auto junc = (*this->junctions)[j];
+                write_segs.emplace("SEG "+junc->getSource()->getOriginId()+" "+ std::to_string(junc->getSource()->getWeight()->getCoverage())+" " + std::to_string(junc->getSource()->getWeight()->getCopyNum()));
+                write_segs.emplace("SEG "+junc->getTarget()->getOriginId()+" "+ std::to_string(junc->getTarget()->getWeight()->getCoverage()) + " "+ std::to_string(junc->getTarget()->getWeight()->getCopyNum()));
+                write_juncs.emplace("JUNC "+ junc->getSource()->getOriginId()+" "+junc->getSourceDir()+" "+junc->getTarget()->getOriginId()+" "+junc->getTargetDir() + " "+ std::to_string(junc->getWeight()->getCoverage()));
+            }
+            for(const auto& j : write_segs) {
+                out<<j<<"\n";
+            }
+            for(const auto& j : write_juncs) {
+                out<<j<<"\n";
+            }
+            out.close();
         }
     }
 }

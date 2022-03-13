@@ -16,6 +16,7 @@ bool BREAK_C = false;
 int TYPE = 0;
 bool SELF_L = false;
 int MIN_L = -1;
+std::string SUB_ONLY = "";
 
 void checkMatrixConjugate(double** matrix, int n) {
     for(int i = 1; i < n+1; i++) {
@@ -132,6 +133,7 @@ int main(int argc, char *argv[]) {
             ("b,break_c", "Whether break and merge cycle into line paths", cxxopts::value<bool>()->default_value("false"))
             ("s,self_l", "Cycle result", cxxopts::value<bool>()->default_value("true"))
             ("min_l", "Min length to print", cxxopts::value<int>()->default_value("-1"))
+            ("sub_only", "Only get all sub graph",cxxopts::value<std::string>()->default_value(""))
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
@@ -157,6 +159,9 @@ int main(int argc, char *argv[]) {
     }
     if (result.count("break_c")) {
         BREAK_C = true;
+    }
+    if (result.count("sub_only")) {
+        SUB_ONLY = result["sub_only"].as<std::string>();
     }
     if (result.count("self_l")) {
         SELF_L = true;
@@ -239,6 +244,7 @@ int main(int argc, char *argv[]) {
 //    matching for each connected graph
     int n = 0;
     g->parseConnectedComponents();
+    if (SUB_ONLY != "") return 0;
     std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
     int maxI = g->subGraphCount();
     while (n< maxI) {
