@@ -399,14 +399,14 @@ void matching::main_steps() {
         }
     }
 
-    for(int k = 1; k < N + 1; k++) {
-        if(this->matched[k] != -1)
-            std::cout << this->idx2StrDir(matched[k]) << "\t";
-        else
-            std::cout<< this->matched[k]<<"\t";
-
-    }
-    std::cout<<std::endl;
+//    for(int k = 1; k < N + 1; k++) {
+//        if(this->matched[k] != -1)
+//            std::cout << this->idx2StrDir(matched[k]) << "\t";
+//        else
+//            std::cout<< this->matched[k]<<"\t";
+//
+//    }
+//    std::cout<<std::endl;
 }
 
 std::string matching::idx2StrDir(int idx, const std::string& token) {
