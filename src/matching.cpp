@@ -82,7 +82,7 @@ matching::matching(seqGraph::Graph* graph1) {
     this->originalMatrix = new double*[N+1];
     for(int i = 0; i < N+1; ++i)
         originalMatrix[i] = new double [N+1];
-    std::memcpy(originalMatrix, currentMatrix, sizeof(int)*(N+1)*(N+1));
+    std::memcpy(originalMatrix, currentMatrix, sizeof(double)*(N+1)*(N+1));
     this->originalVertices = new std::vector<seqGraph::Vertex*>();
     for (auto item : *this->graph->getVertices()) {
         this->originalVertices->push_back(new seqGraph::Vertex(*item));
@@ -199,57 +199,50 @@ bool matching::dfs(int u, bool visity[], std::vector<int>* pre) {
     return false;
 }
 
-void matching::bfs(int u, double ex[], double ey[], bool visity[], int pre[], double slack[]) {
-    auto matrix = this->graph->getConjugateMatrix();
+void matching::bfs(int u, double ex[], double ey[], bool visity[], int pre[], std::set<int>& skipped,double slack[]) {
+    auto matrix = getMatrix();
     int x,cY,y=0, yy=0;
-    double delta;
-
-    for (int i = 1; i < N + 1; i++) slack[i] = INF;
-
-//    当前的match以及共轭的match
+    double d = 0;
+    std::fill_n(slack, N+1, 10000000);
     matched[y] = u;
-//    matched[conjugateIdx(u)] = y;
-    while (matched[y]) {
-        x = matched[y], delta = INF;
-//        cY = matched[conjugateIdx(u)];
-//      当前点y和x共轭点同时被visit
-        visity[y] = true;
-        visity[conjugateIdx(x)] = true;
-        for (int i = 1; i < N + 1; i++) {
 
-            auto cI = conjugateIdx(i);
-            if(!visity[i]) {
-                if(slack[i] > ex[x] + ey[i] - matrix[x][i]){
-                    slack[i] = ex[x] + ey[i] - matrix[x][i];
-                    pre[i] = y;
-//                    pre[conjugateIdx(y)] = cI;
-                }
-                if(slack[i] < delta) {
-                    delta = slack[i], yy = i;
-                }
+    while (true){
+        x = matched[y], d = INF, visity[y] = true;
+        visity[conjugateIdx(x)] = true;
+//        visity[x] = true;
+        for(int i = 1; i < N + 1; i++){
+            if(visity[i] or i == x) continue;
+            if(slack[i] >= ex[x] + ey[i] - matrix[x][i]){
+                slack[i] = ex[x] + ey[i] - matrix[x][i];
+                pre[i] = y; //表示 y对应的 点 y 需要减小的权值
+            }
+            if(slack[i] <= d){
+                d = slack[i],yy = i; //找出减少最小的那条边
+            }
+            if (matched[yy] == -1 && d == 0) break;
+        }
+        if (d != 0) {
+            for(int i = 1; i < N+1; i++){
+                if(visity[i]) ex[matched[i]] -= d,ey[i] += d;
+                else slack[i] -= d;
             }
         }
-        for(int i = 0; i < N + 1; i++){
-            if(visity[i]){
-                ex[matched[i]] -= delta;
-                ey[i] += delta;
-//                ex[conjugateIdx(i)] -= delta;
-//                ey[conjugateIdx(matched[i])] += delta;
-            }
-            else slack[i] -= delta;
-        }
+
         y = yy;
+
+        if(matched[y] == -1) {
+            break;
+        }
     }
+
     while(y){
         matched[y] = matched[pre[y]];
-        auto t1 = conjugateIdx(matched[pre[y]]);
-        auto t2 = conjugateIdx(y);
-        matched[t1] = t2;
-        y = pre[y];
+        matched[conjugateIdx(matched[pre[y]])] = conjugateIdx(y);
+        skipped.emplace(matched[pre[y]]);
+        skipped.emplace(conjugateIdx(y));
+        y = pre[y]; // 更新每个点对应的点
     }
 }
-
-
 //void matching::bfs(int u, double * ex, double* ey, bool* visity, int* pre, double* slack) {
 //    auto matrix = this->graph->getConjugateMatrix();
 //    int x,cY,y=0, yy=0;
@@ -365,28 +358,46 @@ void matching::hungarian() {
     free(pre);
 }
 void matching::main_steps() {
+    auto matrix = getMatrix();
     bool visity[N + 1];
-    int pre[N + 1];
+//    bool visitx[N + 1];
     double slack[N + 1], ex[N + 1], ey[N + 1];
+    int pre[N + 1];
+    std::fill_n(ex,N+1,0);
+    std::fill_n(ey,N+1,0);
+//    std::fill_n(ex,N+1,0);
 
-    memset(ex,0,sizeof ex);
-    memset(ey,0,sizeof ey);
-    memset(visity,0,sizeof visity);
-    memset(pre, 0, sizeof pre);
-    std::vector<int> skipped;
-    for(int i = 1; i < N + 1; ++ i){
-//        if (i % 2 != 1) continue;
-        for(int j = 1; j < N + 1; ++ j)
-            ey[j] = false;
-        if(std::find(skipped.begin(), skipped.end(), i) != skipped.end()) continue;
-        bfs(i, ex, ey, visity, pre, slack);
-        auto cI = conjugateIdx(i);
-        skipped.push_back(matched[cI]);
-        for(int k = 0; k < N + 1; k++) {
-            std::cout<<matched[k]<<"\t";
-        }
-        std::cout<<std::endl;
+//    memset(ey,0,sizeof ey);
+//    memset(ex,0,sizeof ex);
+//    memset(visity,0,sizeof visity);
+
+    for( int i = 1 ; i < N +1 ; i++ ){
+        ex[i] = *std::max_element(matrix[i], matrix[i]+N+1);
+//        for( int j = 1 ; j <= N ; j++ ){
+//            if( ex[i] < matrix[i][j] ) ex[i] = matrix[i][j];
+//        }
     }
+    std::set<int> skipped;
+    for( int i = 1 ; i < N+1 ; i++ ){
+        if (skipped.find(i) != skipped.end()) continue;
+        memset( visity , false , sizeof(visity) );
+        std::fill_n(pre, N+1, 0);
+        std::fill_n(slack, N+1, 10000000);
+        bfs(i,ex,ey, visity,pre, skipped, slack);
+
+        if (VERBOSE >= 1) {
+            std::cout << i << " " << this->idx2StrDir(i) <<std::endl;
+        }
+    }
+
+    for(int k = 1; k < N + 1; k++) {
+        if(this->matched[k] != -1)
+            std::cout << this->idx2StrDir(matched[k]) << "\t";
+        else
+            std::cout<< this->matched[k]<<"\t";
+
+    }
+    std::cout<<std::endl;
 }
 
 std::string matching::idx2StrDir(int idx, const std::string& token) {

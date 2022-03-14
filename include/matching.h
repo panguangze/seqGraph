@@ -28,7 +28,7 @@ private:
     std::vector<int> cyclePaths;
     void init_labels();
     void update_labels();
-    void bfs(int i, double ex[], double ey[], bool visity[],int pre[], double []);
+    void bfs(int i, double ex[], double ey[], bool visity[],int pre[], std::set<int>& skipped, double []);
 public:
     explicit matching(seqGraph::Graph* graph1);
     ~matching();

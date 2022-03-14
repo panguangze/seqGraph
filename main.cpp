@@ -246,15 +246,16 @@ int main(int argc, char *argv[]) {
     }
 //    matching for each connected graph
     int n = 0;
+
     g->parseConnectedComponents();
     std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
     int maxI = g->subGraphCount();
     std::vector<std::string> to_be_remove_sl;
 
     while (n< maxI) {
-//        if(n==6){
-//            int m = 9;
-//        }
+        if(n==63){
+            int m = 9;
+        }
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
         std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<"\n";
@@ -265,8 +266,8 @@ int main(int argc, char *argv[]) {
         auto* m = new matching(subGraph);
         if (VERBOSE)
             checkMatrixConjugate(m->getMatrix(), m->getN());
-//    m->main_steps();
-        m->hungarian();
+    m->main_steps();
+//        m->hungarian();
         if (VERBOSE) {
             std::cout<<"final matched relation\n";
             for(int i = 0; i < m->getN() + 1; i++) {
