@@ -207,13 +207,10 @@ void matching::bfs(int u, double ex[], double ey[], bool visity[], int pre[], st
     auto matrix = getMatrix();
     int x,cY,y=0, yy=0;
     double d = 0;
-    for (int i = 1; i < N + 1; i++) slack[i] = INF;
+    std::fill_n(slack, N+1, 10000000);
     matched[y] = u;
-    if(u ==10) {
-        int k =9;
-    }
 
-    while (1){
+    while (true){
         x = matched[y], d = INF, visity[y] = true;
         visity[conjugateIdx(x)] = true;
 //        visity[x] = true;
@@ -226,18 +223,18 @@ void matching::bfs(int u, double ex[], double ey[], bool visity[], int pre[], st
             if(slack[i] <= d){
                 d = slack[i],yy = i; //找出减少最小的那条边
             }
+            if (matched[yy] == -1 && d == 0) break;
         }
-
-        for(int i = 1; i < N+1; i++){
-            if(visity[i]) ex[matched[i]] -= d,ey[i] += d;
-            else slack[i] -= d;
+        if (d != 0) {
+            for(int i = 1; i < N+1; i++){
+                if(visity[i]) ex[matched[i]] -= d,ey[i] += d;
+                else slack[i] -= d;
+            }
         }
-
 
         y = yy;
 
         if(matched[y] == -1) {
-            visity[y] = true;
             break;
         }
     }
@@ -245,9 +242,6 @@ void matching::bfs(int u, double ex[], double ey[], bool visity[], int pre[], st
     while(y){
         matched[y] = matched[pre[y]];
         matched[conjugateIdx(matched[pre[y]])] = conjugateIdx(y);
-        if (matched[pre[y]] == 0 || conjugateIdx(y) ==0 ){
-            int k = 99;
-        }
         skipped.emplace(matched[pre[y]]);
         skipped.emplace(conjugateIdx(y));
         y = pre[y]; // 更新每个点对应的点
@@ -399,6 +393,10 @@ void matching::main_steps() {
         std::fill_n(pre, N+1, 0);
         std::fill_n(slack, N+1, 10000000);
         bfs(i,ex,ey, visity,pre, skipped, slack);
+
+        if (VERBOSE >= 1) {
+            std::cout << i << " " << this->idx2StrDir(i) <<std::endl;
+        }
     }
 
     for(int k = 1; k < N + 1; k++) {
