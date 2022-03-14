@@ -22,12 +22,12 @@ namespace seqGraph {
         std::vector<Junction *> *junctions;
         Vertex *source;
         Vertex *sink;
-        double ** ConjugateMatrix;
         std::map<std::string, int>* verticesIdx;
         std::map<std::string, int>* junctionIdx;
         std::vector<std::set<int>* > connectedJunctionsIdx;
     public:
         bool isReconstructed;
+        double ** ConjugateMatrix;
         Graph();
 
         ~Graph();
@@ -44,6 +44,8 @@ namespace seqGraph {
         inline int getJuncSize() {
             return this->junctionIdx->size();
         }
+
+        void initMatrix();
 
         Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
 

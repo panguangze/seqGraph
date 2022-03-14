@@ -182,6 +182,7 @@ int main(int argc, char *argv[]) {
 
 //    this used for path backtrack
     std::string line;
+    bool inited = false;
     while (getline(infile, line)) {
         std::istringstream iss(line);
         if (line.rfind("SEG", 0) == 0) {
@@ -211,6 +212,10 @@ int main(int argc, char *argv[]) {
 //                source = originalSource;
             }
         } else {
+            if (!inited) {
+                g->initMatrix();
+                inited = true;
+            }
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
             if(SELF_L && originalSource == originalTarget) {
                 cyclePathsFile<<originalSource<<"\n";
@@ -241,9 +246,95 @@ int main(int argc, char *argv[]) {
 //            g->addJunction(v1t, v2t, sDir, tDir, weight, 1 , 1);
         }
     }
+
+    auto* m = new matching(g);
+
+
+    if (VERBOSE >= 2)
+        checkMatrixConjugate(m->getMatrix(), m->getN());
+    m->main_steps();
+//        m->hungarian();
+    if (VERBOSE >= 2) {
+        std::cout<<"final matched relation\n";
+        for(int i = 0; i < m->getN() + 1; i++) {
+            std::cout<<m->getMatched()[i]<<"\t";
+        }
+    }
+    std::cout<<"\nresolve path"<<std::endl;
+//    TODO , make the path and cycles info into mathicng class
+//        if (result.count("result_m")) {
+//            m->writeMatchResult(matchResultFile);
+//        }
+    auto paths = m->resolvePath(nullptr);
+
+//        cyclePathsFile<<"sub\n";
+//        cyclePathsFile<<"iter 0\n";
+    for (auto item: *paths) {
+        if (m->isCycle(item.first)) {
+//            cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
+            for(const auto& v: *item.second) {
+                cyclePathsFile<<m->idx2StrDir(v)<<"\t";
+            }
+            cyclePathsFile<<"\n";
+        }
+    }
+//    recallPaths.push_back(paths);
+    int iterN = 0;
+    iterRounds = iterRoundsBK;
+    int prevPathSize = paths->size();
+    if (paths->size() != 1) {
+        while (iterRounds !=0) {
+            std::cout<<"Iteration "<<iterN<<",nodes count"<<paths->size()<<"...\n";
+//                TODO if v==1 or juncs ==1 continue
+            m->reconstructMatrix(paths, g);
+//                checkMatrixConjugate(m->getMatrix(), m->getN());
+            std::cout<<"start hungarian"<<std::endl;
+//                m->hungarian();
+            m->main_steps();
+            paths = m->resolvePath(paths);
+            if (paths->size() == prevPathSize || paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}
+            for (auto item: *paths) {
+                if (m->isCycle(item.first)) {
+//                    cyclePathsFile<<"iter "<<iterN<<",graph"<<n<<"\n";
+                    for(const auto& v: *item.second) {
+                        cyclePathsFile << m->idx2StrDir(v) << "\t";
+                    }
+                    cyclePathsFile<<"\n";
+                }
+            }
+            prevPathSize = paths->size();
+            iterRounds--;
+            iterN++;
+        }
+    }
+    for(auto item : *paths) {
+        if (BREAK_C && m->isCycle(item.first)) continue;
+        int total_length = 0;
+        for(const auto& v: *item.second) {
+            std::vector<std::string> tokens;
+            tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
+//            int length = std::stoi(tokens[3]);
+//            total_length+=length;
+            if (v == -1) {
+                resultFile<<'c';
+                continue;
+            }
+//                if (MIN_L != -1 && total_length < MIN_L) continue;
+            resultFile << m->idx2StrDir(v) << "\t";
+        }
+        resultFile<<"\n";
+    }
+
+
+
+
+
+    return 0;
+
+
 //    matching for each connected graph
     int n = 0;
-    g->parseConnectedComponents();
+//    g->parseConnectedComponents();
     if (SUB_ONLY != "") return 0;
     std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
     int maxI = g->subGraphCount();
@@ -332,8 +423,8 @@ int main(int argc, char *argv[]) {
             for(const auto& v: *item.second) {
                 std::vector<std::string> tokens;
                 tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
-//                int length = std::stoi(tokens[3]);
-//                total_length+=length;
+                int length = std::stoi(tokens[3]);
+                total_length+=length;
                 if (v == -1) {
                     resultFile<<'c';
                     continue;

@@ -63,6 +63,17 @@ Graph* Graph::getSubgraph(int i) {
     subG->isReconstructed = false;
     return subG;
 }
+
+void Graph::initMatrix() {
+    int n = this->getVCount();
+    this->ConjugateMatrix = new double *[2*n + 1];
+    for(int i = 0; i < 2*n + 1; i++) {
+
+        auto t = new double[2*n + 1];
+        std::fill_n(t,(2*n + 1), 0);
+        this->ConjugateMatrix[i] = t;
+    }
+}
 Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum) {
 //    create vertex add push
     auto v1 = this->getVertexById(mId);
@@ -77,24 +88,45 @@ Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aE
 Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
                              double coverage, bool aIsBounded) {
 //    auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
-    auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
-    if (jun == nullptr) {
-        auto  k = sourceVertex->getId()+ targetVertex->getId()+sourceDir+targetDir;
-//        throw DuplicateJunctionException(junction);
-        auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
-        junction->junctionToEdge();
-        junction->setIdx(this->junctions->size());
-
-        this->junctions->push_back(junction);
-        this->junctionIdx->emplace(k, junctions->size());
-    //    set vertex not orphan
-        sourceVertex->setOrphan(false);
-        targetVertex->setOrphan(false);
-        sourceVertex->setNextJunc(junction);
-        targetVertex->setPrevJunc(junction);
-        return junction;
-    }
-    return jun;
+//    auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
+//    if (jun == nullptr) {
+//        auto  k = sourceVertex->getId()+ targetVertex->getId()+sourceDir+targetDir;
+////        throw DuplicateJunctionException(junction);
+//        auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
+//        junction->junctionToEdge();
+//        junction->setIdx(this->junctions->size());
+//
+//        this->junctions->push_back(junction);
+//        this->junctionIdx->emplace(k, junctions->size());
+//    //    set vertex not orphan
+//        sourceVertex->setOrphan(false);
+//        targetVertex->setOrphan(false);
+//        sourceVertex->setNextJunc(junction);
+//        targetVertex->setPrevJunc(junction);
+//        return junction;
+//    }
+    auto matrix = this->getConjugateMatrix();
+    int i = sourceVertex->getIdx();
+    int j = targetVertex->getIdx();
+        double weightValue = copyNum;
+        if (sourceDir == '+') {
+            if (targetDir == '+') {
+                matrix[2*j + 1][2*i + 1] = weightValue;
+                matrix[2*(i+1)][2*(j+1)] = weightValue;
+            } else {
+                matrix[2*(j + 1)][2*i+1] = weightValue;
+                matrix[2*(i+1)][2*j+1] = weightValue;
+            }
+        } else {
+            if (targetDir == '+') {
+                matrix[2*j+1][2*(i + 1)] = weightValue;
+                matrix[2*i+1][2*(j+1)] = weightValue;
+            } else {
+                matrix[2*i+1][2*j+1] = weightValue;
+                matrix[2*(j+1)][2*(i+1)] = weightValue;
+            }
+        }
+    return nullptr;
 }
 
 Junction *
@@ -343,30 +375,30 @@ double ** Graph::getConjugateMatrix(){
         this->ConjugateMatrix[i] = t;
     }
     double initV = 0;
-    for(auto junc : *junctions) {
-        int i = junc->getSource()->getIdx();
-        int j = junc->getTarget()->getIdx();
-        int sDir = junc->getSourceDir();
-        int tDir = junc->getTargetDir();
-        double weightValue = junc->getWeight()->getCopyNum();
-        if (sDir == '+') {
-            if (tDir == '+') {
-                this->ConjugateMatrix[2*j + 1][2*i + 1] = weightValue;
-                this->ConjugateMatrix[2*(i+1)][2*(j+1)] = weightValue;
-            } else {
-                this->ConjugateMatrix[2*(j + 1)][2*i+1] = weightValue;
-                this->ConjugateMatrix[2*(i+1)][2*j+1] = weightValue;
-            }
-        } else {
-            if (tDir == '+') {
-                this->ConjugateMatrix[2*j+1][2*(i + 1)] = weightValue;
-                this->ConjugateMatrix[2*i+1][2*(j+1)] = weightValue;
-            } else {
-                this->ConjugateMatrix[2*i+1][2*j+1] = weightValue;
-                this->ConjugateMatrix[2*(j+1)][2*(i+1)] = weightValue;
-            }
-        }
-    }
+//    for(auto junc : *junctions) {
+//        int i = junc->getSource()->getIdx();
+//        int j = junc->getTarget()->getIdx();
+//        int sDir = junc->getSourceDir();
+//        int tDir = junc->getTargetDir();
+//        double weightValue = junc->getWeight()->getCopyNum();
+//        if (sDir == '+') {
+//            if (tDir == '+') {
+//                this->ConjugateMatrix[2*j + 1][2*i + 1] = weightValue;
+//                this->ConjugateMatrix[2*(i+1)][2*(j+1)] = weightValue;
+//            } else {
+//                this->ConjugateMatrix[2*(j + 1)][2*i+1] = weightValue;
+//                this->ConjugateMatrix[2*(i+1)][2*j+1] = weightValue;
+//            }
+//        } else {
+//            if (tDir == '+') {
+//                this->ConjugateMatrix[2*j+1][2*(i + 1)] = weightValue;
+//                this->ConjugateMatrix[2*i+1][2*(j+1)] = weightValue;
+//            } else {
+//                this->ConjugateMatrix[2*i+1][2*j+1] = weightValue;
+//                this->ConjugateMatrix[2*(j+1)][2*(i+1)] = weightValue;
+//            }
+//        }
+//    }
     return ConjugateMatrix;
 }
 

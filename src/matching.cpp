@@ -622,6 +622,8 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
     }
     seqGraph::Vertex* v1;
     seqGraph::Vertex* v2;
+    auto matrix = originGraph->getConjugateMatrix();
+
 //    for(auto junc : *originalJunctions) {
 //        int i = junc->getSource()->getIdx();
 //        int j = junc->getTarget()->getIdx();
@@ -654,7 +656,6 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
             if (iPath.second->size() == 1 && jPath.second->size() == 1) {
                 int i = iPath.second->front();
                 int j = jPath.second->front();
-                auto matrix = originGraph->getConjugateMatrix();
                 values[0] = matrix[j][i];
                 values[1] = matrix[conjugateIdx(j)][i];
                 values[2] = matrix[j][conjugateIdx(i)];
