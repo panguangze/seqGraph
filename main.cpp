@@ -271,8 +271,8 @@ int main(int argc, char *argv[]) {
         auto* m = new matching(subGraph);
         if (VERBOSE >= 2)
             checkMatrixConjugate(m->getMatrix(), m->getN());
-//    m->main_steps();
-        m->hungarian();
+        m->main_steps();
+//        m->hungarian();
         if (VERBOSE >= 2) {
             std::cout<<"final matched relation\n";
             for(int i = 0; i < m->getN() + 1; i++) {
@@ -281,9 +281,9 @@ int main(int argc, char *argv[]) {
         }
         std::cout<<"\nresolve path"<<std::endl;
 //    TODO , make the path and cycles info into mathicng class
-        if (result.count("result_m")) {
-            m->writeMatchResult(matchResultFile);
-        }
+//        if (result.count("result_m")) {
+//            m->writeMatchResult(matchResultFile);
+//        }
         auto paths = m->resolvePath(nullptr);
 
 //        cyclePathsFile<<"sub\n";
@@ -308,7 +308,8 @@ int main(int argc, char *argv[]) {
                 m->reconstructMatrix(paths, subGraph);
 //                checkMatrixConjugate(m->getMatrix(), m->getN());
                 std::cout<<"start hungarian"<<std::endl;
-                m->hungarian();
+//                m->hungarian();
+                m->main_steps();
                 paths = m->resolvePath(paths);
                 if (paths->size() == prevPathSize || paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}
                 for (auto item: *paths) {
@@ -331,13 +332,13 @@ int main(int argc, char *argv[]) {
             for(const auto& v: *item.second) {
                 std::vector<std::string> tokens;
                 tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
-                int length = std::stoi(tokens[0]);
-                total_length+=length;
+//                int length = std::stoi(tokens[3]);
+//                total_length+=length;
                 if (v == -1) {
                     resultFile<<'c';
                     continue;
                 }
-                if (MIN_L != -1 && total_length < MIN_L) continue;
+//                if (MIN_L != -1 && total_length < MIN_L) continue;
                 resultFile << m->idx2StrDir(v) << "\t";
             }
             resultFile<<"\n";
