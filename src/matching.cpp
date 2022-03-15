@@ -584,30 +584,35 @@ double* matching::mergePath(std::vector<int>* p1, std::vector<int>* p2, double**
     if (isCycle_1) {
 
     }
+    int max_p1 = 5 > p1->size() ? p1->size():5;
+    int max_p2 = 5 > p2->size() ? p2->size():5;
 
-//    for (auto ip1: *p1) {
-//        if (ip1 == -1) continue;
-//        for (auto ip2: *p2) {
-//            if (ip2 == -1) continue;
+    for (int i = 0 ; i < max_p1; i ++) {
+        int ip1 = (*p1)[i];
+        if (ip1 == -1) continue;
+
+        for (int j = 0 ; j < max_p2; j ++) {
+            int ip2 = (*p2)[j];
+            if (ip2 == -1) continue;
 //            result[0] += matrix[ip2][ip1];
 //            result[1] += matrix[conjugateIdx(ip2)][ip1];
 //            result[2] += matrix[ip2][conjugateIdx(ip1)];
 //            result[3] += matrix[conjugateIdx(ip2)][conjugateIdx(ip1)];
-////            if (ip1 % 2 == 1) {
-////                if (ip2 % 2 == 1) {//            ++
-////                    result[0] += matrix[ip1][ip2];
-////                } else {
-////                    result[1] += matrix[ip1][ip2];
-////                }
-////            } else {
-////                if (ip2 % 2 == 1) {//            -+
-////                    result[2] += matrix[ip1][ip2];
-////                } else {
-////                    result[3] += matrix[ip1][ip2];
-////                }
-////            }
-//        }
-//    }
+            if (ip1 % 2 == 1) {
+                if (ip2 % 2 == 1) {//            ++
+                    result[0] += matrix[ip1][ip2];
+                } else {
+                    result[1] += matrix[conjugateIdx(ip2)][ip1];
+                }
+            } else {
+                if (ip2 % 2 == 1) {//            -+
+                    result[2] += matrix[ip2][conjugateIdx(ip1)];
+                } else {
+                    result[3] += matrix[conjugateIdx(ip2)][conjugateIdx(ip1)];
+                }
+            }
+        }
+    }
     return result;
 }
 
