@@ -22,8 +22,8 @@ namespace seqGraph {
         int start;
         int end;
         int length;
-        double depth;
-        double credibility;
+        float depth;
+        float credibility;
         int idx;
         int copy_idx; //
 
@@ -49,7 +49,7 @@ namespace seqGraph {
 
         const std::vector<Junction *> &getPrevJuncs() const;
     public:
-        Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
+        Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum, int idx);
         bool sameVertex(const seqGraph::Vertex & v2);
 
         ~Vertex();
@@ -109,9 +109,9 @@ namespace seqGraph {
 
         void setEnd(int mEnd);
 
-        double getCredibility() const;
+        float getCredibility() const;
 
-        void setCredibility(double mCredibility);
+        void setCredibility(float mCredibility);
 
 
         void restoreCopy();
@@ -123,8 +123,8 @@ namespace seqGraph {
         void checkLowerBound();
         bool hasCopy();
 
-        double getInCoverage();
-        double getOutCoverage();
+        float getInCoverage();
+        float getOutCoverage();
 
         void setMateEP();
     };

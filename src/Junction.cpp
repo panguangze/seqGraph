@@ -6,8 +6,8 @@
 
 using namespace seqGraph;
 
-Junction::Junction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
-                   double coverage, bool aIsBounded) {
+Junction::Junction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, float copyNum,
+                   float coverage, bool aIsBounded) {
     this->sourceDir = sourceDir;
     this->targetDir = targetDir;
     this->weight = new Weight(coverage);

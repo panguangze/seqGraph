@@ -12,7 +12,7 @@ bool Vertex::sameVertex(const seqGraph::Vertex &v2) {
     return this->Id.substr(0, idx1) == v2.getId().substr(0,idx2);
 }
 
-Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double aCredibility, int aCopyNum) {
+Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float aCredibility, int aCopyNum, int idx) {
     this->Id = mId;
     this->orphan = true;
     this->chrom = aChrom;
@@ -22,6 +22,7 @@ Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,double 
     this->depth = aCoverage;
     this->credibility = aCredibility;
     this->visited = false;
+    this->idx = idx;
 //    create weight
     weight = new Weight(aCoverage);
     weight->setCopyNum(aCopyNum);
@@ -82,6 +83,11 @@ void Vertex::setId(const int mId) {
 
 void Vertex::setIdx(const int idx) {
     this->idx = idx;
+    this->getEp3()->setIdx(2 * idx + 1);
+    this->getEp5()->setIdx(2 * idx + 1);
+
+    this->getRep3()->setIdx(2 * (idx + 1));
+    this->getRep5()->setIdx(2 * (idx + 1));
 }
 
 int Vertex::getIdx() const {
@@ -172,11 +178,11 @@ void Vertex::setEnd(int mEnd) {
     Vertex::end = mEnd;
 }
 
-double Vertex::getCredibility() const {
+float Vertex::getCredibility() const {
     return credibility;
 }
 
-void Vertex::setCredibility(double mCredibility) {
+void Vertex::setCredibility(float mCredibility) {
     Vertex::credibility = mCredibility;
 }
 
@@ -188,10 +194,10 @@ bool Vertex::hasCopy() {
     return this->EP3->hasCopy();
 }
 
-double Vertex::getInCoverage(){
+float Vertex::getInCoverage(){
     return this->EP5->getInCoverage();
 }
-double Vertex::getOutCoverage(){
+float Vertex::getOutCoverage(){
     return this->EP3->getOutCoverage();
 }
 

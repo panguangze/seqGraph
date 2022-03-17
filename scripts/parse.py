@@ -36,14 +36,16 @@ for line in inp2:
             vs[-1] = depth
         #write_juncs.append(" ".join(vs)+"\n")
         # outs.write(" ".join(vs)+"\n")
+        write_juncs.append(" ".join(vs)+"\n")
         tmp[k].remove(v)
-    elif (vc in tmp.keys() and kc in tmp[vc]):
+    if (vc in tmp.keys() and kc in tmp[vc]):
         if int(depth) > int(vs[-1]):
             vs[-1] = depth
         #write_juncs.append(" ".join(vs)+"\n")
         # outs.write(" ".join(vs)+"\n")
+        write_juncs.append(" ".join(vs)+"\n")
         tmp[vc].remove(kc)
-    write_juncs.append(" ".join(vs)+"\n")
+
     write_segs.add(all_segs[vs[1]])
     write_segs.add(all_segs[vs[3]])
 for item in tmp.keys():

@@ -6,7 +6,7 @@
 #include "../include/cxxopts.hpp"
 #include <math.h>
 // arg1 输入bam，arg2输出jaccard
-double DEPTH = -1;
+float DEPTH = -1;
 int CUTOFF = 300;
 bool SELFLOOP = false;
 int THRESHOLD = 0;
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 
 }
 
-void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, double>& refCopys) {
+void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, float>& refCopys) {
     int nRef = sam_hdr_nref(hdr);
     std::string refName, revRef;
     for(int i = 0; i< nRef; i++) {
@@ -67,7 +67,7 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, double>&
         std::string item;
         while (std::getline(ssf,item,'_'));
         int idx = item.find(':');
-        double cov = 0;
+        float cov = 0;
         if (idx != -1) {
             cov = std::stod(item.substr(0,idx));
         } else {
@@ -87,7 +87,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
     sam_hdr_t *hdr;
     bam1_t *b;
     int ret;
-    std::map<std::string, double> refCopys;
+    std::map<std::string, float> refCopys;
     if ((hdr = sam_hdr_read(in)) == nullptr) {
         fprintf(stderr, "[E::%s] couldn't read file header \n", __func__);
         return;

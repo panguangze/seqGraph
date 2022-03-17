@@ -10,25 +10,36 @@
 #include <sstream>
 #include "include/cxxopts.hpp"
 int VERBOSE = 0;
-const double ZERO = 0.00000001;
-const double M_WEIGHT = 1000000;
+const float ZERO = 0.00000001;
+const float M_WEIGHT = 1000000;
 bool BREAK_C = false;
 int TYPE = 0;
 bool SELF_L = false;
 int MIN_L = -1;
 std::string SUB_ONLY = "";
 
-void checkMatrixConjugate(double** matrix, int n) {
+void checkMatrixConjugate(seqGraph::SparseMatrix& matrix, int n) {
+
+//    for (auto i : matrix.IA) {
+//        for (auto j : matrix.JA) {
+//            auto t1 = matrix.getIJ(i,j);
+//            auto t2 = matrix.getIJ(conjugateIdx(j),conjugateIdx(i));
+//            if (std::abs(t1 - t2) > ZERO) {
+//                std::cout<<"Error, not conjugated\n"<<i<<j<<std::endl;
+//                exit(0);
+//            }
+//        }
+//    }
     for(int i = 1; i < n+1; i++) {
         std::cout<<i<<" ";
         for(int j = 1; j < n+1; j++) {
-            auto t1 = matrix[i][j];
-            auto t2 = matrix[conjugateIdx(j)][conjugateIdx(i)];
-            if (std::abs(matrix[i][j] - matrix[conjugateIdx(j)][conjugateIdx(i)]) > ZERO) {
-                std::cout<<"Error\n"<<i<<j<<std::endl;
-                break;
+            auto t1 = matrix.getIJ(i,j);
+            auto t2 = matrix.getIJ(conjugateIdx(j), conjugateIdx(i));
+            if (std::abs(t1 - t2) > ZERO) {
+                std::cout<<"Error "<<i<<" "<<j<<std::endl;
+                exit(0);
             }
-            std::cout<<matrix[i][j]<<" ";
+//            std::cout<<matrix[i][j]<<" ";
         }
         std::cout<<"\n"<<std::endl;
     }
@@ -144,7 +155,7 @@ int main(int argc, char *argv[]) {
     std::string graphF = result["graph"].as<std::string>();
     std::string resultF = result["result"].as<std::string>();
     std::string resultCF = result["result_c"].as<std::string>();
-    int iterRounds = result["iteration"].as<int>();
+        int iterRounds = result["iteration"].as<int>();
     VERBOSE = result["verbose"].as<int>();
 
 
@@ -170,8 +181,8 @@ int main(int argc, char *argv[]) {
     std::string source, target, startTag, originalSource, originalTarget;
     char sDir, tDir;
     int copyNum;
-    double coverage = 1;
-    double weight;
+    float coverage = 1;
+    float weight;
     auto* g = new seqGraph::Graph;
 
 //
@@ -224,8 +235,8 @@ int main(int argc, char *argv[]) {
             auto v2t = g->getVertexById(target+"_0");
 //            v1 = v1t == nullptr ? g->addVertex(source,"xx",1,2,1,1,2) : v1t;
 //            v2 = v2t == nullptr ? g->addVertex(target,"xx",1,2,1,1,2) : v2t;
-            double c1 = v1t->getWeight()->getCopyNum();
-            double c2 = v2t->getWeight()->getCopyNum();
+            float c1 = v1t->getWeight()->getCopyNum();
+            float c2 = v2t->getWeight()->getCopyNum();
             auto avg_weight = weight / (v1t->getWeight()->getCopyNum() * v2t->getWeight()->getCopyNum());
 //            g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
             for (int i = 0; i <  c1; i++) {
@@ -269,6 +280,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
         auto* m = new matching(subGraph);
+//
         if (VERBOSE >= 2)
             checkMatrixConjugate(m->getMatrix(), m->getN());
         m->main_steps();

@@ -13,22 +13,22 @@ extern bool BREAK_C;
 class matching {
 private:
     seqGraph::Graph* graph;
-    double** currentMatrix;
-//    double** originalMatrix;
+//    float** currentMatrix;
+//    float** originalMatrix;
     std::vector<seqGraph::Vertex*>* originalVertices;
 //    std::vector<seqGraph::Junction* >* originalJunctions;
     seqGraph::Graph* originalGraph;
 
     int N;
 
-    double* lx;
-    double* ly;
+    float* lx;
+    float* ly;
     int* matched;
 
     std::vector<int> cyclePaths;
     void init_labels();
     void update_labels();
-    void bfs(int i, double ex[], double ey[], bool visity[],int pre[], std::set<int>& skipped, double []);
+    void bfs(int i, float ex[], float ey[], bool visity[],int pre[], std::set<int>& skipped, float []);
 public:
     explicit matching(seqGraph::Graph* graph1);
     ~matching();
@@ -44,12 +44,15 @@ public:
     inline bool isCycle(int i) {
         return std::find(cyclePaths.begin(), cyclePaths.end(), i) != cyclePaths.end();
     }
-    inline double** getMatrix() const {
-        return this->currentMatrix;
-    };
+//    inline float** getMatrix() const {
+//        return this->currentMatrix;
+//    };
+    inline seqGraph::SparseMatrix& getMatrix() const {
+        return this->graph->getConjugateMatrix();
+    }
     void hungarian();
     bool dfs(int u, bool visity[], std::vector<int>* pre);
-    bool kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, double ex[], double ey[], double slack[]);
+    bool kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, float ex[], float ey[], float slack[]);
     void main_steps();
 
     std::map<int, std::vector<int>*>* resolvePath(std::map<int, std::vector<int>*>* prevPaths);
@@ -69,10 +72,10 @@ public:
     void breakResolvedPaths(std::vector<int>* cur, std::deque<int> & zereBK, std::map<int,std::vector<int>* >* result);
     void breakAndMergeCycle(std::map<int,std::vector<int>*> *result);
     std::vector<int>* breakCycle(std::vector<int> *);
-    double* mergePath(std::vector<int>* p1, std::vector<int>* p2, double** matrix, double* result);
+    float* mergePath(std::vector<int>* p1, std::vector<int>* p2, seqGraph::SparseMatrix& matrix, float* result);
 };
 
 int conjugateIdx(int idx);
-//seqGraph::Graph* reconstructMatrix(double** matrix, std::map<int, std::vector<int>*>*);
+//seqGraph::Graph* reconstructMatrix(float** matrix, std::map<int, std::vector<int>*>*);
 std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
 #endif //SEQGRAPH_MATCHING_H
