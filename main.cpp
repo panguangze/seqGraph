@@ -17,6 +17,14 @@ int TYPE = 0;
 bool SELF_L = false;
 int MIN_L = -1;
 std::string SUB_ONLY = "";
+bool check_visited_path(std::vector<std::vector<std::string>>& visited_vec, std::vector<std::string>& path){
+    for (auto& p: visited_vec){
+        if (p == path){
+            return true;
+        }
+    }
+    return false;
+}
 
 void checkMatrixConjugate(seqGraph::SparseMatrix& matrix, int n) {
 
@@ -211,7 +219,7 @@ int main(int argc, char *argv[]) {
 //            if(source == "EDGE_1499493_length_56_cov_55.000000_0") {
 //                int mm = 9;
 //            }
-            g->addVertex(source,"xx",1,2,coverage,1,copyNum);
+            auto v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
             for (int i = 1; i < copyNum; i++) {
                 source.pop_back();
                 if (i>=11)
@@ -219,7 +227,7 @@ int main(int argc, char *argv[]) {
                 if (i>=101)
                     source.pop_back();
                 source.append(std::to_string(i));
-                g->addVertex(source,"xx",1,2,coverage,1,copyNum);
+                v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
 //                source = originalSource;
             }
         } else {

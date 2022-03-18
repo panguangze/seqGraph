@@ -379,7 +379,8 @@ std::vector<Junction *> *Graph::getJunctions() const {
 }
 
 SparseMatrix&  Graph::getConjugateMatrix(){
-    if(this->ConjugateMatrix != nullptr) return this->sparseMatrix;
+    if(!this->sparseMatrix.isEmpty())
+        return this->sparseMatrix;
 
 //    int n = this->getVCount();
 //    this->ConjugateMatrix = new float *[2*n + 1];

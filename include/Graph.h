@@ -24,6 +24,7 @@ namespace seqGraph {
         std::vector<int> IA;
         std::vector<int> JA;
 
+
         explicit SparseMatrix ();
         ~SparseMatrix();
 
@@ -31,6 +32,9 @@ namespace seqGraph {
 //        void addValue(int i, int j, float v);
         void debugPrint();
         float getIRowMax(int i);
+        inline bool isEmpty() const {
+            return JA.empty();
+        }
     };
 
 

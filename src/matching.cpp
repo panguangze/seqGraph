@@ -125,6 +125,7 @@ void matching::resetGraph(seqGraph::Graph* g) {
     std::fill_n(this->matched,N+1, -1);
 //    for (int i = 0 ; i < N + 1; i++) this->matched[i] = -1;
 //    currentMatrix = this->graph->getConjugateMatrix();
+    this->getMatrix();
     this->cyclePaths.clear();
     this->cyclePaths.shrink_to_fit();
 }
@@ -151,7 +152,8 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, flo
 //             int km = 0;
 //            std::cout<<std::endl;
 //        }
-        if(std::abs(ex[u] + ey[i] - matrix.getIJ(u,i)) <= ZERO) {
+        auto mIJ = matrix.getIJ(u,i);
+        if(std::abs(ex[u] + ey[i] - mIJ) <= ZERO) {
             visity[i] = true;
             candidates.push_back(i);
 //            if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
@@ -161,12 +163,12 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, flo
 //                matched[conjugateIdx(u)] = conjugateIdx(i);
 //                return true;
 //            }
-        } else if(slack[i] > ex[u] + ey[i] - matrix.getIJ(u,i)) {
+        } else if(slack[i] > ex[u] + ey[i] - mIJ) {
 //            auto tt1 = ex[u];
 //            auto tt2 = ey[i];
 //            auto tt3 = matrix[u][i];
 //            if (ex[u] + ey[i]  - matrix[u][i] >= ZERO)
-                slack[i] = ex[u] + ey[i]  - matrix.getIJ(u,i);
+                slack[i] = ex[u] + ey[i]  - mIJ;
 //            auto tts = slack[i];
 //            auto ttttt = 99;
         }
@@ -219,8 +221,9 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
 //        visity[x] = true;
         for(int i = 1; i < N + 1; i++){
             if(visity[i] or i == x) continue;
-            if(slack[i] >= ex[x] + ey[i] - matrix.getIJ(x,i)){
-                slack[i] = ex[x] + ey[i] - matrix.getIJ(x,i);
+            auto mIJ = matrix.getIJ(x,i);
+            if(slack[i] >= ex[x] + ey[i] - mIJ){
+                slack[i] = ex[x] + ey[i] - mIJ;
                 pre[i] = y; //表示 y对应的 点 y 需要减小的权值
             }
             if(slack[i] <= d){
@@ -492,11 +495,12 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
         bool isCycle = false;
         std::deque<int> zeroBreakPoint;
         while (true) {
+            auto mIJ = matrix.getIJ(matched[now],now);
             if (now == 77 || matched[now] == 77) {
                 int mmd = 99;
             }
             if (visited[matched[now]]) {
-                if (matrix.getIJ(matched[now],now) == 0) {
+                if (mIJ == 0) {
                     zeroBreakPoint.push_back(matched[now]);
                 }
                 break;
@@ -527,7 +531,7 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
 //            dir = matched[now] % 2 == 0 ? '-':'+';
 //            std::cout<<(*this->graph->getVertices())[vIdx - 1]->getId()<<dir<<'\t';
             currentPath->push_back(matched[now]);
-            if (matrix.getIJ(matched[now],now) == 0) {
+            if (mIJ == 0) {
                 zeroBreakPoint.push_back(matched[now]);
             }
             now = matched[now];
@@ -656,6 +660,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
 //            }
 //        }
 //    }
+    auto matrix = originGraph->getConjugateMatrix();
     for (auto iPath: *paths) {
         v1 = resultG->getVertexByIdQ(std::to_string(iPath.second->front()));
         for (auto jPath: *paths) {
@@ -664,7 +669,6 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
             if (iPath.second->size() == 1 && jPath.second->size() == 1) {
                 int i = iPath.second->front();
                 int j = jPath.second->front();
-                auto matrix = originGraph->getConjugateMatrix();
                 values[0] = matrix.getIJ(j,i);
                 values[1] = matrix.getIJ(conjugateIdx(j), i);
                 values[2] = matrix.getIJ(j, conjugateIdx(i));
@@ -731,8 +735,9 @@ std::vector<int>* matching::breakCycle(std::vector<int> * cyclePath) {
             }
             continue;
         }
-        if (matrix.getIJ(nextIdx, idx) < minW) {
-            minW = matrix.getIJ(nextIdx, idx);
+        auto mIJ = matrix.getIJ(nextIdx, idx);
+        if (mIJ < minW) {
+            minW = mIJ;
             minI = i;
         }
     }
