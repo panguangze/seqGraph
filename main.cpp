@@ -296,6 +296,7 @@ int main(int argc, char *argv[]) {
 //        }
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
+//          auto subGraph = g;
 //        subGraph->removeByGeneAndScore();
         std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<std::endl;
         if(subGraph->getVertices()->size() == 1) {

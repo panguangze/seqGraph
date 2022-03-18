@@ -73,6 +73,7 @@ void matching::printM(int i){
 const float INF = 1e18;
 matching::matching(seqGraph::Graph* graph1) {
     this->graph = graph1;
+    this->graph->initRowMax();
     N = 2 * graph1->getVCount();
     this->matched = new int[N + 1];
     std::fill_n(this->matched,N+1, -1);
@@ -120,6 +121,7 @@ void matching::resetGraph(seqGraph::Graph* g) {
         free(this->graph);
     std::cout<<"free done"<<std::endl;
     this->graph =  g;
+    this->graph->initRowMax();
     N = 2 *  g->getVCount();
     this->matched = new int[N + 1];
     std::fill_n(this->matched,N+1, -1);
@@ -716,7 +718,6 @@ int matching::checkConjugateMatch() {
 
 void matching::checkConjugateMatrix() {
     for(int i = 1; i < N+1; i++) {
-        std::cout<<i<<" ";
         for(int j = 1; j < N+1; j++) {
             if(i == 5 && j == 1260)
                 auto oo = 33;
@@ -728,7 +729,6 @@ void matching::checkConjugateMatrix() {
             }
 //            std::cout<<matrix[i][j]<<" ";
         }
-        std::cout<<"\n"<<std::endl;
     }
 }
 
@@ -737,7 +737,8 @@ float matching::getIJ(int i, int j) {
     auto jIdx = (j + 1) / 2;
     auto iDir = i % 2 == 0 ? '-' : '+';
     auto jDir = j % 2 == 0 ? '-' : '+';
-    return this->graph->getIJ(iIdx - 1, jIdx - 1, iDir, jDir);
+//    get junction j to i
+    return this->graph->getIJ(jIdx - 1, iIdx - 1, jDir, iDir);
 }
 
 std::vector<int>* matching::breakCycle(std::vector<int> * cyclePath) {

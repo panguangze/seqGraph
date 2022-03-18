@@ -137,6 +137,8 @@ namespace seqGraph {
 //        float ** getConjugateMatrix();
 
         SparseMatrix& getConjugateMatrix();
+
+        void initRowMax();
     };
 }
 

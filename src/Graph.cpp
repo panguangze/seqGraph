@@ -625,10 +625,45 @@ Junction *Graph::addJunction(Junction *j) {
     this->addVertex(j->getSource());
     this->addVertex(j->getTarget());
 //    auto k = j->getSource()->getId()+ j->getTarget()->getId()+j->getSourceDir()+j->getTargetDir();
-    auto k = std::to_string(j->getSource()->getIdx()) + std::to_string(j->getTarget()->getIdx()) + j->getSourceDir()+j->getTargetDir();
+    auto k = std::to_string(j->getSource()->getIdx()) + j->getSourceDir() + std::to_string(j->getTarget()->getIdx()) +j->getTargetDir();
 
     this->junctions->push_back(j);
     j->setIdx(this->junctions->size());
     this->junctionIdx->emplace(k, junctions->size());
     return j;
+}
+
+void Graph::initRowMax() {
+    for (auto v : *this->vertices) {
+        auto juncs = v->getPrevJuncs();
+        std::vector<float> toPositiveVs;
+        std::vector<float> toNegativeVs;
+        for (auto junc: juncs) {
+            int j = 2 * (junc->getSource()->getIdx() + 1);
+            if (junc->getSourceDir() == '+')
+                j = 2 * junc->getSource()->getIdx() + 1;
+            if ( junc->getTargetDir() == '+') {
+                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
+            } else {
+                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
+            }
+        }
+
+        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toPositiveVs.begin(),toPositiveVs.end());
+        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toNegativeVs.begin(),toNegativeVs.end());
+        juncs = v->getNextJuncs();
+        for (auto junc : juncs) {
+            int j = junc->getSource()->getIdx();
+            if ( junc->getSourceDir() == '-') {
+                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
+            } else {
+                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
+            }
+        }
+
+        float pM = toPositiveVs.empty() ? 0 : *std::max_element(toPositiveVs.begin(),toPositiveVs.end());
+        float nM = toNegativeVs.empty() ? 0 : *std::max_element(toNegativeVs.begin(),toNegativeVs.end());
+        this->rowMaxV.emplace(2 * v->getIdx() + 1, pM);
+        this->rowMaxV.emplace(2 * (v->getIdx() + 1), nM);
+    }
 }
