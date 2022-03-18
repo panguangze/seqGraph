@@ -41,8 +41,10 @@ void checkMatrixConjugate(seqGraph::SparseMatrix& matrix, int n) {
     for(int i = 1; i < n+1; i++) {
         std::cout<<i<<" ";
         for(int j = 1; j < n+1; j++) {
+            if(i == 3 && j == 15)
+                auto oo = 33;
             auto t1 = matrix.getIJ(i,j);
-            auto t2 = matrix.getIJ(conjugateIdx(j), conjugateIdx(i));
+            auto t2 = matrix.getIJ(seqGraph::conjugateIdx(j), seqGraph::conjugateIdx(i));
             if (std::abs(t1 - t2) > ZERO) {
                 std::cout<<"Error "<<i<<" "<<j<<std::endl;
                 exit(0);
@@ -258,6 +260,8 @@ int main(int argc, char *argv[]) {
 //            seqGraph::Vertex* v2;
             source = originalSource;
             target = originalTarget;
+            if (source == "EDGE_54893_length_473_cov_4.568182")
+                auto mk = 33;
             auto v1t = g->getVertexById(source+"_0");
             auto v2t = g->getVertexById(target+"_0");
 //            v1 = v1t == nullptr ? g->addVertex(source,"xx",1,2,1,1,2) : v1t;
@@ -292,7 +296,7 @@ int main(int argc, char *argv[]) {
 //        }
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
-        subGraph->removeByGeneAndScore();
+//        subGraph->removeByGeneAndScore();
         std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<std::endl;
         if(subGraph->getVertices()->size() == 1) {
             resultFile<<subGraph->getVertices()->front()->getOriginId()<<"+"<<"\n";
@@ -309,6 +313,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
         auto* m = new matching(subGraph);
+//        m->checkConjugateMatrix();
 //
         if (VERBOSE >= 2)
             checkMatrixConjugate(m->getMatrix(), m->getN());
@@ -356,12 +361,12 @@ int main(int argc, char *argv[]) {
                     }
                     std::vector<std::string> tokens;
                     tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
-                    int length = std::stoi(tokens[3]);
-                    total_length+=length;
+//                    int length = std::stoi(tokens[3]);
+//                    total_length+=length;
                 }
-                if(total_length<1000|| not_print_tag){
-                    continue;
-                }
+//                if(total_length<1000|| not_print_tag){
+//                    continue;
+//                }
 //                bool self_loop_flag = false;
                 std::string path_str;
                 std::vector<std::string> tmp;

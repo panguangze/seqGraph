@@ -24,9 +24,9 @@ set(SOURCE_FILES src/Edge.cpp
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} include/cxxopts.hpp)
 
-add_executable(matching main.cpp ${SOURCE_FILES})
-add_executable(rDistance utils/reads_overlap.cpp utils/reads_overlap.h)
-add_executable(bDistance utils/bDistance.cpp utils/bDistance.h)
+add_executable(matching main.cpp ${SOURCE_FILES} include/util.h)
+add_executable(rDistance utils/reads_overlap.cpp utils/reads_overlap.h include/util.h)
+add_executable(bDistance utils/bDistance.cpp utils/bDistance.h include/util.h)
 target_link_libraries(rDistance -lhts)
 target_link_libraries(bDistance -lhts)
 target_include_directories(${PROJECT_NAME} PUBLIC

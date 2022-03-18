@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <queue>
 #include <fstream>
+#include "../include/util.h"
+#include "exception"
 
 using namespace seqGraph;
 
@@ -24,6 +26,12 @@ float SparseMatrix::getIJ(int i, int j) {
     auto countI = IA[i + 1];
     for (int k = moveC; k < moveC + (countI - moveC); k++) {
         if (JA[k] == j) return values[k];
+    }
+//  conjugate
+    moveC = IA[seqGraph::conjugateIdx(j)];
+    countI = IA[seqGraph::conjugateIdx(j) + 1];
+    for (int k = moveC; k < moveC + (countI - moveC); k++) {
+        if (JA[k] == conjugateIdx(i)) return values[k];
     }
     return 0;
 }
@@ -47,13 +55,14 @@ void SparseMatrix::debugPrint() {
 }
 
 float SparseMatrix::getIRowMax(int i) {
-    auto moveC = IA[i];
-    auto countI = IA[i + 1];
-    float maxV = 0;
-    for (int k = moveC; k < moveC + (countI - moveC); k++) {
-        if (values[k] > maxV) maxV = values[k];
-    }
-    return maxV;
+//    auto moveC = IA[i];
+//    auto countI = IA[i + 1];
+//    float maxV = 0;
+//    for (int k = moveC; k < moveC + (countI - moveC); k++) {
+//        if (values[k] > maxV) maxV = values[k];
+//    }
+//    return maxV;
+    return rowMaxV[i];
 }
 
 
@@ -125,7 +134,8 @@ Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char so
 //    auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
     auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
     if (jun == nullptr) {
-        auto  k = sourceVertex->getId()+ targetVertex->getId()+sourceDir+targetDir;
+//        auto  k = sourceVertex->getId()+ targetVertex->getId()+sourceDir+targetDir;
+        auto k = std::to_string(sourceVertex->getIdx()) + sourceDir + std::to_string(targetVertex->getIdx()) +targetDir;
 //        throw DuplicateJunctionException(junction);
         auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
 //        junction->junctionToEdge();
@@ -271,18 +281,19 @@ Junction* Graph::doesJunctionExist(Junction *aJunction) {
 
 
 Junction* Graph::doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d) {
-    auto  k = v1.getId()+ v2.getId()+v1d+v2d;
+    auto  k = std::to_string(v1.getIdx()) +v1d + std::to_string(v2.getIdx())+v2d;
     if (v1d == '-') v1d = '+';
     else v1d = '-';
     if (v2d == '-') v2d = '+';
     else v2d = '-';
-    auto rk = v2.getId()+v1.getId()+v2d+v1d;
+//    auto rk = v2.getId()+v1.getId()+v2d+v1d;
+    auto  rk = std::to_string(v2.getIdx()) +v2d + std::to_string(v1.getIdx())+v1d;
     if (junctionIdx->find(k) != junctionIdx->end()) {
         auto idx = (*junctionIdx)[k];
         return (*junctions)[idx];
     } else if (junctionIdx->find(rk) != junctionIdx->end()) {
         auto idx = (*junctionIdx)[rk];
-        return (*junctions)[idx];
+        return (*junctions)[idx - 1];
     }
 //    for(auto item: *this->junctions){
 //        auto& s1 = *item->getSource();
@@ -335,6 +346,46 @@ void Graph::removeByGeneAndScore() {
         }
     }
 
+}
+
+float Graph::getIJ(int i, int j,char sDir,char tDir) {
+    auto k = std::to_string(i) + sDir + std::to_string(j)  + tDir;
+//    try {
+//        auto idx = (*junctionIdx)[k];
+//        return (*this->junctions)[idx - 1]->getWeight()->getCopyNum();
+//    } catch (std::exception & e) {
+//        if (sDir == '-') sDir = '+';
+//        else sDir = '-';
+//        if (tDir == '-') tDir = '+';
+//        else tDir = '-';
+//        auto  rk = std::to_string(j) + tDir + std::to_string(i)  + sDir;
+//        try {
+//            auto idx = (*junctionIdx)[rk];
+//            return (*this->junctions)[idx - 1]->getWeight()->getCopyNum();
+//        } catch (std::exception& e1) {
+//            return 0;
+//        }
+//    }
+//    if (junctionIdx->find(k) != junctionIdx->end()) {
+    std::string test = "sewwe";
+    auto idx = (*junctionIdx)[k];
+    if (idx != 0) {
+        return (*this->junctions)[idx - 1]->getWeight()->getCopyNum();
+    }
+//    }
+    if (sDir == '-') sDir = '+';
+    else sDir = '-';
+    if (tDir == '-') tDir = '+';
+    else tDir = '-';
+//    auto rk = v2.getId()+v1.getId()+v2d+v1d;
+    auto  rk = std::to_string(j) + tDir + std::to_string(i)  + sDir;
+//    if (junctionIdx->find(rk) != junctionIdx->end()) {
+    idx = (*junctionIdx)[rk];
+    if (idx != 0) {
+        return (*this->junctions)[idx - 1]->getWeight()->getCopyNum();
+    }
+//    }
+    return 0;
 }
 
 void Graph::resetJunctionVisitFlag() {
@@ -430,39 +481,95 @@ SparseMatrix&  Graph::getConjugateMatrix(){
 //    }
 
 //   vertices are sorted by idx already
-    this->sparseMatrix.IA.push_back(0);
+//    this->sparseMatrix.IA.push_back(0);
     for (auto v : *this->vertices) {
 //        v + row
-        auto ep5InEdges = v->getEp5()->getInEdges();
-        sort(ep5InEdges->begin(), ep5InEdges->end(), [](const Edge* lhs, const Edge* rhs) {
-            return lhs->getSource()->getIdx() < rhs->getSource()->getIdx();
-        });
-        for (auto e: *ep5InEdges) {
-            int j = e->getSource()->getIdx();
-//          value
-            this->sparseMatrix.values.push_back(e->getWeight()->getCopyNum());
-//          value col
-            this->sparseMatrix.JA.push_back(e->getSource()->getIdx());
+        auto juncs = v->getPrevJuncs();
+//        sort(juncs.begin(), juncs.end(), [](const Junction *lhs, const Junction *rhs) {
+//            return lhs->getSource()->getIdx() < rhs->getSource()->getIdx();
+//        });
+        std::vector<float> toPositiveVs;
+//        std::vector<int> toPositiveJAs;
+        std::vector<float> toNegativeVs;
+//        std::vector<int> toNegativeJAs;
+        for (auto junc: juncs) {
+            int j = 2 * (junc->getSource()->getIdx() + 1);
+            if (junc->getSourceDir() == '+')
+                j = 2 * junc->getSource()->getIdx() + 1;
+            if ( junc->getTargetDir() == '+') {
+                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
+//                toPositiveJAs.push_back(j);
+            } else {
+                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
+//                toNegativeJAs.push_back(j);
+            }
         }
-//      IA, for value count
-        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + ep5InEdges->size());
-//        v - row
-        auto rEp5InEdges = v->getRep5()->getInEdges();
 
-        sort(rEp5InEdges->begin(), rEp5InEdges->end(), [](const Edge* lhs, const Edge* rhs) {
-            return lhs->getSource()->getIdx() < rhs->getSource()->getIdx();
-        });
-        for (auto e: *rEp5InEdges) {
-            int j = e->getSource()->getIdx();
 //          value
-            this->sparseMatrix.values.push_back(e->getWeight()->getCopyNum());
+        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toPositiveVs.begin(),toPositiveVs.end());
+        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toNegativeVs.begin(),toNegativeVs.end());
 //          value col
-            this->sparseMatrix.JA.push_back(e->getSource()->getIdx());
-        }
+//        this->sparseMatrix.JA.insert(this->sparseMatrix.JA.end(), toPositiveJAs.begin(), toPositiveJAs.end());
+//        this->sparseMatrix.JA.insert(this->sparseMatrix.JA.end(), toNegativeJAs.begin(), toNegativeJAs.end());
+
+
 //      IA, for value count
-        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + rEp5InEdges->size());
+//        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + toPositiveVs.size());
+//        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + toNegativeVs.size());
+
+
+        juncs = v->getNextJuncs();
+        for (auto junc : juncs) {
+            int j = junc->getSource()->getIdx();
+            if ( junc->getSourceDir() == '-') {
+                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
+            } else {
+                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
+            }
+        }
+
+        float pM = toPositiveVs.empty() ? 0 : *std::max_element(toPositiveVs.begin(),toPositiveVs.end());
+        float nM = toNegativeVs.empty() ? 0 : *std::max_element(toNegativeVs.begin(),toNegativeVs.end());
+        this->rowMaxV.emplace(2 * v->getIdx() + 1, pM);
+        this->rowMaxV.emplace(2 * (v->getIdx() + 1), nM);
 
     }
+
+
+//   vertices are sorted by idx already
+//    this->sparseMatrix.IA.push_back(0);
+//    for (auto v : *this->vertices) {
+////        v + row
+//        auto ep5InEdges = v->getEp5()->getInEdges();
+//        sort(ep5InEdges->begin(), ep5InEdges->end(), [](const Edge* lhs, const Edge* rhs) {
+//            return lhs->getSource()->getIdx() < rhs->getSource()->getIdx();
+//        });
+//        for (auto e: *ep5InEdges) {
+//            int j = e->getSource()->getIdx();
+////          value
+//            this->sparseMatrix.values.push_back(e->getWeight()->getCopyNum());
+////          value col
+//            this->sparseMatrix.JA.push_back(e->getSource()->getIdx());
+//        }
+////      IA, for value count
+//        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + ep5InEdges->size());
+////        v - row
+//        auto rEp5InEdges = v->getRep5()->getInEdges();
+//
+//        sort(rEp5InEdges->begin(), rEp5InEdges->end(), [](const Edge* lhs, const Edge* rhs) {
+//            return lhs->getSource()->getIdx() < rhs->getSource()->getIdx();
+//        });
+//        for (auto e: *rEp5InEdges) {
+//            int j = e->getSource()->getIdx();
+////          value
+//            this->sparseMatrix.values.push_back(e->getWeight()->getCopyNum());
+////          value col
+//            this->sparseMatrix.JA.push_back(e->getSource()->getIdx());
+//        }
+////      IA, for value count
+//        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + rEp5InEdges->size());
+//
+//    }
     return sparseMatrix;
 }
 
@@ -517,7 +624,9 @@ Vertex *Graph::addVertex(Vertex *v) {
 Junction *Graph::addJunction(Junction *j) {
     this->addVertex(j->getSource());
     this->addVertex(j->getTarget());
-    auto k = j->getSource()->getId()+ j->getTarget()->getId()+j->getSourceDir()+j->getTargetDir();
+//    auto k = j->getSource()->getId()+ j->getTarget()->getId()+j->getSourceDir()+j->getTargetDir();
+    auto k = std::to_string(j->getSource()->getIdx()) + std::to_string(j->getTarget()->getIdx()) + j->getSourceDir()+j->getTargetDir();
+
     this->junctions->push_back(j);
     j->setIdx(this->junctions->size());
     this->junctionIdx->emplace(k, junctions->size());

@@ -23,6 +23,7 @@ namespace seqGraph {
         std::vector<float> values;
         std::vector<int> IA;
         std::vector<int> JA;
+        std::map<int, float> rowMaxV;
 
 
         explicit SparseMatrix ();
@@ -49,6 +50,7 @@ namespace seqGraph {
         std::map<std::string, int>* verticesIdx;
         std::map<std::string, int>* junctionIdx;
         std::vector<std::set<int>* > connectedJunctionsIdx;
+        std::map<int, float> rowMaxV;
         SparseMatrix sparseMatrix;
 
     public:
@@ -70,6 +72,9 @@ namespace seqGraph {
             return this->junctionIdx->size();
         }
 
+        inline float getIRowMaxV(int i ) {
+            return rowMaxV[i];
+        }
         Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum);
 
         Junction *
@@ -92,6 +97,8 @@ namespace seqGraph {
         Vertex *getVertexByIdx(int idx);
 
         void removeByGeneAndScore();
+
+        float getIJ(int i, int j,char sDir,char tDir);
 
         bool doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);
 

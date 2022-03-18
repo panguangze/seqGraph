@@ -8,6 +8,7 @@
 #include "Graph.h"
 #include "algorithm"
 #include <deque>
+#include "util.h"
 extern int VERBOSE;
 extern bool BREAK_C;
 class matching {
@@ -58,6 +59,12 @@ public:
     std::map<int, std::vector<int>*>* resolvePath(std::map<int, std::vector<int>*>* prevPaths);
 
     int checkConjugateMatch();
+    void checkConjugateMatrix();
+    inline float getIRowMax(int i) {
+        return this->graph->getIRowMaxV(i);
+    }
+
+    float getIJ(int i,int j);
 
 //
     std::string idx2StrDir(int idx, const std::string& token= std::string(""));
@@ -75,7 +82,6 @@ public:
     float* mergePath(std::vector<int>* p1, std::vector<int>* p2, seqGraph::SparseMatrix& matrix, float* result);
 };
 
-int conjugateIdx(int idx);
 //seqGraph::Graph* reconstructMatrix(float** matrix, std::map<int, std::vector<int>*>*);
 std::vector<int>* addPrevPath(std::map<int, std::vector<int>*>* prevPath, std::vector<int>* curPath);
 #endif //SEQGRAPH_MATCHING_H
