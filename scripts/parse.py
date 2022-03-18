@@ -31,7 +31,11 @@ for line in inp2:
     if vs[4] == '-':
         v = vs[3]+"'"
         vc = vs[3]
+    if k =="EDGE_5369_length_3828_cov_7.082378":
+        print(tmp[k])
+        print(v)
     if (k in tmp.keys() and v in tmp[k]):
+        # print(v)
         if int(depth) > int(vs[-1]):
             vs[-1] = depth
         #write_juncs.append(" ".join(vs)+"\n")
@@ -48,6 +52,8 @@ for line in inp2:
 
     write_segs.add(all_segs[vs[1]])
     write_segs.add(all_segs[vs[3]])
+# print(tmp['EDGE_5369_length_3828_cov_7.082378'])
+
 for item in tmp.keys():
     first = item
     fdir = "+"
@@ -63,9 +69,11 @@ for item in tmp.keys():
             second = i[0:-1]
             sdir = "-"
         write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
-        write_segs.add(all_segs[second])
         write_segs.add(all_segs[first])
+        write_segs.add(all_segs[second])
+
 for item in write_segs:
+    print(item)
     outs.write(item)
 for item in write_juncs:
     outs.write(item)

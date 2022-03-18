@@ -193,6 +193,7 @@ int main(int argc, char *argv[]) {
 
 //    this used for path backtrack
     std::string line;
+    std::set<std::string> visited_self_loop;
     while (getline(infile, line)) {
         std::istringstream iss(line);
         if (line.rfind("SEG", 0) == 0) {
@@ -224,7 +225,20 @@ int main(int argc, char *argv[]) {
         } else {
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
             if(SELF_L && originalSource == originalTarget) {
-                cyclePathsFile<<originalSource<<"\n";
+                if (visited_self_loop.find(originalSource) == visited_self_loop.end()){
+//                    std::vector<std::string> tokens;
+//                    tokenize(originalSource, tokens, "_");
+//                    std::cout<<originalSource<<std::endl;
+//                    int length = std::stoi(tokens[3]);
+//                    if (length>1000){
+//                        std::cout<<"pass for: "<<originalSource<<std::endl;
+//                        cyclePathsFile<< "self loop: "<<std::endl;
+//                        cyclePathsFile<<originalSource+"+"<<std::endl;
+//                    }else{
+//                        std::cout<<"not pass for: "<<originalSource<<std::endl;
+//                    }
+                    visited_self_loop.insert(originalSource);
+                }
                 continue;
             }
 //            seqGraph::Vertex* v1;
@@ -258,6 +272,7 @@ int main(int argc, char *argv[]) {
     if (SUB_ONLY != "") return 0;
     std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
     int maxI = g->subGraphCount();
+    std::vector<std::string> to_be_remove_sl;
     while (n< maxI) {
 //        if(n==6){
 //            int m = 9;
@@ -300,15 +315,86 @@ int main(int argc, char *argv[]) {
 
 //        cyclePathsFile<<"sub\n";
 //        cyclePathsFile<<"iter 0\n";
-        for (auto item: *paths) {
+        std::set<std::string> seen;
+        bool not_print_tag;
+        std::vector<std::vector<std::string>> visited_path;
+
+        for (auto &item: *paths) {
             if (m->isCycle(item.first)) {
-                cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
+//                if (m->graph->getVertexByIdQ(m->idx2IdStr(item.second->front()))->sameVertex(*m->graph->getVertexByIdQ(m->idx2IdStr(item.second->back()))) ){
+//                    item.second->pop_back();
+//                }
+                int idp = (&item-&*(paths->begin()));
+
+                int total_length = 0;
+                std::vector<int> path;
+
+
                 for(const auto& v: *item.second) {
-                    cyclePathsFile<<m->idx2StrDir(v)<<"\t";
+//                    path.emplace_back(v)
+                    int idx = (&v-&*(item.second->begin()));
+                    // record IDX OF A-B-A_0-B_0
+                    if (idx!=0 && m->idx2VertexInCurrentGraph(item.second->front())->sameVertex(*(m->idx2VertexInCurrentGraph(v))) && m->idx2VertexInCurrentGraph((*item.second)[idx-1])->sameVertex(*(m->idx2VertexInCurrentGraph(item.second->back())))){
+                        not_print_tag = true;
+                    }
+                    else{
+                        not_print_tag = false;
+                    }
+                    std::vector<std::string> tokens;
+                    tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
+                    int length = std::stoi(tokens[3]);
+                    total_length+=length;
                 }
-                cyclePathsFile<<"\n";
+                if(total_length<1000|| not_print_tag){
+                    continue;
+                }
+//                bool self_loop_flag = false;
+                std::string path_str;
+                std::vector<std::string> tmp;
+                for(auto &t: *item.second){
+                    std::cout<<m->idx2Str(t)<<std::endl;
+                    std::string idStr = m->idx2Str(t);
+                    auto pos = idStr.find_last_of('_');
+                    std::string true_name = idStr.substr(0,pos);
+                    tmp.emplace_back(true_name);
+                }
+                for(const auto& v: *item.second) {
+                    path_str+=("_"+std::to_string(v));
+                    std::cout<<m->idx2Str(v)<<std::endl;
+                    std::string idStr = m->idx2Str(v);
+                    auto pos = idStr.find_last_of('_');
+                    std::string true_name = idStr.substr(0,pos);
+                    if (visited_self_loop.find(true_name)!=visited_self_loop.end()){
+                        to_be_remove_sl.emplace_back(true_name);
+//                        self_loop_flag = true;
+                    }
+                }
+//                if(self_loop_flag) continue;
+                std::string res_str;
+//                if (std::find(visited_path.begin(), visited_path.end(), item.second) == visited_path.end()){
+//                    cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
+                if (!check_visited_path(visited_path, tmp)){
+                    for(const auto& v: *item.second) {
+                        int idr = (&v-&*(item.second->begin()));
+//                        if (std::find(not_print_idxes.begin(), not_print_idxes.end(), idr) == not_print_idxes.end()) continue;
+//                        cyclePathsFile<<m->idx2StrDir(v)<<"\t";
+                        res_str+=(m->idx2StrDir(v)+"\t");
+                    }
+//                    cyclePathsFile<<"\n";
+                    if(res_str.length()>0){
+                        cyclePathsFile<<"iter "<<0<<",graph"<<n<<"\n";
+                        cyclePathsFile<<res_str<<"\n";
+                    }
+
+                    std::sort(tmp.begin(), tmp.end());
+                    visited_path.emplace_back(tmp);
+
+
+               }
+
             }
         }
+
 //    recallPaths.push_back(paths);
         int iterN = 0;
         iterRounds = iterRoundsBK;
@@ -358,6 +444,21 @@ int main(int argc, char *argv[]) {
         free(m);
         free(subGraph);
         n++;
+    }
+    for(auto& self_loop: visited_self_loop){
+        if (std::find(to_be_remove_sl.begin(), to_be_remove_sl.end(), self_loop)==to_be_remove_sl.end()){
+            std::vector<std::string> tokens;
+            tokenize(self_loop, tokens, "_");
+            std::cout<<self_loop<<std::endl;
+            int length = std::stoi(tokens[3]);
+            if (length>1000){
+                std::cout<<"pass for: "<<self_loop<<std::endl;
+                cyclePathsFile<< "self loop: "<<std::endl;
+                cyclePathsFile<<self_loop+"+"<<std::endl;
+            }else{
+                std::cout<<"not pass for: "<<self_loop<<std::endl;
+            }
+        }
     }
     infile.close();
     resultFile.close();
