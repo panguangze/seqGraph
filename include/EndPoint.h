@@ -24,6 +24,7 @@ namespace seqGraph {
         EndPoint *mateEP;
         Vertex* vertex;
         std::string vId;
+        int idx; // derived from vertex idx.
         std::vector<Edge *> *edges;
         int type; // EP type,0: left top, 1: right top, 2: right bottom,3: left bottom
         bool visited;
@@ -46,6 +47,7 @@ namespace seqGraph {
         int getType() const;
 
         void setType(int type);
+        void setIdx(int idx);
 
         bool isVisited() const;
 
@@ -69,10 +71,13 @@ namespace seqGraph {
 
         Vertex *getVertex() const;
 
-        void setVertex(Vertex *vertex);
+        void setVertex(Vertex *v);
 
-        double getInCoverage();
-        double getOutCoverage();
+        float getInCoverage();
+        float getOutCoverage();
+        inline int getIdx() const {
+            return idx;
+        }
 
     };
 }

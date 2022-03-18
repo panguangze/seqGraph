@@ -15,17 +15,42 @@ namespace seqGraph {
     typedef std::vector<EndPoint *> EndPointPath;
 
 
+    //    CRS for sparse matrix
+    class SparseMatrix {
+    public:
+        int N;
+
+        std::vector<float> values;
+        std::vector<int> IA;
+        std::vector<int> JA;
+
+
+        explicit SparseMatrix ();
+        ~SparseMatrix();
+
+        float getIJ(int i, int j);
+//        void addValue(int i, int j, float v);
+        void debugPrint();
+        float getIRowMax(int i);
+        inline bool isEmpty() const {
+            return JA.empty();
+        }
+    };
+
+
     class Graph {
     protected:
-        double mAvgCoverage;
+        float mAvgCoverage;
         std::vector<Vertex *> *vertices;
         std::vector<Junction *> *junctions;
         Vertex *source;
         Vertex *sink;
-        double ** ConjugateMatrix;
+        float ** ConjugateMatrix;
         std::map<std::string, int>* verticesIdx;
         std::map<std::string, int>* junctionIdx;
         std::vector<std::set<int>* > connectedJunctionsIdx;
+        SparseMatrix sparseMatrix;
+
     public:
         bool isReconstructed;
         Graph();
@@ -45,17 +70,17 @@ namespace seqGraph {
             return this->junctionIdx->size();
         }
 
-        Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum);
+        Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum);
 
         Junction *
-        addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
-                    double coverage, bool aIsBounded);
+        addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, float copyNum,
+                    float coverage, bool aIsBounded);
 
         Junction *
-        addJunction(std::string& sourceId, std::string& targetId, char sourceDir, char targetDir, double copyNum,
-                    double coverage, bool aIsBounded);
+        addJunction(std::string& sourceId, std::string& targetId, char sourceDir, char targetDir, float copyNum,
+                    float coverage, bool aIsBounded);
 
-        Junction * addJunction(EndPoint* ep3, EndPoint* ep5, double copyNum, double converage, bool isBounded);
+        Junction * addJunction(EndPoint* ep3, EndPoint* ep5, float copyNum, float converage, bool isBounded);
 
         Junction *
         addJunction(Junction* j);
@@ -65,6 +90,8 @@ namespace seqGraph {
         Vertex *getVertexById(std::string Id);
         Vertex *getVertexByIdQ(std::string Id);
         Vertex *getVertexByIdx(int idx);
+
+        void removeByGeneAndScore();
 
         bool doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);
 
@@ -84,9 +111,9 @@ namespace seqGraph {
 
         void resetShortestPrevEdge();
 
-        double getMAvgCoverage() const;
+        float getMAvgCoverage() const;
 
-        void setMAvgCoverage(double mAvgCoverage);
+        void setMAvgCoverage(float mAvgCoverage);
 
         Vertex *getSource() const;
 
@@ -100,7 +127,9 @@ namespace seqGraph {
 
         std::vector<Junction *> *getJunctions() const;
 
-        double ** getConjugateMatrix();
+//        float ** getConjugateMatrix();
+
+        SparseMatrix& getConjugateMatrix();
     };
 }
 

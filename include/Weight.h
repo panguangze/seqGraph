@@ -9,35 +9,35 @@
 namespace seqGraph {
     class Weight {
     protected:
-        double mCoverage;           // coverage as adjusted by LP
-        double mCopyNum;             // the copy number, coverage / average coverage of one copy
-        double mCopyNumOriginal;
-        double mCopyNumBackup;
+        float mCoverage;           // coverage as adjusted by LP
+        float mCopyNum;             // the copy number, coverage / average coverage of one copy
+        float mCopyNumOriginal;
+        float mCopyNumBackup;
 
         bool mIsInferred;
 
     public:
-        Weight(double aCoverage);
+        Weight(float aCoverage);
 
         ~Weight();
 
-        double getCoverage();
+        float getCoverage();
 
-        double getCopyNum();
+        float getCopyNum();
 
-        double getCopyNumBackup();
+        float getCopyNumBackup();
 
-        void setCoverage(double aCoverage);
+        void setCoverage(float aCoverage);
 
-        void setCopyNum(double aCopyNum);
+        void setCopyNum(float aCopyNum);
 
         void backup();
 
         void restore();
 
-        void increaseCopyNum(double aIncrement = 1);
+        void increaseCopyNum(float aIncrement = 1);
 
-        void decreaseCopyNum(double aDecrement = 1);
+        void decreaseCopyNum(float aDecrement = 1);
 
         bool isInferred();
 

@@ -71,12 +71,14 @@ for line in inp2:
             vs[-1] = depth
         # write_juncs.append(" ".join(vs)+"\n")
         # outs.write(" ".join(vs)+"\n")
+        write_juncs.append(" ".join(vs)+"\n")
         tmp[k].remove(v)
     if (vc in tmp.keys() and kc in tmp[vc]):
         if int(depth) > int(vs[-1]):
             vs[-1] = depth
         # write_juncs.append(" ".join(vs)+"\n")
         # outs.write(" ".join(vs)+"\n")
+        write_juncs.append(" ".join(vs)+"\n")
         tmp[vc].remove(kc)
     write_juncs.append(" ".join(vs) + "\n")
     # print(all_segs[vs[1]].strip()+" "+(gene_res[vs[1]] if vs[1] in gene_res else '0')+" "+(scores[vs[1]] if vs[1] in scores else '0')+"\n")

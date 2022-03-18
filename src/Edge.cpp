@@ -7,7 +7,7 @@
 
 using namespace seqGraph;
 
-Edge::Edge(EndPoint *source, EndPoint *target, double aCoverage,double copyNum, int type) {
+Edge::Edge(EndPoint *source, EndPoint *target, float aCoverage,float copyNum, int type) {
     this->source = source;
     this->target = target;
     this->weight = new Weight(aCoverage);

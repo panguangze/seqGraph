@@ -11,6 +11,52 @@
 
 using namespace seqGraph;
 
+SparseMatrix::SparseMatrix() {
+    this->IA.push_back(0);
+}
+
+SparseMatrix::~SparseMatrix() {
+
+}
+
+float SparseMatrix::getIJ(int i, int j) {
+    auto moveC = IA[i];
+    auto countI = IA[i + 1];
+    for (int k = moveC; k < moveC + (countI - moveC); k++) {
+        if (JA[k] == j) return values[k];
+    }
+    return 0;
+}
+
+void SparseMatrix::debugPrint() {
+    std::cout<<"values\n";
+    for (auto i : values) {
+        std::cout<<i<<" ";
+    }
+    std::cout<<std::endl;
+    std::cout<<"IA\n";
+    for (auto i : IA) {
+        std::cout<<i<<" ";
+    }
+    std::cout<<std::endl;
+    std::cout<<"JA\n";
+    for (auto i : JA) {
+        std::cout<<i<<" ";
+    }
+    std::cout<<std::endl;
+}
+
+float SparseMatrix::getIRowMax(int i) {
+    auto moveC = IA[i];
+    auto countI = IA[i + 1];
+    float maxV = 0;
+    for (int k = moveC; k < moveC + (countI - moveC); k++) {
+        if (values[k] > maxV) maxV = values[k];
+    }
+    return maxV;
+}
+
+
 Graph::Graph() {
     this->mAvgCoverage = 0;
     this->vertices = new std::vector<Vertex *>();
@@ -63,26 +109,26 @@ Graph* Graph::getSubgraph(int i) {
     subG->isReconstructed = false;
     return subG;
 }
-Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,double aCoverage, double mCredibility, int aCopyNum) {
+Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum) {
 //    create vertex add push
     auto v1 = this->getVertexById(mId);
     if(v1 != nullptr) return v1;
-    auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum);
-    vertex->setIdx(this->vertices->size());
+    auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum, this->vertices->size());
+//    vertex->setIdx(this->vertices->size());
     this->vertices->push_back(vertex);
     this->verticesIdx->emplace(mId, vertex->getIdx());
     return vertex;
 }
 
-Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
-                             double coverage, bool aIsBounded) {
+Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, float copyNum,
+                             float coverage, bool aIsBounded) {
 //    auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
     auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
     if (jun == nullptr) {
         auto  k = sourceVertex->getId()+ targetVertex->getId()+sourceDir+targetDir;
 //        throw DuplicateJunctionException(junction);
         auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
-        junction->junctionToEdge();
+//        junction->junctionToEdge();
         junction->setIdx(this->junctions->size());
 
         this->junctions->push_back(junction);
@@ -98,14 +144,14 @@ Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char so
 }
 
 Junction *
-Graph::addJunction(std::string& sourceId, std::string& targetId, char sourceDir, char targetDir, double copyNum,
-                   double coverage ,bool aIsBounded) {
+Graph::addJunction(std::string& sourceId, std::string& targetId, char sourceDir, char targetDir, float copyNum,
+                   float coverage ,bool aIsBounded) {
     Vertex *sourceVertex = this->getVertexById(sourceId);
     Vertex *targetVertex = this->getVertexById(targetId);
     return this->addJunction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
 }
 
-Junction * Graph::addJunction(EndPoint *ep3, EndPoint *ep5, double copyNum, double coverage, bool isBounded) {
+Junction * Graph::addJunction(EndPoint *ep3, EndPoint *ep5, float copyNum, float coverage, bool isBounded) {
     Vertex *sourceVertex = ep3->getVertex();
     Vertex *targetVertex = ep5->getVertex();
 
@@ -279,6 +325,18 @@ bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
     return isReach;
 }
 
+void Graph::removeByGeneAndScore() {
+//    for vertex, gene score.
+    for (auto v : *this->getVertices()) {
+        for (auto junc : v->getNextJuncs()) {
+            junc->getSourceDir();
+            junc->getTargetDir();
+            doesPathExists(v->getRep3(), junc->getTarget()->getEp5());
+        }
+    }
+
+}
+
 void Graph::resetJunctionVisitFlag() {
     for (Junction *junction : *this->junctions) {
         junction->getCEdge()->setVisited(false);
@@ -300,11 +358,11 @@ void Graph::resetShortestPrevEdge() {
     }
 }
 
-double Graph::getMAvgCoverage() const {
+float Graph::getMAvgCoverage() const {
     return mAvgCoverage;
 }
 
-void Graph::setMAvgCoverage(double mAvgCoverage) {
+void Graph::setMAvgCoverage(float mAvgCoverage) {
     Graph::mAvgCoverage = mAvgCoverage;
 }
 
@@ -332,42 +390,80 @@ std::vector<Junction *> *Graph::getJunctions() const {
     return junctions;
 }
 
-double ** Graph::getConjugateMatrix(){
-    if(this->ConjugateMatrix != nullptr) return this->ConjugateMatrix;
-    int n = this->getVCount();
-    this->ConjugateMatrix = new double *[2*n + 1];
-    for(int i = 0; i < 2*n + 1; i++) {
+SparseMatrix&  Graph::getConjugateMatrix(){
+    if(!this->sparseMatrix.isEmpty())
+        return this->sparseMatrix;
 
-        auto t = new double[2*n + 1];
-        std::fill_n(t,(2*n + 1), 0);
-        this->ConjugateMatrix[i] = t;
-    }
-    double initV = 0;
-    for(auto junc : *junctions) {
-        int i = junc->getSource()->getIdx();
-        int j = junc->getTarget()->getIdx();
-        int sDir = junc->getSourceDir();
-        int tDir = junc->getTargetDir();
-        double weightValue = junc->getWeight()->getCopyNum();
-        if (sDir == '+') {
-            if (tDir == '+') {
-                this->ConjugateMatrix[2*j + 1][2*i + 1] = weightValue;
-                this->ConjugateMatrix[2*(i+1)][2*(j+1)] = weightValue;
-            } else {
-                this->ConjugateMatrix[2*(j + 1)][2*i+1] = weightValue;
-                this->ConjugateMatrix[2*(i+1)][2*j+1] = weightValue;
-            }
-        } else {
-            if (tDir == '+') {
-                this->ConjugateMatrix[2*j+1][2*(i + 1)] = weightValue;
-                this->ConjugateMatrix[2*i+1][2*(j+1)] = weightValue;
-            } else {
-                this->ConjugateMatrix[2*i+1][2*j+1] = weightValue;
-                this->ConjugateMatrix[2*(j+1)][2*(i+1)] = weightValue;
-            }
+//    int n = this->getVCount();
+//    this->ConjugateMatrix = new float *[2*n + 1];
+//    for(int i = 0; i < 2*n + 1; i++) {
+//
+//        auto t = new float[2*n + 1];
+//        std::fill_n(t,(2*n + 1), 0);
+//        this->sparseMatrix.addValue(i] = t;
+//    }
+//    float initV = 0;
+//    for(auto junc : *junctions) {
+//        int i = junc->getSource()->getIdx();
+//        int j = junc->getTarget()->getIdx();
+//        int sDir = junc->getSourceDir();
+//        int tDir = junc->getTargetDir();
+//        float weightValue = junc->getWeight()->getCopyNum();
+//        if (sDir == '+') {
+//            if (tDir == '+') {
+//                this->sparseMatrix.addValue(2*j + 1, 2*i + 1, weightValue);
+//                this->sparseMatrix.addValue(2*j + 1, 2*i + 1, weightValue);
+//                this->sparseMatrix.addValue(2*(i+1), 2*(j+1), weightValue);
+//            } else {
+//                this->sparseMatrix.addValue(2*(j + 1), 2*i+1, weightValue);
+//                this->sparseMatrix.addValue(2*(i+1), 2*j+1, weightValue);
+//            }
+//        } else {
+//            if (tDir == '+') {
+//                this->sparseMatrix.addValue(2*j+1, 2*(i + 1), weightValue);
+//                this->sparseMatrix.addValue(2*i+1, 2*(j+1), weightValue);
+//            } else {
+//                this->sparseMatrix.addValue(2*i+1, 2*j+1, weightValue);
+//                this->sparseMatrix.addValue(2*(j+1), 2*(i+1), weightValue);
+//            }
+//        }
+//    }
+
+//   vertices are sorted by idx already
+    this->sparseMatrix.IA.push_back(0);
+    for (auto v : *this->vertices) {
+//        v + row
+        auto ep5InEdges = v->getEp5()->getInEdges();
+        sort(ep5InEdges->begin(), ep5InEdges->end(), [](const Edge* lhs, const Edge* rhs) {
+            return lhs->getSource()->getIdx() < rhs->getSource()->getIdx();
+        });
+        for (auto e: *ep5InEdges) {
+            int j = e->getSource()->getIdx();
+//          value
+            this->sparseMatrix.values.push_back(e->getWeight()->getCopyNum());
+//          value col
+            this->sparseMatrix.JA.push_back(e->getSource()->getIdx());
         }
+//      IA, for value count
+        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + ep5InEdges->size());
+//        v - row
+        auto rEp5InEdges = v->getRep5()->getInEdges();
+
+        sort(rEp5InEdges->begin(), rEp5InEdges->end(), [](const Edge* lhs, const Edge* rhs) {
+            return lhs->getSource()->getIdx() < rhs->getSource()->getIdx();
+        });
+        for (auto e: *rEp5InEdges) {
+            int j = e->getSource()->getIdx();
+//          value
+            this->sparseMatrix.values.push_back(e->getWeight()->getCopyNum());
+//          value col
+            this->sparseMatrix.JA.push_back(e->getSource()->getIdx());
+        }
+//      IA, for value count
+        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + rEp5InEdges->size());
+
     }
-    return ConjugateMatrix;
+    return sparseMatrix;
 }
 
 void Graph::parseConnectedComponents() {

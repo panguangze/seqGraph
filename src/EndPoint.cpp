@@ -30,6 +30,10 @@ int EndPoint::getType() const {
 
 void EndPoint::setType(int type) {
     EndPoint::type = type;
+
+}
+void EndPoint::setIdx(int idx) {
+    this->idx = idx;
 }
 
 std::string EndPoint::getInfo() {
@@ -106,15 +110,15 @@ std::vector<Edge *> *EndPoint::getOutEdges() {
     if (this->type == _LEFT_BOTTOM_ || this->type == _RIGHT_TOP_) return this->edges;
 }
 
-double EndPoint::getInCoverage() {
-    double inCoverage = 0;
+float EndPoint::getInCoverage() {
+    float inCoverage = 0;
     for (Edge * e : *(this->getInEdges())) {
         inCoverage += e->getWeight()->getCoverage();
     }
     return inCoverage;
 }
-double EndPoint::getOutCoverage() {
-    double outCoverage = 0;
+float EndPoint::getOutCoverage() {
+    float outCoverage = 0;
     for (Edge * e : *(this->getOutEdges())) {
         outCoverage += e->getWeight()->getCoverage();
     }
@@ -125,8 +129,13 @@ Vertex *EndPoint::getVertex() const {
     return vertex;
 }
 
-void EndPoint::setVertex(Vertex *vertex) {
-    EndPoint::vertex = vertex;
+void EndPoint::setVertex(Vertex *v) {
+    EndPoint::vertex = v;
+    if (this->type == _LEFT_TOP_ || this->type == _RIGHT_TOP_) {
+        this->idx = 2 * v->getIdx() + 1;
+    } else {
+        this->idx = 2 * (v->getIdx() + 1);
+    }
 }
 
 void EndPoint::setMateEp(EndPoint *mateEp) {

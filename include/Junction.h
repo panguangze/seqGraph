@@ -35,8 +35,8 @@ namespace seqGraph {
         bool inferred;
 
     public:
-        Junction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, double copyNum,
-                 double coverage, bool aIsBounded);
+        Junction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, float copyNum,
+                 float coverage, bool aIsBounded);
 
         ~Junction();
 

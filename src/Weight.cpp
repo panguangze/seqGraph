@@ -6,7 +6,7 @@
 
 using namespace seqGraph;
 
-Weight::Weight(double aCoverage) {
+Weight::Weight(float aCoverage) {
     mCoverage = aCoverage;
     mCopyNum = 0;
     mCopyNumOriginal = 0;
@@ -17,27 +17,27 @@ Weight::Weight(double aCoverage) {
 
 Weight::~Weight() { ; }
 
-double Weight::getCoverage() { return mCoverage; }
+float Weight::getCoverage() { return mCoverage; }
 
-// double Weight::getOriginalCoverage() { return mCoverageOriginal; }
-// double Weight::getAdjustedCoverage() { return mCoverageAdjusted; }
-double Weight::getCopyNum() { return mCopyNum; }
+// float Weight::getOriginalCoverage() { return mCoverageOriginal; }
+// float Weight::getAdjustedCoverage() { return mCoverageAdjusted; }
+float Weight::getCopyNum() { return mCopyNum; }
 
-double Weight::getCopyNumBackup() { return mCopyNumBackup; }
+float Weight::getCopyNumBackup() { return mCopyNumBackup; }
 
-void Weight::setCoverage(double aCoverage) { mCoverage = aCoverage; }
+void Weight::setCoverage(float aCoverage) { mCoverage = aCoverage; }
 
-// void Weight::setOriginalCoverage(double aCoverage) { mCoverageOriginal = aCoverage; }
-// void Weight::setAdjustedCoverage(double aCoverage) { mCoverageAdjusted = aCoverage; }
-void Weight::setCopyNum(double aCopyNum) { mCopyNum = mCopyNumOriginal = mCopyNumBackup = aCopyNum; }
+// void Weight::setOriginalCoverage(float aCoverage) { mCoverageOriginal = aCoverage; }
+// void Weight::setAdjustedCoverage(float aCoverage) { mCoverageAdjusted = aCoverage; }
+void Weight::setCopyNum(float aCopyNum) { mCopyNum = mCopyNumOriginal = mCopyNumBackup = aCopyNum; }
 
 void Weight::backup() { mCopyNumBackup = mCopyNum; }
 
 void Weight::restore() { mCopyNum = mCopyNumBackup; }
 
-void Weight::increaseCopyNum(double aIncrement) { mCopyNum += aIncrement; }
+void Weight::increaseCopyNum(float aIncrement) { mCopyNum += aIncrement; }
 
-void Weight::decreaseCopyNum(double aDecrement) { mCopyNum -= aDecrement; }
+void Weight::decreaseCopyNum(float aDecrement) { mCopyNum -= aDecrement; }
 
 bool Weight::isInferred() { return mIsInferred; }
 
