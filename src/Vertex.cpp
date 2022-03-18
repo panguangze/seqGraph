@@ -223,6 +223,11 @@ void Vertex::setPrevJunc(Junction* v){
     this->prevJuncs.push_back(v);
 }
 
+void Vertex::setGeneAndScore(bool gene, float s) {
+    this->containsGene = gene;
+    this->score = s;
+}
+
 bool Vertex::isVisited() const {
     return visited;
 }

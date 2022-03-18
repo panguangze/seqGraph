@@ -191,6 +191,8 @@ int main(int argc, char *argv[]) {
     int copyNum;
     float coverage = 1;
     float weight;
+    float score;
+    int cGene;
     auto* g = new seqGraph::Graph;
 
 //
@@ -210,7 +212,7 @@ int main(int argc, char *argv[]) {
                 matchResultFile<<line<<std::endl;
             }
 //            TODO, take coverage into consideration
-            iss>>startTag>>originalSource>>coverage>>copyNum;
+            iss>>startTag>>originalSource>>coverage>>copyNum>>cGene>>score;
 //            iss>>startTag>>originalSource>>copyNum;
 
 //            TODO consider optimize the copied vertices.
@@ -220,6 +222,7 @@ int main(int argc, char *argv[]) {
 //                int mm = 9;
 //            }
             auto v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
+            v->setGeneAndScore(cGene, score);
             for (int i = 1; i < copyNum; i++) {
                 source.pop_back();
                 if (i>=11)
@@ -228,6 +231,8 @@ int main(int argc, char *argv[]) {
                     source.pop_back();
                 source.append(std::to_string(i));
                 v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
+                v->setGeneAndScore(cGene, score);
+
 //                source = originalSource;
             }
         } else {

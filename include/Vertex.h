@@ -26,6 +26,8 @@ namespace seqGraph {
         float credibility;
         int idx;
         int copy_idx; //
+        bool containsGene;
+        float score;
 
         bool visited;
     public:
@@ -56,6 +58,7 @@ namespace seqGraph {
 
         void setNextJunc(Junction*);
         void setPrevJunc(Junction*);
+        void setGeneAndScore(bool gene, float s);
 
 
         const std::string getId() const;
