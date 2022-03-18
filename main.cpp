@@ -292,6 +292,7 @@ int main(int argc, char *argv[]) {
 //        }
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
+        subGraph->removeByGeneAndScore();
         std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<std::endl;
         if(subGraph->getVertices()->size() == 1) {
             resultFile<<subGraph->getVertices()->front()->getOriginId()<<"+"<<"\n";

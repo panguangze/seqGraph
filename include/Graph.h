@@ -91,6 +91,8 @@ namespace seqGraph {
         Vertex *getVertexByIdQ(std::string Id);
         Vertex *getVertexByIdx(int idx);
 
+        void removeByGeneAndScore();
+
         bool doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);
 
         int BFS_EndPoint(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint);

@@ -325,6 +325,18 @@ bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
     return isReach;
 }
 
+void Graph::removeByGeneAndScore() {
+//    for vertex, gene score.
+    for (auto v : *this->getVertices()) {
+        for (auto junc : v->getNextJuncs()) {
+            junc->getSourceDir();
+            junc->getTargetDir();
+            doesPathExists(v->getRep3(), junc->getTarget()->getEp5());
+        }
+    }
+
+}
+
 void Graph::resetJunctionVisitFlag() {
     for (Junction *junction : *this->junctions) {
         junction->getCEdge()->setVisited(false);
