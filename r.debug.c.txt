@@ -1,0 +1,152 @@
+iter 0,graph0
+125547+	7532-	77244-	272098+	130249-	81096+	
+iter 0,graph0
+247985+	271993-	
+iter 0,graph0
+195170+	141079-	
+iter 0,graph0
+141822+	200879+	
+iter 0,graph0
+267750+	260700-	
+iter 0,graph0
+141830+	195018-	
+iter 0,graph0
+274565+	176857-	
+iter 0,graph0
+4332+	171463+	
+iter 0,graph0
+274418+	269582+	
+iter 0,graph0
+274084+	230524-	
+iter 0,graph0
+266471+	9135+	9203-	
+iter 0,graph0
+221954+	273431+	135010+	8181-	
+iter 0,graph0
+273888+	258482-	
+iter 0,graph0
+4526+	244893+	
+iter 0,graph0
+273318+	274721+	
+iter 0,graph0
+273158+	241732+	
+iter 0,graph0
+250017+	127275+	226449+	
+iter 0,graph0
+251443+	172333-	
+iter 0,graph0
+124700+	193357+	
+iter 0,graph0
+254566+	270324+	
+iter 0,graph0
+272703+	247489-	195602-	
+iter 0,graph0
+6256+	142086-	
+iter 0,graph0
+272381+	40361-	
+iter 0,graph0
+8744+	1657-	
+iter 0,graph0
+86222+	242267+	49753+	
+iter 0,graph0
+270697+	263211-	
+iter 0,graph0
+5788+	250161+	
+iter 0,graph0
+270295+	238923-	
+iter 0,graph0
+269648+	199582+	
+iter 0,graph0
+8861+	265083-	
+iter 0,graph0
+269302+	228364-	
+iter 0,graph0
+268412+	238516+	
+iter 0,graph0
+267927+	203338-	
+iter 0,graph0
+266884+	250072-	186422+	240030-	250969+	251465+	242306+	
+iter 0,graph0
+269580+	7455-	
+iter 0,graph0
+129441+	265119+	
+iter 0,graph0
+265039+	9197-	
+iter 0,graph0
+265018+	263484+	228420+	
+iter 0,graph0
+264036+	35252+	
+iter 0,graph0
+203529+	193160-	
+iter 0,graph0
+249175+	9002-	
+iter 0,graph0
+260978+	227901+	178720-	
+iter 0,graph0
+250088+	129649+	230591-	
+iter 0,graph0
+193564+	270661-	
+iter 0,graph0
+259677+	234896-	
+iter 0,graph0
+259182+	258879-	
+iter 0,graph0
+259092+	142673-	
+iter 0,graph0
+196974+	8807-	
+iter 0,graph0
+258432+	250015+	
+iter 0,graph0
+267409+	211619+	
+iter 0,graph0
+256571+	212992+	
+iter 0,graph0
+235229+	170118-	128139-	62784-	
+iter 0,graph0
+235859+	178913+	
+iter 0,graph0
+250245+	237087-	
+iter 0,graph0
+172214+	236646+	
+iter 0,graph0
+260876+	235709-	
+iter 0,graph0
+65519+	200786-	
+iter 0,graph0
+240153+	220026-	
+iter 0,graph0
+239728+	8515+	
+iter 0,graph0
+237767+	196934-	
+iter 0,graph0
+206920+	209042+	
+iter 0,graph0
+236920+	8300+	
+iter 0,graph0
+272563+	200590+	
+iter 0,graph0
+229633+	135854-	
+iter 0,graph0
+264604+	125278-	
+iter 0,graph0
+176620+	8983-	
+iter 0,graph0
+227551+	260237+	
+iter 0,graph0
+120881+	200833+	178943+	
+iter 0,graph0
+122851+	226024-	
+iter 0,graph0
+203059+	235797-	
+iter 0,graph0
+5926+	5927+	
+iter 0,graph0
+8993+	196969-	
+iter 0,graph0
+7799+	7795+	7796+	
+iter 0,graph146
+9234+	191749-	
+iter 0,graph231
+126650+	219432-	
+iter 0,graph278
+267365+	26863+	250366+	

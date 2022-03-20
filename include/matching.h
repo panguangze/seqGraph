@@ -61,7 +61,8 @@ public:
     int checkConjugateMatch();
     void checkConjugateMatrix();
     inline float getIRowMax(int i) {
-        return this->graph->getIRowMaxV(i);
+        if (this->graph->isSparse()) return this->graph->getConjugateMatrix().getIRowMax(i);
+        else return this->graph->getIRowMaxV(i);
     }
 
     float getIJ(int i,int j);
@@ -79,7 +80,7 @@ public:
     void breakResolvedPaths(std::vector<int>* cur, std::deque<int> & zereBK, std::map<int,std::vector<int>* >* result);
     void breakAndMergeCycle(std::map<int,std::vector<int>*> *result);
     std::vector<int>* breakCycle(std::vector<int> *);
-    float* mergePath(std::vector<int>* p1, std::vector<int>* p2, seqGraph::SparseMatrix& matrix, float* result);
+    float* mergePath(std::vector<int>* p1, std::vector<int>* p2, float* result);
 };
 
 //seqGraph::Graph* reconstructMatrix(float** matrix, std::map<int, std::vector<int>*>*);

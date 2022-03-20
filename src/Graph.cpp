@@ -248,6 +248,7 @@ void Graph::BFS_Vertices(Vertex* vertex, std::set<int>* connectedIdx){
         auto currentV = VQueuen.front();
         VQueuen.pop();
         for (auto e : currentV->getNextJuncs()) {
+            if (e->isRemoved()) continue;
             // if (e->hasCopy()) {
             auto *nextV = e->getTarget();
             connectedIdx->insert(e->getIdx());
@@ -257,6 +258,7 @@ void Graph::BFS_Vertices(Vertex* vertex, std::set<int>* connectedIdx){
             }
         }
         for (auto e : currentV->getPrevJuncs()) {
+            if (e->isRemoved()) continue;
             // if (e->hasCopy()) {
             auto *nextV = e->getSource();
             if (!nextV->isVisited()) {
@@ -272,7 +274,7 @@ void Graph::BFS_Vertices(Vertex* vertex, std::set<int>* connectedIdx){
 
 Junction* Graph::doesJunctionExist(Junction *aJunction) {
     for(auto item: *this->junctions){
-        if(*item == *aJunction) {
+        if(!item->isRemoved() && *item == *aJunction) {
             return item;
         }
     }
@@ -338,12 +340,52 @@ bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
 
 void Graph::removeByGeneAndScore() {
 //    for vertex, gene score.
+    bool  flag = false;
     for (auto v : *this->getVertices()) {
+        if (!v->isGeneAndScoreOk()) continue;
         for (auto junc : v->getNextJuncs()) {
-            junc->getSourceDir();
-            junc->getTargetDir();
-            doesPathExists(v->getRep3(), junc->getTarget()->getEp5());
+            auto sDir = junc->getSourceDir();
+            auto tDir = junc->getTargetDir();
+            if (sDir == '+') {
+                if (tDir == '+') {
+                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getEp5());
+                } else {
+                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getEp5());
+                }
+            } else {
+                if (tDir == '+') {
+                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getRep5());
+                } else {
+                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getRep5());
+                }
+            }
+            if (! flag) {
+                this->removeJunc(junc);
+            }
         }
+
+        for (auto junc : v->getPrevJuncs()) {
+            if (junc->isRemoved()) continue;
+            auto sDir = junc->getSourceDir();
+            auto tDir = junc->getTargetDir();
+            if (sDir == '+') {
+                if (tDir == '+') {
+                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getEp5());
+                } else {
+                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getEp5());
+                }
+            } else {
+                if (tDir == '+') {
+                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getRep5());
+                } else {
+                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getRep5());
+                }
+            }
+            if (! flag) {
+                this->removeJunc(junc);
+            }
+        }
+
     }
 
 }
@@ -390,6 +432,7 @@ float Graph::getIJ(int i, int j,char sDir,char tDir) {
 
 void Graph::resetJunctionVisitFlag() {
     for (Junction *junction : *this->junctions) {
+        if (junction->isRemoved()) continue;
         junction->getCEdge()->setVisited(false);
         junction->getOEdge()->setVisited(false);
     }
@@ -442,8 +485,9 @@ std::vector<Junction *> *Graph::getJunctions() const {
 }
 
 SparseMatrix&  Graph::getConjugateMatrix(){
-    if(!this->sparseMatrix.isEmpty())
-        return this->sparseMatrix;
+    return this->sparseMatrix;
+//    if(!this->sparseMatrix.isEmpty())
+//        return this->sparseMatrix;
 
 //    int n = this->getVCount();
 //    this->ConjugateMatrix = new float *[2*n + 1];
@@ -482,58 +526,59 @@ SparseMatrix&  Graph::getConjugateMatrix(){
 
 //   vertices are sorted by idx already
 //    this->sparseMatrix.IA.push_back(0);
-    for (auto v : *this->vertices) {
-//        v + row
-        auto juncs = v->getPrevJuncs();
+//    for (auto v : *this->vertices) {
+////        v + row
+//        auto juncs = v->getPrevJuncs();
 //        sort(juncs.begin(), juncs.end(), [](const Junction *lhs, const Junction *rhs) {
 //            return lhs->getSource()->getIdx() < rhs->getSource()->getIdx();
 //        });
-        std::vector<float> toPositiveVs;
+//        std::vector<float> toPositiveVs;
 //        std::vector<int> toPositiveJAs;
-        std::vector<float> toNegativeVs;
+//        std::vector<float> toNegativeVs;
 //        std::vector<int> toNegativeJAs;
-        for (auto junc: juncs) {
-            int j = 2 * (junc->getSource()->getIdx() + 1);
-            if (junc->getSourceDir() == '+')
-                j = 2 * junc->getSource()->getIdx() + 1;
-            if ( junc->getTargetDir() == '+') {
-                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
+//        for (auto junc: juncs) {
+//            int j = 2 * (junc->getSource()->getIdx() + 1);
+//            if (junc->getSourceDir() == '+')
+//                j = 2 * junc->getSource()->getIdx() + 1;
+//            if ( junc->getTargetDir() == '+') {
+//                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
 //                toPositiveJAs.push_back(j);
-            } else {
-                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
+//            } else {
+//                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
 //                toNegativeJAs.push_back(j);
-            }
-        }
-
-//          value
-        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toPositiveVs.begin(),toPositiveVs.end());
-        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toNegativeVs.begin(),toNegativeVs.end());
-//          value col
+//            }
+//        }
+//
+////          value
+//        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toPositiveVs.begin(),toPositiveVs.end());
+//        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toNegativeVs.begin(),toNegativeVs.end());
+////          value col
 //        this->sparseMatrix.JA.insert(this->sparseMatrix.JA.end(), toPositiveJAs.begin(), toPositiveJAs.end());
 //        this->sparseMatrix.JA.insert(this->sparseMatrix.JA.end(), toNegativeJAs.begin(), toNegativeJAs.end());
-
-
-//      IA, for value count
+//
+//
+////      IA, for value count
 //        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + toPositiveVs.size());
 //        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + toNegativeVs.size());
+//
+//
+//        juncs = v->getNextJuncs();
+//        for (auto junc : juncs) {
+//            int j = junc->getSource()->getIdx();
+//            if ( junc->getSourceDir() == '-') {
+//                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
+//            } else {
+//                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
+//            }
+//        }
+//
+//        float pM = toPositiveVs.empty() ? 0 : *std::max_element(toPositiveVs.begin(),toPositiveVs.end());
+//        float nM = toNegativeVs.empty() ? 0 : *std::max_element(toNegativeVs.begin(),toNegativeVs.end());
+//        this->rowMaxV.emplace(2 * v->getIdx() + 1, pM);
+//        this->rowMaxV.emplace(2 * (v->getIdx() + 1), nM);
+//        this->sparseMatrix.rowMaxV.emplace(2 * v->getIdx() + 1, pM);
+//        this->sparseMatrix.rowMaxV.emplace(2 * (v->getIdx() + 1), nM);
 
-
-        juncs = v->getNextJuncs();
-        for (auto junc : juncs) {
-            int j = junc->getSource()->getIdx();
-            if ( junc->getSourceDir() == '-') {
-                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
-            } else {
-                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
-            }
-        }
-
-        float pM = toPositiveVs.empty() ? 0 : *std::max_element(toPositiveVs.begin(),toPositiveVs.end());
-        float nM = toNegativeVs.empty() ? 0 : *std::max_element(toNegativeVs.begin(),toNegativeVs.end());
-        this->rowMaxV.emplace(2 * v->getIdx() + 1, pM);
-        this->rowMaxV.emplace(2 * (v->getIdx() + 1), nM);
-
-    }
 
 
 //   vertices are sorted by idx already
@@ -570,7 +615,6 @@ SparseMatrix&  Graph::getConjugateMatrix(){
 //        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + rEp5InEdges->size());
 //
 //    }
-    return sparseMatrix;
 }
 
 void Graph::parseConnectedComponents() {
@@ -633,24 +677,51 @@ Junction *Graph::addJunction(Junction *j) {
     return j;
 }
 
+void Graph::removeJunc(Junction *junc) {
+    junc->setRemoved(true);
+}
 void Graph::initRowMax() {
+
+    if (this->vertices->size() / this->junctions->size() > 50) this->sparse = false;
+    else this->sparse = true;
+    //   vertices are sorted by idx already
+    this->sparseMatrix.IA.push_back(0);
     for (auto v : *this->vertices) {
+//        v + row
         auto juncs = v->getPrevJuncs();
+        sort(juncs.begin(), juncs.end(), [](const Junction *lhs, const Junction *rhs) {
+            return lhs->getSource()->getIdx() < rhs->getSource()->getIdx();
+        });
         std::vector<float> toPositiveVs;
+        std::vector<int> toPositiveJAs;
         std::vector<float> toNegativeVs;
+        std::vector<int> toNegativeJAs;
         for (auto junc: juncs) {
             int j = 2 * (junc->getSource()->getIdx() + 1);
             if (junc->getSourceDir() == '+')
                 j = 2 * junc->getSource()->getIdx() + 1;
             if ( junc->getTargetDir() == '+') {
                 toPositiveVs.push_back(junc->getWeight()->getCopyNum());
+                toPositiveJAs.push_back(j);
             } else {
                 toNegativeVs.push_back(junc->getWeight()->getCopyNum());
+                toNegativeJAs.push_back(j);
             }
         }
 
+//          value
         this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toPositiveVs.begin(),toPositiveVs.end());
         this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toNegativeVs.begin(),toNegativeVs.end());
+//          value col
+        this->sparseMatrix.JA.insert(this->sparseMatrix.JA.end(), toPositiveJAs.begin(), toPositiveJAs.end());
+        this->sparseMatrix.JA.insert(this->sparseMatrix.JA.end(), toNegativeJAs.begin(), toNegativeJAs.end());
+
+
+//      IA, for value count
+        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + toPositiveVs.size());
+        this->sparseMatrix.IA.push_back(this->sparseMatrix.IA.back() + toNegativeVs.size());
+
+
         juncs = v->getNextJuncs();
         for (auto junc : juncs) {
             int j = junc->getSource()->getIdx();
@@ -665,5 +736,41 @@ void Graph::initRowMax() {
         float nM = toNegativeVs.empty() ? 0 : *std::max_element(toNegativeVs.begin(),toNegativeVs.end());
         this->rowMaxV.emplace(2 * v->getIdx() + 1, pM);
         this->rowMaxV.emplace(2 * (v->getIdx() + 1), nM);
+        this->sparseMatrix.rowMaxV.emplace(2 * v->getIdx() + 1, pM);
+        this->sparseMatrix.rowMaxV.emplace(2 * (v->getIdx() + 1), nM);
+
     }
+
+
+//    for (auto v : *this->vertices) {
+//        auto juncs = v->getPrevJuncs();
+//        std::vector<float> toPositiveVs;
+//        std::vector<float> toNegativeVs;
+//        for (auto junc: juncs) {
+//            int j = 2 * (junc->getSource()->getIdx() + 1);
+//            if (junc->getSourceDir() == '+')
+//                j = 2 * junc->getSource()->getIdx() + 1;
+//            if ( junc->getTargetDir() == '+') {
+//                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
+//            } else {
+//                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
+//            }
+//        }
+//
+//        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toPositiveVs.begin(),toPositiveVs.end());
+//        this->sparseMatrix.values.insert(this->sparseMatrix.values.end(), toNegativeVs.begin(),toNegativeVs.end());
+//        juncs = v->getNextJuncs();
+//        for (auto junc : juncs) {
+//            int j = junc->getSource()->getIdx();
+//            if ( junc->getSourceDir() == '-') {
+//                toPositiveVs.push_back(junc->getWeight()->getCopyNum());
+//            } else {
+//                toNegativeVs.push_back(junc->getWeight()->getCopyNum());
+//            }
+//        }
+//
+//        float pM = toPositiveVs.empty() ? 0 : *std::max_element(toPositiveVs.begin(),toPositiveVs.end());
+//        float nM = toNegativeVs.empty() ? 0 : *std::max_element(toNegativeVs.begin(),toNegativeVs.end());
+//        this->rowMaxV.emplace(2 * v->getIdx() + 1, pM);
+//        this->rowMaxV.emplace(2 * (v->getIdx() + 1), nM);
 }

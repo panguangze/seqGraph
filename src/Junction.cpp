@@ -110,6 +110,13 @@ bool Junction::isInferred() const {
     return inferred;
 }
 
+bool Junction::isRemoved() {
+    return this->removed;
+}
+void Junction::setRemoved(bool r) {
+    this->removed = r;
+}
+
 void Junction::setInferred(bool inferred) {
     Junction::inferred = inferred;
 }

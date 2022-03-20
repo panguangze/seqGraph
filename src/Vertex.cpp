@@ -228,6 +228,9 @@ void Vertex::setGeneAndScore(bool gene, float s) {
     this->score = s;
 }
 
+bool Vertex::isGeneAndScoreOk() {
+    return this->containsGene && score > 0.7;
+}
 bool Vertex::isVisited() const {
     return visited;
 }

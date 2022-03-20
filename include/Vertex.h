@@ -59,6 +59,7 @@ namespace seqGraph {
         void setNextJunc(Junction*);
         void setPrevJunc(Junction*);
         void setGeneAndScore(bool gene, float s);
+        bool isGeneAndScoreOk();
 
 
         const std::string getId() const;

@@ -33,6 +33,7 @@ namespace seqGraph {
         Edge *oEdge; // original edge
         Edge *cEdge; // conjugate edge
         bool inferred;
+        bool removed;
 
     public:
         Junction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, float copyNum,
@@ -60,6 +61,9 @@ namespace seqGraph {
         Vertex *getTarget() const;
 
         bool isInferred() const;
+
+        bool isRemoved();
+        void setRemoved(bool r);
 
         void setInferred(bool inferred);
 

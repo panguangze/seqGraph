@@ -52,7 +52,7 @@ namespace seqGraph {
         std::vector<std::set<int>* > connectedJunctionsIdx;
         std::map<int, float> rowMaxV;
         SparseMatrix sparseMatrix;
-
+        bool sparse;
     public:
         bool isReconstructed;
         Graph();
@@ -75,6 +75,12 @@ namespace seqGraph {
         inline float getIRowMaxV(int i ) {
             return rowMaxV[i];
         }
+
+        inline bool isSparse() const {
+            return this->sparse;
+        }
+
+        void removeJunc(Junction* junc);
         Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum);
 
         Junction *

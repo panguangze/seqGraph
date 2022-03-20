@@ -74,6 +74,7 @@ const float INF = 1e18;
 matching::matching(seqGraph::Graph* graph1) {
     this->graph = graph1;
     this->graph->initRowMax();
+    this->graph->removeByGeneAndScore();
     N = 2 * graph1->getVCount();
     this->matched = new int[N + 1];
     std::fill_n(this->matched,N+1, -1);
@@ -570,7 +571,7 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
     return resPath;
 }
 
-float* matching::mergePath(std::vector<int>* p1, std::vector<int>* p2, seqGraph::SparseMatrix& matrix, float* result) {
+float* matching::mergePath(std::vector<int>* p1, std::vector<int>* p2, float* result) {
 //    auto result = new float[4];
 //    for(int i = 0 ; i< 4 ; i ++) result[i] = 0;
 //            TODO, only add end node
@@ -669,7 +670,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
                 values[2] = this->getIJ(j, seqGraph::conjugateIdx(i));
                 values[3] = this->getIJ(seqGraph::conjugateIdx(j), seqGraph::conjugateIdx(i));
             } else {
-                mergePath(iPath.second, jPath.second, originGraph->getConjugateMatrix(), values);
+                mergePath(iPath.second, jPath.second, values);
             }
 //            if (values[0] == 0 && values[1]==0 && values[2]==0 && values[3]==0) continue;
 //            std::string v1Str, v2Str;
@@ -733,13 +734,18 @@ void matching::checkConjugateMatrix() {
 }
 
 float matching::getIJ(int i, int j) {
-    auto iIdx  = (i + 1) / 2;
-    auto jIdx = (j + 1) / 2;
-    auto iDir = i % 2 == 0 ? '-' : '+';
-    auto jDir = j % 2 == 0 ? '-' : '+';
+    if (this->graph->isSparse())
+        return this->getMatrix().getIJ(i,j);
+    else {
+        auto iIdx  = (i + 1) / 2;
+        auto jIdx = (j + 1) / 2;
+        auto iDir = i % 2 == 0 ? '-' : '+';
+        auto jDir = j % 2 == 0 ? '-' : '+';
 //    get junction j to i
-    return this->graph->getIJ(jIdx - 1, iIdx - 1, jDir, iDir);
+        return this->graph->getIJ(jIdx - 1, iIdx - 1, jDir, iDir);
+    }
 }
+
 
 std::vector<int>* matching::breakCycle(std::vector<int> * cyclePath) {
     auto res = new std::vector<int>();
