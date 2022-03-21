@@ -336,7 +336,6 @@ int main(int argc, char *argv[]) {
 //        cyclePathsFile<<"sub\n";
 //        cyclePathsFile<<"iter 0\n";
         std::set<std::string> seen;
-        bool not_print_tag;
         std::vector<std::vector<std::string>> visited_path;
 
         for (auto &item: *paths) {
@@ -349,27 +348,71 @@ int main(int argc, char *argv[]) {
                 int total_length = 0;
                 std::vector<int> path;
 
+                bool not_print_tag;
 
                 for(const auto& v: *item.second) {
 //                    path.emplace_back(v)
                     int idx = (&v-&*(item.second->begin()));
                     // record IDX OF A-B-A_0-B_0
-                    if (idx!=0 && m->idx2VertexInCurrentGraph(item.second->front())->sameVertex(*(m->idx2VertexInCurrentGraph(v))) && m->idx2VertexInCurrentGraph((*item.second)[idx-1])->sameVertex(*(m->idx2VertexInCurrentGraph(item.second->back())))){
+                    if (m->idx2StrDir(v)=="EDGE_74036_length_196_cov_93.191489+"){
+                        std::cout<<'fk'<<std::endl;
+                        if (idx!=0 ){
+                            std::cout<<m->idx2StrDir(item.second->front())<<std::endl;
+                            std::cout<<m->idx2StrDir(v)<<std::endl;
+                            std::cout<<m->idx2StrDir((*item.second)[idx-1])<<std::endl;
+                            std::cout<<m->idx2StrDir(item.second->back())<<std::endl;
+                        }
+                    }
+                    std::string true_name_front;
+                    std::string true_name_current;
+                    std::string true_name_pre;
+                    std::string true_name_back;
+
+                    if(idx!=0){
+                        std::string idStrFront = m->idx2Str(item.second->front());
+                        auto pos_front = idStrFront.find_last_of('_');
+                        true_name_front = idStrFront.substr(0,pos_front);
+
+                        std::string idStrCurrent = m->idx2Str(v);
+                        auto pos_current = idStrCurrent.find_last_of('_');
+                        true_name_current = idStrCurrent.substr(0,pos_current);
+
+                        std::string idStrPre = m->idx2Str((*item.second)[idx-1]);
+                        auto pos_pre = idStrPre.find_last_of('_');
+                        true_name_pre = idStrPre.substr(0,pos_pre);
+
+                        std::string idStrBack = m->idx2Str(item.second->back());
+                        auto pos_back = idStrBack.find_last_of('_');
+                        true_name_back = idStrBack.substr(0,pos_back);
+                    }
+
+
+                    if (idx!=0 && true_name_front==true_name_current && true_name_pre == true_name_back){
+                        continue;
                         not_print_tag = true;
                     }
                     else{
                         not_print_tag = false;
                     }
+
+
+//
+//                    if (idx!=0 && m->idx2VertexInCurrentGraph(item.second->front())->sameVertex(*(m->idx2VertexInCurrentGraph(v))) && m->idx2VertexInCurrentGraph((*item.second)[idx-1])->sameVertex(*(m->idx2VertexInCurrentGraph(item.second->back())))){
+//                        not_print_tag = true;
+//                    }
+//                    else{
+//                        not_print_tag = false;
+//                    }
                     std::vector<std::string> tokens;
                     tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
-//                    int length = std::stoi(tokens[3]);
-//                    total_length+=length;
+                    int length = std::stoi(tokens[3]);
+                    total_length+=length;
                 }
-//                if(total_length<1000|| not_print_tag){
-//                    continue;
-//                }
+                if(total_length<1000|| not_print_tag){
+                    continue;
+                }
 //                bool self_loop_flag = false;
-                std::string path_str;
+//                std::string path_str;
                 std::vector<std::string> tmp;
                 for(auto &t: *item.second){
                     std::cout<<m->idx2Str(t)<<std::endl;
@@ -379,7 +422,7 @@ int main(int argc, char *argv[]) {
                     tmp.emplace_back(true_name);
                 }
                 for(const auto& v: *item.second) {
-                    path_str+=("_"+std::to_string(v));
+//                    path_str+=("_"+std::to_string(v));
                     std::cout<<m->idx2Str(v)<<std::endl;
                     std::string idStr = m->idx2Str(v);
                     auto pos = idStr.find_last_of('_');

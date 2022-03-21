@@ -1,3 +1,7 @@
+iter 0,graph1
+EDGE_74036_length_196_cov_93.191489+	EDGE_74038_length_354_cov_88.882943+	EDGE_74036_length_196_cov_93.191489+	EDGE_74038_length_354_cov_88.882943+	
+iter 0,graph1
+EDGE_74036_length_196_cov_93.191489+	EDGE_74038_length_354_cov_88.882943+	EDGE_74036_length_196_cov_93.191489+	EDGE_74038_length_354_cov_88.882943+	
 iter 0,graph2
 EDGE_73998_length_1048_cov_276.856999+	EDGE_68670_length_2755_cov_8.786667+	
 iter 0,graph2
