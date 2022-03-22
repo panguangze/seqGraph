@@ -108,7 +108,7 @@ for item in tmp.keys():
         left_node_len = int(first.split("_")[3])
         right_node_len = int(second.split("_")[3])
         if (left_score < 0.2 and left_node_len > 10000) or (right_score < 0.2 and right_node_len > 10000):
-            # print(first, left_score, second, right_score)
+            print(first, left_score, second, right_score)
             continue
         write_juncs.append("JUNC {} {} {} {} {}\n".format(first, fdir, second, sdir, int(depth) / 2))
         write_segs.add(all_segs[first].strip() + " " + (gene_res[first] if first in gene_res else '0') + " " + (
