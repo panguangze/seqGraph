@@ -22,16 +22,38 @@ SparseMatrix::~SparseMatrix() {
 }
 
 float SparseMatrix::getIJ(int i, int j) {
+    int cacheSize = 1000;
+    std::string tmp = std::to_string(i).append("-").append(std::to_string(j));
+    std::string ctmp = std::to_string(seqGraph::conjugateIdx(j)).append("-").append(std::to_string(conjugateIdx(i)));
+
+    if (IA[i + 1] - IA[i] > cacheSize && cache.find(tmp) != cache.end())
+        return cache[tmp];
+    if (IA[seqGraph::conjugateIdx(j) + 1] - IA[seqGraph::conjugateIdx(j)] > cacheSize && cache.find(ctmp) != cache.end()) {
+        return cache[ctmp];
+    }
     auto moveC = IA[i];
     auto countI = IA[i + 1];
     for (int k = moveC; k < moveC + (countI - moveC); k++) {
-        if (JA[k] == j) return values[k];
+        if (JA[k] == j){
+            if (countI - moveC > cacheSize) {
+                std::string tmp = std::to_string(i).append("-").append(std::to_string(j));
+                cache.emplace(tmp, values[k]);
+            }
+            return values[k];
+        }
     }
+
 //  conjugate
     moveC = IA[seqGraph::conjugateIdx(j)];
     countI = IA[seqGraph::conjugateIdx(j) + 1];
     for (int k = moveC; k < moveC + (countI - moveC); k++) {
-        if (JA[k] == conjugateIdx(i)) return values[k];
+        if (JA[k] == conjugateIdx(i)) {
+            if (countI - moveC > cacheSize) {
+                std::string tmp = std::to_string(i).append("-").append(std::to_string(j));
+                cache.emplace(tmp, values[k]);
+            }
+            return values[k];
+        }
     }
     return 0;
 }
@@ -71,7 +93,7 @@ Graph::Graph() {
     this->vertices = new std::vector<Vertex *>();
     this->junctions = new std::vector<Junction *>();
     verticesIdx = new std::map<std::string, int>();
-    junctionIdx = new std::map<std::string, int>();
+    junctionIdx = new std::unordered_map<std::string, int>();
     ConjugateMatrix = nullptr;
     source = nullptr;
     sink = nullptr;
@@ -410,8 +432,8 @@ float Graph::getIJ(int i, int j,char sDir,char tDir) {
 //    }
 //    if (junctionIdx->find(k) != junctionIdx->end()) {
     std::string test = "sewwe";
-    auto idx = (*junctionIdx)[k];
-    if (idx != 0) {
+    if (junctionIdx->find(k) != junctionIdx->end()) {
+        auto idx = (*junctionIdx)[k];
         return (*this->junctions)[idx - 1]->getWeight()->getCopyNum();
     }
 //    }
@@ -422,8 +444,8 @@ float Graph::getIJ(int i, int j,char sDir,char tDir) {
 //    auto rk = v2.getId()+v1.getId()+v2d+v1d;
     auto  rk = std::to_string(j) + tDir + std::to_string(i)  + sDir;
 //    if (junctionIdx->find(rk) != junctionIdx->end()) {
-    idx = (*junctionIdx)[rk];
-    if (idx != 0) {
+    if (junctionIdx->find(rk) != junctionIdx->end()) {
+        auto idx = (*junctionIdx)[rk];
         return (*this->junctions)[idx - 1]->getWeight()->getCopyNum();
     }
 //    }

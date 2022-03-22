@@ -7,9 +7,10 @@
 #include <algorithm>
 #include <queue>
 #include <iostream>
+#include "limits"
 #include <fstream>
 
-const float ZERO = 0.00000001;
+const float ZERO = 0.0000001;
 //
 bool cmp(std::pair<int, std::vector<int>* >& a,
          std::pair<int, std::vector<int>* >& b)
@@ -70,7 +71,7 @@ void matching::printM(int i){
         std::cout<<this->getIJ(i,j)<<"\t";
     }
 }
-const float INF = 1e18;
+const float INF = std::numeric_limits<float>::max();
 matching::matching(seqGraph::Graph* graph1) {
     this->graph = graph1;
     this->graph->initRowMax();
@@ -215,7 +216,7 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
 //    auto matrix = getMatrix();
     int x,cY,y=0, yy=0;
     float d = 0;
-    std::fill_n(slack, N+1, 10000000);
+    std::fill_n(slack, N+1, INF);
     matched[y] = u;
 
     while (true){
@@ -223,6 +224,9 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
         visity[seqGraph::conjugateIdx(x)] = true;
 //        visity[x] = true;
         for(int i = 1; i < N + 1; i++){
+            if(ex[x] > 1000) {
+                int k = 88;
+            }
             if(visity[i] or i == x) continue;
             auto mIJ = this->getIJ(x,i);
             if(slack[i] >= ex[x] + ey[i] - mIJ){
@@ -231,8 +235,13 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
             }
             if(slack[i] <= d){
                 d = slack[i],yy = i; //找出减少最小的那条边
+                //            如果没有matched，并且是zero就break
+                if (matched[i] == -1 && d < ZERO)
+                    break;
             }
-            if (matched[yy] == -1 && d == 0) break;
+        }
+        if (d < ZERO) {
+            d = 0;
         }
         if (d != 0) {
             for(int i = 1; i < N+1; i++){
@@ -399,6 +408,9 @@ void matching::main_steps() {
     }
     std::set<int> skipped;
     for( int i = 1 ; i < N+1 ; i++ ){
+        if (i == 3) {
+            int ii = 99;
+        }
         if (skipped.find(i) != skipped.end()) continue;
         memset( visity , false , sizeof(visity) );
         std::fill_n(pre, N+1, 0);

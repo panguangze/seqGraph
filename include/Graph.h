@@ -9,6 +9,7 @@
 #include "Junction.h"
 #include  <set>
 #include "map"
+#include "unordered_map"
 extern std::string SUB_ONLY;
 
 namespace seqGraph {
@@ -24,6 +25,7 @@ namespace seqGraph {
         std::vector<int> IA;
         std::vector<int> JA;
         std::map<int, float> rowMaxV;
+        std::unordered_map<std::string, float> cache;
 
 
         explicit SparseMatrix ();
@@ -48,7 +50,7 @@ namespace seqGraph {
         Vertex *sink;
         float ** ConjugateMatrix;
         std::map<std::string, int>* verticesIdx;
-        std::map<std::string, int>* junctionIdx;
+        std::unordered_map<std::string, int>* junctionIdx;
         std::vector<std::set<int>* > connectedJunctionsIdx;
         std::map<int, float> rowMaxV;
         SparseMatrix sparseMatrix;
