@@ -171,6 +171,10 @@ Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char so
         sourceVertex->setNextJunc(junction);
         targetVertex->setPrevJunc(junction);
         return junction;
+    } else {
+        if (copyNum > jun->getWeight()->getCopyNum()) {
+            jun->getWeight()->setCopyNum(copyNum);
+        }
     }
     return jun;
 }
