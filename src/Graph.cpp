@@ -154,12 +154,18 @@ Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aE
 Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, float copyNum,
                              float coverage, bool aIsBounded) {
 //    auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
-    auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
+if (targetVertex->getId() == "EDGE_2331069_length_139_cov_10.154762_0") {
+    int kk = 33;
+}
+auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
+    float plasCopy = (sourceVertex->getScore() + targetVertex->getScore()) / 2 * copyNum;
     if (jun == nullptr) {
 //        auto  k = sourceVertex->getId()+ targetVertex->getId()+sourceDir+targetDir;
         auto k = std::to_string(sourceVertex->getIdx()) + sourceDir + std::to_string(targetVertex->getIdx()) +targetDir;
 //        throw DuplicateJunctionException(junction);
-        auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
+
+//        junc with plasmid score
+        auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, plasCopy, coverage, aIsBounded);
 //        junction->junctionToEdge();
         junction->setIdx(this->junctions->size());
 
@@ -172,8 +178,8 @@ Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char so
         targetVertex->setPrevJunc(junction);
         return junction;
     } else {
-        if (copyNum > jun->getWeight()->getCopyNum()) {
-            jun->getWeight()->setCopyNum(copyNum);
+        if (plasCopy > jun->getWeight()->getCopyNum()) {
+            jun->getWeight()->setCopyNum(plasCopy);
         }
     }
     return jun;
@@ -318,7 +324,7 @@ Junction* Graph::doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d) {
     auto  rk = std::to_string(v2.getIdx()) +v2d + std::to_string(v1.getIdx())+v1d;
     if (junctionIdx->find(k) != junctionIdx->end()) {
         auto idx = (*junctionIdx)[k];
-        return (*junctions)[idx];
+        return (*junctions)[idx - 1];
     } else if (junctionIdx->find(rk) != junctionIdx->end()) {
         auto idx = (*junctionIdx)[rk];
         return (*junctions)[idx - 1];

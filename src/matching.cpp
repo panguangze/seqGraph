@@ -178,7 +178,7 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, flo
         }
     }
 //    sort(candidates.begin(),candidates.end(), this->cmpVertex());
-//    Quicksort(this, this->idx2VertexInCurrentGraph(u)->getOutCoverage(), candidates, 0, candidates.size() - 1);
+    Quicksort(this, this->idx2VertexInCurrentGraph(u)->getOutCoverage(), candidates, 0, candidates.size() - 1);
     for (auto i : candidates) {
         if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
             pre->insert(u);
@@ -244,7 +244,7 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
             d = 0;
         }
         if (d != 0) {
-            for(int i = 1; i < N+1; i++){
+            for(int i = 0; i < N+1; i++){
                 if(visity[i]) ex[matched[i]] -= d,ey[i] += d;
                 else slack[i] -= d;
             }
@@ -408,7 +408,7 @@ void matching::main_steps() {
     }
     std::set<int> skipped;
     for( int i = 1 ; i < N+1 ; i++ ){
-        if (i == 3) {
+        if (i == 7) {
             int ii = 99;
         }
         if (skipped.find(i) != skipped.end()) continue;

@@ -28,6 +28,10 @@ namespace seqGraph {
         int copy_idx; //
         bool containsGene;
         float score;
+    public:
+        float getScore() const;
+
+    protected:
 
         bool visited;
     public:

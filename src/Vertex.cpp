@@ -238,3 +238,7 @@ bool Vertex::isVisited() const {
 void Vertex::setIsVisited(bool visited) {
     Vertex::visited = visited;
 }
+
+float Vertex::getScore() const {
+    return score;
+}
