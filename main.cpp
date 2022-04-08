@@ -15,7 +15,7 @@ const float M_WEIGHT = 1000000;
 bool BREAK_C = false;
 int TYPE = 0;
 bool SELF_L = false;
-int MIN_L = -1;
+int MIN_L = 1000;
 std::string SUB_ONLY = "";
 bool check_visited_path(std::vector<std::vector<std::string>>& visited_vec, std::vector<std::string>& path){
     for (auto& p: visited_vec){
@@ -224,6 +224,7 @@ int main(int argc, char *argv[]) {
 //                int mm = 9;
 //            }
             auto v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
+            score = 1;
             v->setGeneAndScore(cGene, score);
             for (int i = 1; i < copyNum; i++) {
                 source.pop_back();
@@ -297,7 +298,7 @@ int main(int argc, char *argv[]) {
         std::cout<<"process subgraph "<<n<<"\n";
         auto subGraph = g->getSubgraph(n);
 //          auto subGraph = g;
-//        subGraph->removeByGeneAndScore();
+//        subGraph->removeByGeneAndScore(cyclePathsFile);
         std::cout<<"sub graph nodes: "<<subGraph->getVertices()->size()<<std::endl;
         if(subGraph->getVertices()->size() == 1) {
             resultFile<<subGraph->getVertices()->front()->getOriginId()<<"+"<<"\n";
@@ -408,7 +409,7 @@ int main(int argc, char *argv[]) {
                     int length = std::stoi(tokens[3]);
                     total_length+=length;
                 }
-                if(total_length<1000|| not_print_tag){
+                if(total_length<MIN_L|| not_print_tag){
                     continue;
                 }
 //                bool self_loop_flag = false;
@@ -464,7 +465,7 @@ int main(int argc, char *argv[]) {
         int prevPathSize = paths->size();
         if (paths->size() != 1) {
             while (iterRounds !=0) {
-                std::cout<<"Iteration "<<iterN<<",nodes count"<<paths->size()<<"...\n";
+                std::cout<<"Iteration "<<iterN + 1<<",nodes count"<<paths->size()<<"...\n";
 //                TODO if v==1 or juncs ==1 continue
                 m->reconstructMatrix(paths, subGraph);
 //                checkMatrixConjugate(m->getMatrix(), m->getN());
@@ -487,22 +488,31 @@ int main(int argc, char *argv[]) {
                 iterN++;
             }
         }
+        std::vector<std::string> all_paths;
         for(auto item : *paths) {
             if (BREAK_C && m->isCycle(item.first)) continue;
             int total_length = 0;
+            std::string current_path;
             for(const auto& v: *item.second) {
                 std::vector<std::string> tokens;
                 tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
-//                int length = std::stoi(tokens[3]);
-//                total_length+=length;
+                int length = std::stoi(tokens[3]);
+                total_length+=length;
                 if (v == -1) {
                     resultFile<<'c';
                     continue;
                 }
 //                if (MIN_L != -1 && total_length < MIN_L) continue;
-                resultFile << m->idx2StrDir(v) << "\t";
+                current_path.append(m->idx2StrDir(v)).append("\t");
             }
-            resultFile<<"\n";
+            if (total_length>500){
+                if (std::find(all_paths.begin(), all_paths.end(), current_path) != all_paths.end())
+                    continue;
+                all_paths.push_back(current_path);
+                resultFile<<current_path<<std::endl;
+            }else{
+                std::cout<<"not pass for: "<<current_path<<std::endl;
+            }
         }
         free(m);
         free(subGraph);

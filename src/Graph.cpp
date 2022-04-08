@@ -158,7 +158,8 @@ if (targetVertex->getId() == "EDGE_2331069_length_139_cov_10.154762_0") {
     int kk = 33;
 }
 auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
-    float plasCopy = (sourceVertex->getScore() + targetVertex->getScore()) / 2 * copyNum;
+//    float plasCopy = (sourceVertex->getScore() + targetVertex->getScore()) / 2 * copyNum;
+    float plasCopy = copyNum;
     if (jun == nullptr) {
 //        auto  k = sourceVertex->getId()+ targetVertex->getId()+sourceDir+targetDir;
         auto k = std::to_string(sourceVertex->getIdx()) + sourceDir + std::to_string(targetVertex->getIdx()) +targetDir;
@@ -345,6 +346,7 @@ bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
     EndPointPath EPStack;
     EPStack.push_back(startEP);
     Edge *nextEdge = startEP->getOneNextEdge();
+    std::vector<Junction*> js;
     while (true) {
         if (nextEdge == NULL) {
             EPStack.pop_back();
@@ -360,6 +362,7 @@ bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
                 isReach = true;
                 break;
             }
+            js.push_back(nextEdge->getJunction());
             nextEdge->setVisited(true);
             EPStack.push_back(nextEP);
             startEP = nextEP;
@@ -367,10 +370,15 @@ bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
         }
     }
     this->resetJunctionVisitFlag();
+    if(isReach) {
+        for (auto j : js) {
+            j->getWeight()->setCopyNum(100000);
+        }
+    }
     return isReach;
 }
 
-void Graph::removeByGeneAndScore() {
+void Graph::removeByGeneAndScore(std::ofstream& cycleFile) {
 //    for vertex, gene score.
     bool  flag = false;
     for (auto v : *this->getVertices()) {
@@ -714,7 +722,7 @@ void Graph::removeJunc(Junction *junc) {
 }
 void Graph::initRowMax() {
 
-    if (this->vertices->size() / this->junctions->size() > 50) this->sparse = false;
+    if (this->junctions->size() == 0 || this->vertices->size() / this->junctions->size() > 50) this->sparse = false;
     else this->sparse = true;
     //   vertices are sorted by idx already
     this->sparseMatrix.IA.push_back(0);

@@ -13,5 +13,5 @@ for line in orderin.readlines():
         tmp_seq = record_dict[t[0:-1]].seq
         if t[-1] == '-':
             tmp_seq = record_dict[t[0:-1]].seq.reverse_complement()
-        seq = seq +n_seq+ tmp_seq
+        seq = seq + tmp_seq
     faout.write(">"+tmp[0]+"\n"+str(seq)+"\n")

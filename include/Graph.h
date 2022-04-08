@@ -104,7 +104,7 @@ namespace seqGraph {
         Vertex *getVertexByIdQ(std::string Id);
         Vertex *getVertexByIdx(int idx);
 
-        void removeByGeneAndScore();
+        void removeByGeneAndScore(std::ofstream& cycleFile);
 
         float getIJ(int i, int j,char sDir,char tDir);
 

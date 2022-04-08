@@ -75,7 +75,7 @@ const float INF = std::numeric_limits<float>::max();
 matching::matching(seqGraph::Graph* graph1) {
     this->graph = graph1;
     this->graph->initRowMax();
-    this->graph->removeByGeneAndScore();
+//    this->graph->removeByGeneAndScore();
     N = 2 * graph1->getVCount();
     this->matched = new int[N + 1];
     std::fill_n(this->matched,N+1, -1);
@@ -593,43 +593,43 @@ float* matching::mergePath(std::vector<int>* p1, std::vector<int>* p2, float* re
     auto front_2 = p2->front();
     auto back_1 = p1->back();
     auto back_2 = p2->back();
-    result[0] = this->getIJ(front_2,back_1);
-    result[1] = this->getIJ(seqGraph::conjugateIdx(back_2),back_1);
-    result[2] = this->getIJ(front_2, seqGraph::conjugateIdx(front_1));
-    result[3] = this->getIJ(seqGraph::conjugateIdx(back_2),seqGraph::conjugateIdx(front_1));
+    result[0] = this->getIJFromOrigG(front_2,back_1);
+    result[1] = this->getIJFromOrigG(seqGraph::conjugateIdx(back_2),back_1);
+    result[2] = this->getIJFromOrigG(front_2, seqGraph::conjugateIdx(front_1));
+    result[3] = this->getIJFromOrigG(seqGraph::conjugateIdx(back_2),seqGraph::conjugateIdx(front_1));
 
-    if (isCycle_1) {
-
-    }
-    int max_p1 = 5 > p1->size() ? p1->size():5;
-    int max_p2 = 5 > p2->size() ? p2->size():5;
-
-    for (int i = 0 ; i < max_p1; i ++) {
-        int ip1 = (*p1)[i];
-        if (ip1 == -1) continue;
-
-        for (int j = 0 ; j < max_p2; j ++) {
-            int ip2 = (*p2)[j];
-            if (ip2 == -1) continue;
-//            result[0] += matrix[ip2][ip1];
-//            result[1] += matrix[seqGraph::conjugateIdx(ip2)][ip1];
-//            result[2] += matrix[ip2][seqGraph::conjugateIdx(ip1)];
-//            result[3] += matrix[seqGraph::conjugateIdx(ip2)][seqGraph::conjugateIdx(ip1)];
-            if (ip1 % 2 == 1) {
-                if (ip2 % 2 == 1) {//            ++
-                    result[0] += this->getIJ(ip1,ip2);
-                } else {
-                    result[1] += this->getIJ(seqGraph::conjugateIdx(ip2), ip1);
-                }
-            } else {
-                if (ip2 % 2 == 1) {//            -+
-                    result[2] += this->getIJ(ip2, seqGraph::conjugateIdx(ip1));
-                } else {
-                    result[3] += this->getIJ(seqGraph::conjugateIdx(ip2), seqGraph::conjugateIdx(ip1));
-                }
-            }
-        }
-    }
+//    if (isCycle_1) {
+//
+//    }
+//    int max_p1 = 5 > p1->size() ? p1->size():5;
+//    int max_p2 = 5 > p2->size() ? p2->size():5;
+//
+//    for (int i = 0 ; i < max_p1; i ++) {
+//        int ip1 = (*p1)[i];
+//        if (ip1 == -1) continue;
+//
+//        for (int j = 0 ; j < max_p2; j ++) {
+//            int ip2 = (*p2)[j];
+//            if (ip2 == -1) continue;
+////            result[0] += matrix[ip2][ip1];
+////            result[1] += matrix[seqGraph::conjugateIdx(ip2)][ip1];
+////            result[2] += matrix[ip2][seqGraph::conjugateIdx(ip1)];
+////            result[3] += matrix[seqGraph::conjugateIdx(ip2)][seqGraph::conjugateIdx(ip1)];
+//            if (ip1 % 2 == 1) {
+//                if (ip2 % 2 == 1) {//            ++
+//                    result[0] += this->getIJ(ip1,ip2);
+//                } else {
+//                    result[1] += this->getIJ(seqGraph::conjugateIdx(ip2), ip1);
+//                }
+//            } else {
+//                if (ip2 % 2 == 1) {//            -+
+//                    result[2] += this->getIJ(ip2, seqGraph::conjugateIdx(ip1));
+//                } else {
+//                    result[3] += this->getIJ(seqGraph::conjugateIdx(ip2), seqGraph::conjugateIdx(ip1));
+//                }
+//            }
+//        }
+//    }
     return result;
 }
 
@@ -671,19 +671,24 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
 //    auto matrix = originGraph->getConjugateMatrix();
     for (auto iPath: *paths) {
         v1 = resultG->getVertexByIdQ(std::to_string(iPath.second->front()));
+        if (idx2Str(iPath.second->front()) == "EDGE_5532997_length_1440_cov_2.471753_0")
+            int iii = 9;
         for (auto jPath: *paths) {
+            if (idx2Str(jPath.second->front()) == "EDGE_62388_length_682_cov_5.543802_0")
+                int idi = 9;
             if (iPath.first == jPath.first) continue;
             v2 = resultG->getVertexByIdQ(std::to_string(jPath.second->front()));
-            if (iPath.second->size() == 1 && jPath.second->size() == 1) {
-                int i = iPath.second->front();
-                int j = jPath.second->front();
-                values[0] = this->getIJ(j,i);
-                values[1] = this->getIJ(seqGraph::conjugateIdx(j), i);
-                values[2] = this->getIJ(j, seqGraph::conjugateIdx(i));
-                values[3] = this->getIJ(seqGraph::conjugateIdx(j), seqGraph::conjugateIdx(i));
-            } else {
-                mergePath(iPath.second, jPath.second, values);
-            }
+            mergePath(iPath.second, jPath.second, values);
+//            if (iPath.second->size() == 1 && jPath.second->size() == 1) {
+//                int i = iPath.second->front();
+//                int j = jPath.second->front();
+//                values[0] = this->getIJFromOrigG(j,i);
+//                values[1] = this->getIJFromOrigG(seqGraph::conjugateIdx(j), i);
+//                values[2] = this->getIJFromOrigG(j, seqGraph::conjugateIdx(i));
+//                values[3] = this->getIJFromOrigG(seqGraph::conjugateIdx(j), seqGraph::conjugateIdx(i));
+//            } else {
+//                mergePath(iPath.second, jPath.second, values);
+//            }
 //            if (values[0] == 0 && values[1]==0 && values[2]==0 && values[3]==0) continue;
 //            std::string v1Str, v2Str;
 //            for (auto item : *iPath.second) {
@@ -755,6 +760,19 @@ float matching::getIJ(int i, int j) {
         auto jDir = j % 2 == 0 ? '-' : '+';
 //    get junction j to i
         return this->graph->getIJ(jIdx - 1, iIdx - 1, jDir, iDir);
+    }
+}
+
+float matching::getIJFromOrigG(int i, int j) {
+    if (this->originalGraph->isSparse())
+        return this->originalGraph->getConjugateMatrix().getIJ(i,j);
+    else {
+        auto iIdx  = (i + 1) / 2;
+        auto jIdx = (j + 1) / 2;
+        auto iDir = i % 2 == 0 ? '-' : '+';
+        auto jDir = j % 2 == 0 ? '-' : '+';
+//    get junction j to i
+        return this->originalGraph->getIJ(jIdx - 1, iIdx - 1, jDir, iDir);
     }
 }
 

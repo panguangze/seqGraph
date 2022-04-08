@@ -66,6 +66,7 @@ public:
     }
 
     float getIJ(int i,int j);
+    float getIJFromOrigG(int i,int j);
 
 //
     std::string idx2StrDir(int idx, const std::string& token= std::string(""));

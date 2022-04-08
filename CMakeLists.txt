@@ -26,9 +26,11 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} include/cxxopts.hpp)
 
 add_executable(matching main.cpp ${SOURCE_FILES} include/util.h)
 add_executable(rDistance utils/reads_overlap.cpp utils/reads_overlap.h include/util.h)
+add_executable(eref extract_ref.cpp )
 add_executable(bDistance utils/bDistance.cpp utils/bDistance.h include/util.h)
 target_link_libraries(rDistance -lhts)
 target_link_libraries(bDistance -lhts)
+target_link_libraries(eref -lpthread)
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
