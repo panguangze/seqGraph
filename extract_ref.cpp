@@ -612,7 +612,7 @@ void slide_window(unsigned char* record_ref_hit, int ref_len, int ref_index, lon
     for (int i = 0; i < frag_index; i++){
         el += (save_good_intervals[2*i+1] - save_good_intervals[2*i]);
     }
-    if(el>0 && (el/ref_len > 0.7))
+    if(el>0 && (float(el)/float(ref_len) > 0.7))
         interval_file<<ref_index<<"\t"<<el<<"\t"<<ref_len<<"\n";
     delete [] save_good_intervals;
     delete [] single_hit_num;
