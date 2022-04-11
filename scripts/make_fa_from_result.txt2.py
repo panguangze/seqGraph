@@ -24,10 +24,13 @@ for line in blastin.readlines():
 elen = prev_seg.split("_")[3]
 if float(prev_len)/float(elen) > blast_ratio or prev_len > 2000:
     blast_segs.add(t[0])
+
 record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 n_seq = Seq("N"*40)
 print(blast_segs)
 for line in orderin.readlines():
+    if line.startswith("iter") or line.startswith("self"):
+        continue
     seq = ""
     tmp = line.strip().split("\t")
     if len(tmp) == 1:
@@ -43,6 +46,8 @@ for line in orderin.readlines():
             blast_len = blast_len + elen
     if (float(blast_len) / float(all_len)) > 0.1:
         flags = True
+    if all_len < 1000:
+        flags = False
     if not flags:
         continue
     for t in tmp:
@@ -50,4 +55,4 @@ for line in orderin.readlines():
         if t[-1] == '-':
             tmp_seq = record_dict[t[0:-1]].seq.reverse_complement()
         seq = seq + tmp_seq
-    faout.write(">"+tmp[0]+"\n"+str(seq)+"\n")
+    faout.write(">"+"".join(tmp)+"\n"+str(seq)+"\n")
