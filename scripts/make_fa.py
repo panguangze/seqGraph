@@ -19,7 +19,7 @@ for line in orderin.readlines():
     if line.startswith("iter") or line.startswith("self"):
         continue
     seq = ""
-    tmp = re.split(" +",line.rstrip())
+    tmp = re.split("\t",line.strip())
     for t in tmp:
         tmp_seq = str(record_dict[t[0:-1]].seq)
         if t[-1] == '-':
