@@ -18,8 +18,8 @@ def rev_comp(s):
 
 if __name__ == "__main__":
     fa = pysam.FastaFile(sys.argv[1])
-    res = open(sys.argv[2], "w")
-    paths = open(sys.argv[3], 'r')
+    res = open(sys.argv[3], "w")
+    paths = open(sys.argv[2], 'r')
     # fa = pysam.FastaFile("/Users/troye/Documents/Recycler/bin/sim800/all.fa")
     # res = open("/Users/troye/Documents/Recycler/bin/sim800/neo800.fa", "w")
     # paths = open("/Users/troye/Documents/tmp/seqGraph/r.debug.c.522446.test.txt", 'rb')
