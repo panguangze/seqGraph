@@ -14,7 +14,10 @@ faout_f= sys.argv[3]
 faout = open(faout_f,"w")
 record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 h_appends = []
+
 for line in orderin.readlines():
+    if line.startswith("iter") or line.startswith("self"):
+        continue
     seq = ""
     tmp = re.split(" +",line.rstrip())
     for t in tmp:

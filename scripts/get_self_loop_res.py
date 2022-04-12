@@ -7,11 +7,13 @@ if __name__ == "__main__":
     with open(res) as all_f:
         while True:
             line1 = all_f.readline().strip()
-            line2 = all_f.readline().strip()
-            if not line2:
+            if not line1:
                 break
-            if line1 == "self loop:":
-                print("yes")
+            if line1.startswith("self"):
+                line2 = all_f.readline().strip()
+                if not line2:
+                    break
                 self_loop_file.write("self loop: \n")
-                self_loop_file.write(line2+"\n")
+                self_loop_file.write(line2 + "\n")
+
     self_loop_file.close()
