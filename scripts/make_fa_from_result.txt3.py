@@ -41,7 +41,7 @@ with open(plasscore_file, 'r') as ps:
         plasscore[id_] = float(item[1])
 
 genehit = {}
-for i in range(len(plasscore)):
+for i in range(len(orderin.readlines())):
     genehit[i + 1] = False
 with open(gene_hit, 'r') as gh:
     for s in gh:
