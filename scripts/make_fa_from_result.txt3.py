@@ -4,6 +4,7 @@ from Bio.Seq import Seq
 
 fain = sys.argv[1]
 orderin = open(sys.argv[2])
+orderintmp = open(sys.argv[2])
 faout = open(sys.argv[3], "w")
 blastin = open(sys.argv[4])
 blast_ratio = float(sys.argv[5])
@@ -41,9 +42,8 @@ with open(plasscore_file, 'r') as ps:
         plasscore[id_] = float(item[1])
 
 genehit = {}
-for id, i in enumerate(orderin):
+for id, i in enumerate(orderintmp):
     genehit[id + 1] = False
-print(genehit)
 with open(gene_hit, 'r') as gh:
     for s in gh:
         item = s.strip().split('\t')
@@ -51,6 +51,8 @@ with open(gene_hit, 'r') as gh:
             continue
         id_ = int(item[0].split('_')[1])
         genehit[id_] = True
+print(genehit)
+
 
 record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 n_seq = Seq("N" * 40)
