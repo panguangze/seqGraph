@@ -44,7 +44,7 @@ if __name__ == "__main__":
                     name = "_".join(contig[:-1].split('_')[:-1])
                     print("not found: ", name)
                     fasta += rev_comp(fa.fetch(name))
-        res.write(">res" + str(idx + 1) + "_" + str(len(fasta)) + "\n")
+        res.write(">res_" + str(idx + 1) + "_" + str(len(fasta)) + "\n")
         res.write(fasta + "\n")
 
     #
