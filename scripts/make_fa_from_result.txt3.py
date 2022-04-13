@@ -58,7 +58,7 @@ record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 n_seq = Seq("N" * 40)
 self_tag = False
 for idx, line in enumerate(orderin.readlines()):
-    print(idx, genehit[idx+1])
+    # print(idx, genehit[idx+1])
     if line.startswith("iter") or line.startswith("self"):
         if line.startswith("self"):
             self_tag = True
