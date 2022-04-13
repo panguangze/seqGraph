@@ -41,8 +41,9 @@ with open(plasscore_file, 'r') as ps:
         plasscore[id_] = float(item[1])
 
 genehit = {}
-for i in range(len(orderin.readlines())):
-    genehit[i + 1] = False
+for id, i in enumerate(orderin):
+    genehit[id + 1] = False
+print(genehit)
 with open(gene_hit, 'r') as gh:
     for s in gh:
         item = s.strip().split('\t')
@@ -55,6 +56,7 @@ record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 n_seq = Seq("N" * 40)
 self_tag = False
 for idx, line in enumerate(orderin.readlines()):
+    print(idx, genehit[idx+1])
     if line.startswith("iter") or line.startswith("self"):
         if line.startswith("self"):
             self_tag = True
