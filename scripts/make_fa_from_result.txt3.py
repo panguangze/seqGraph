@@ -102,7 +102,7 @@ for idx, line in enumerate(orderin.readlines()):
         if t[-1] == '-':
             tmp_seq = record_dict[t[0:-1]].seq.reverse_complement()
         seq = seq + tmp_seq
-    if plasscore[idx + 1] and plasscore[idx + 1] >= 0.7:
+    if genehit[idx + 1] and plasscore[idx + 1] >= 0.7:
         print(">gene_score" + "".join(tmp))
     else:
         if plasscore[idx + 1] >= 0.7:
