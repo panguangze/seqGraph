@@ -32,14 +32,6 @@ if float(prev_len) / float(elen) > blast_ratio or prev_len > 2000:
 #     for gene_r in gene_lst:
 #         gene_res.add(gene_r.strip())
 
-genehit = {}
-with open(gene_hit, 'r') as gh:
-    for s in gh:
-        item = s.strip().split('\t')
-        if len(s.strip()) == 0:
-            continue
-        id_ = int(item[0].split('_')[1])
-        genehit[id_] = True
 
 plasscore = {}
 with open(plasscore_file, 'r') as ps:
@@ -47,6 +39,17 @@ with open(plasscore_file, 'r') as ps:
         item = s.strip().split('\t')
         id_ = int(item[0].split('_')[1])
         plasscore[id_] = float(item[1])
+
+genehit = {}
+for i in range(len(plasscore)):
+    genehit[i + 1] = False
+with open(gene_hit, 'r') as gh:
+    for s in gh:
+        item = s.strip().split('\t')
+        if len(s.strip()) == 0:
+            continue
+        id_ = int(item[0].split('_')[1])
+        genehit[id_] = True
 
 record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 n_seq = Seq("N" * 40)
