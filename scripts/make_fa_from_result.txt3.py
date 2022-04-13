@@ -50,7 +50,7 @@ for idx, line in enumerate(orderin.readlines()):
     if len(tmp) == 1:
         # if tmp[0][0:-1] not in blast_segs or plasscore[idx] < 0.7:
         #     continue
-        if tmp[0][0:-1] in blast_segs or plasscore[idx] >= 0.7:
+        if tmp[0][0:-1] in blast_segs or plasscore[idx+1] >= 0.7:
             for t in tmp:
                 tmp_seq = record_dict[t[0:-1]].seq
                 if t[-1] == '-':
@@ -72,7 +72,7 @@ for idx, line in enumerate(orderin.readlines()):
         flags = True
     if all_len < 1000:
         flags = False
-    if not flags or plasscore[idx] < 0.7:
+    if not flags or plasscore[idx+1] < 0.7:
         continue
     for t in tmp:
         tmp_seq = record_dict[t[0:-1]].seq
