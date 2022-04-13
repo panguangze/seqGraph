@@ -99,17 +99,17 @@ for idx, line in enumerate(orderin.readlines()):
         flags = True
     if all_len < 1000:
         flags = False
-    if not flags and plasscore[idx + 1] < 0.7:
+    if not flags and plasscore[idx + 1] < 0.9:
         continue
     for t in tmp:
         tmp_seq = record_dict[t[0:-1]].seq
         if t[-1] == '-':
             tmp_seq = record_dict[t[0:-1]].seq.reverse_complement()
         seq = seq + tmp_seq
-    if genehit[idx + 1] and plasscore[idx + 1] >= 0.7:
+    if genehit[idx + 1] and plasscore[idx + 1] >= 0.9:
         print(">gene_score" + "".join(tmp))
     else:
-        if plasscore[idx + 1] >= 0.7:
+        if plasscore[idx + 1] >= 0.9:
             faout.write(">score" + "".join(tmp) + "\n" + str(seq) + "\n")
         else:
             faout.write(">gene" + "".join(tmp) + "\n" + str(seq) + "\n")
