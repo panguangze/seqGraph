@@ -259,7 +259,7 @@ for k in result:
         else:
             k2 = k
         print("res: ", k2)
-        plt.savefig("N"+k2[0:10]+"_"+k2[-10:-1]+"%s_blast.png"%ref, dpi=600)
+        plt.savefig("N"+k2[0:15]+"_"+k2[-15:-1]+"%s_blast.png"%ref, dpi=600)
         plt.close()
         f_in.close()
 print(t)
