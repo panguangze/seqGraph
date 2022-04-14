@@ -132,6 +132,6 @@ for idx, line in enumerate(orderin.readlines()):
         else:
             faout.write(">gene" + "".join(tmp) + "\n" + str(seq) + "\n")
 
-with open(sys.argv[7]) as res:
+with open(sys.argv[7], 'w') as res:
     for s in res:
         res.write(s+'\n')
