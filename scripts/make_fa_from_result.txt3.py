@@ -99,7 +99,7 @@ for idx, line in enumerate(orderin.readlines()):
         flags = True
     if all_len < 1000:
         flags = False
-    if not flags and plasscore[idx + 1] < 0.9:
+    if not flags and plasscore[idx + 1] < 0.9 or all_len <1000:
         continue
     for t in tmp:
         tmp_seq = record_dict[t[0:-1]].seq
