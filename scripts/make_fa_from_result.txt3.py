@@ -74,7 +74,7 @@ for idx, line in enumerate(orderin.readlines()):
                 if t[-1] == '-':
                     tmp_seq = record_dict[t[0:-1]].seq.reverse_complement()
                 seq = seq + tmp_seq
-            # faout.write(">self" + "".join(tmp) + "\n" + str(seq) + "\n")
+            faout.write(">self" + "".join(tmp) + "\n" + str(seq) + "\n")
             print(">self-gene" + "".join(tmp))
         else:
             for t in tmp:
@@ -109,6 +109,7 @@ for idx, line in enumerate(orderin.readlines()):
         seq = seq + tmp_seq
     if genehit[idx + 1] and plasscore[idx + 1] >= 0.9:
         print(">gene_score" + "".join(tmp))
+        faout.write(">score" + "".join(tmp) + "\n" + str(seq) + "\n")
     else:
         if plasscore[idx + 1] >= 0.9:
             faout.write(">score" + "".join(tmp) + "\n" + str(seq) + "\n")
