@@ -53,15 +53,17 @@ with open(gene_hit, 'r') as gh:
         genehit[id_] = True
 print(genehit)
 
-
 record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 n_seq = Seq("N" * 40)
 self_tag = False
+cycle_tag = False
 for idx, line in enumerate(orderin.readlines()):
     # print(idx, genehit[idx+1])
     if line.startswith("iter") or line.startswith("self"):
         if line.startswith("self"):
             self_tag = True
+        if line.startswith("iter"):
+            cycle_tag = True
         continue
     seq = ""
     tmp = line.strip().split("\t")
@@ -84,14 +86,25 @@ for idx, line in enumerate(orderin.readlines()):
                 seq = seq + tmp_seq
                 faout.write(">self" + "".join(tmp) + "\n" + str(seq) + "\n")
         continue
+
+    if cycle_tag:
+        # if tmp[0][0:-1] not in blast_segs or plasscore[idx] < 0.7:
+        #     continue
+        if genehit[idx + 1]:
+            print(">cycle-gene" + "".join(tmp))
+        if plasscore[idx + 1] >= 0.9:
+            print(">cycle-score" + "".join(tmp))
+
     flags = False
     is_gene = False
     blast_len = 0
     all_len = 0
+    if genehit[idx + 1]:
+        flags = True
+        is_gene = True
+        # if cycle_tag:
+        #     print(">cycle-gene" + "".join(tmp))
     for t in tmp:
-        if genehit[idx + 1]:
-            flags = True
-            is_gene = True
         elen = int(t.split("_")[3])
         all_len = all_len + elen
         if t[0:-1] in blast_segs:
@@ -100,7 +113,7 @@ for idx, line in enumerate(orderin.readlines()):
         flags = True
     if all_len < 1000:
         flags = False
-    if not flags and plasscore[idx + 1] < 0.9 or all_len <1000:
+    if not flags and plasscore[idx + 1] < 0.9 or all_len < 1000:
         continue
     for t in tmp:
         tmp_seq = record_dict[t[0:-1]].seq
