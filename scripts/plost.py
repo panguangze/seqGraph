@@ -15,7 +15,8 @@ f_in = open(sys.argv[1])
 res = set()
 
 with open(sys.argv[2]) as r:
-    res.add(r.read().strip())
+    for line in r.readlines():
+        res.add(line.strip())
 
 title_contig = {}
 ref_contig_l = {}
