@@ -12,6 +12,11 @@ f.close()
 
 ref_contig = {}
 f_in = open(sys.argv[1])
+res = set()
+
+with open(sys.argv[2]) as r:
+    res.add(r.read().strip())
+
 title_contig = {}
 ref_contig_l = {}
 
@@ -207,7 +212,6 @@ for fk in k_lens.keys():
 # print(result)
 
 t = 0
-res = set()
 for k in result:
     if "self" in k or "gene" in k:
         pass

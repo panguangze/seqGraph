@@ -13,6 +13,7 @@ plasscore_file = sys.argv[7]
 blast_segs = set()
 prev_seg = ""
 prev_len = 0
+res_count = set()
 for line in blastin.readlines():
     t = line.strip().split("\t")
     if prev_seg != t[0] and prev_seg != "":
@@ -92,8 +93,10 @@ for idx, line in enumerate(orderin.readlines()):
         #     continue
         if genehit[idx + 1]:
             print(">cycle-gene" + "".join(tmp))
+            res_count.add(''.join(tmp))
         if plasscore[idx + 1] >= 0.9:
             print(">cycle-score" + "".join(tmp))
+            res_count.add(''.join(tmp))
 
     flags = False
     is_gene = False
@@ -128,3 +131,7 @@ for idx, line in enumerate(orderin.readlines()):
             faout.write(">score" + "".join(tmp) + "\n" + str(seq) + "\n")
         else:
             faout.write(">gene" + "".join(tmp) + "\n" + str(seq) + "\n")
+
+with open(sys.argv[7]) as res:
+    for s in res:
+        res.write(s+'\n')
