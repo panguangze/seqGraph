@@ -212,7 +212,8 @@ for fk in k_lens.keys():
 t = 0
 for k in result:
     if "self" in k or "gene" in k:
-        print(k)
+        pass
+        # print(k)
     t = t+ len(contig_ref[k])
     for ref in contig_ref[k]:
         # pass
