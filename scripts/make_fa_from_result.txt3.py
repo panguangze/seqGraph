@@ -92,6 +92,7 @@ for idx, line in enumerate(orderin.readlines()):
         if genehit[idx + 1]:
             flags = True
             is_gene = True
+        elen = int(t.split("_")[3])
         all_len = all_len + elen
         if t[0:-1] in blast_segs:
             blast_len = blast_len + elen
