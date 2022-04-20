@@ -128,8 +128,13 @@ for item in tmp.keys():
             relevate_blast_segs.add(first)
             relevate_blast_segs.add(second)
 
+writed_segs = []
 for item in write_segs:
+    writed_segs.append(item.split()[1])
     outs.write(item.strip()+" 0 1\n")
+for item in blast_segs:
+    if item not in writed_segs:
+        outs.write(all_segs[item].strip()+" 0 1\n")
 for item in write_juncs:
     t = item.split()
     if (t[1] in self_l_segs and t[3] not in self_l_segs) or (t[3] in self_l_segs and t[1] not in self_l_segs):
