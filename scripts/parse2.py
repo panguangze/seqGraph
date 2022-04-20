@@ -11,6 +11,7 @@ relevate_blast_segs = set()
 prev_seg = ""
 prev_len = 0
 relevate_edge_len = 2000
+self_l_segs = set()
 def get_len(edge):
     return int(edge.split("_")[3])
 for line in blast_in.readlines():
@@ -41,6 +42,11 @@ for line in inp2:
     if vs[0] == "SEG":
         all_segs[vs[1]] = line
         # outs.write(line)
+        continue
+    if vs[1] == vs[3]:
+        self_l_segs.add(vs[1])
+        write_segs.add(all_segs[vs[1]])
+        write_juncs.append(" ".join(vs)+"\n")
         continue
     if int(vs[-1]) < int(f_th):
         continue
@@ -94,6 +100,11 @@ for item in tmp.keys():
         if i[-1] == "'":
             second = i[0:-1]
             sdir = "-"
+        if first == second:
+            self_l_segs.add(first)
+            write_segs.add(all_segs[first])
+            write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
+            continue
         if first in blast_segs or second in blast_segs or (first in relevate_blast_segs or second in relevate_blast_segs and get_len(first) <= relevate_edge_len and get_len(second) <= relevate_edge_len):
             write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
             write_segs.add(all_segs[first])
@@ -106,4 +117,7 @@ for item in tmp.keys():
 for item in write_segs:
     outs.write(item.strip()+" 0 1\n")
 for item in write_juncs:
+    t = item.split()
+    if (t[1] in self_l_segs and t[3] not in self_l_segs) or (t[3] in self_l_segs and t[1] not in self_l_segs):
+        continue
     outs.write(item)
