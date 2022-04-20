@@ -4,6 +4,7 @@ from Bio.Seq import Seq
 
 fain = sys.argv[1]
 orderin = open(sys.argv[2])
+orderintmp = open(sys.argv[2])
 faout = open(sys.argv[3], "w")
 blastin = open(sys.argv[4])
 blast_ratio = float(sys.argv[5])
@@ -12,6 +13,7 @@ plasscore_file = sys.argv[7]
 blast_segs = set()
 prev_seg = ""
 prev_len = 0
+res_count = set()
 for line in blastin.readlines():
     t = line.strip().split("\t")
     if prev_seg != t[0] and prev_seg != "":
@@ -27,10 +29,11 @@ for line in blastin.readlines():
 elen = int(prev_seg.split("_")[3])
 if float(prev_len) / float(elen) > blast_ratio or prev_len > 2000:
     blast_segs.add(t[0])
-gene_res = set()
-with open(gene_hit, 'r') as gene_lst:
-    for gene_r in gene_lst:
-        gene_res.add(gene_r.strip())
+# gene_res = set()
+# with open(gene_hit, 'r') as gene_lst:
+#     for gene_r in gene_lst:
+#         gene_res.add(gene_r.strip())
+
 
 plasscore = {}
 with open(plasscore_file, 'r') as ps:
@@ -39,39 +42,73 @@ with open(plasscore_file, 'r') as ps:
         id_ = int(item[0].split('_')[1])
         plasscore[id_] = float(item[1])
 
+genehit = {}
+for id, i in enumerate(orderintmp):
+    genehit[id + 1] = False
+with open(gene_hit, 'r') as gh:
+    for s in gh:
+        item = s.strip().split('\t')
+        if len(s.strip()) == 0:
+            continue
+        id_ = int(item[0].split('_')[1])
+        genehit[id_] = True
+print(genehit)
+
 record_dict = SeqIO.to_dict(SeqIO.parse(fain, "fasta"))
 n_seq = Seq("N" * 40)
 self_tag = False
+cycle_tag = False
 for idx, line in enumerate(orderin.readlines()):
+    # print(idx, genehit[idx+1])
     if line.startswith("iter") or line.startswith("self"):
         if line.startswith("self"):
             self_tag = True
+        if line.startswith("iter"):
+            cycle_tag = True
         continue
     seq = ""
     tmp = line.strip().split("\t")
     if len(tmp) == 1 and self_tag:
         # if tmp[0][0:-1] not in blast_segs or plasscore[idx] < 0.7:
         #     continue
-        if tmp[0][0:-1] in gene_res or plasscore[idx+1] >= 0.7:
+        if genehit[idx + 1] or plasscore[idx + 1] >= 0.7:
             for t in tmp:
                 tmp_seq = record_dict[t[0:-1]].seq
                 if t[-1] == '-':
                     tmp_seq = record_dict[t[0:-1]].seq.reverse_complement()
                 seq = seq + tmp_seq
-            #faout.write(">self" + "".join(tmp) + "\n" + str(seq) + "\n")
-            print(">self" + "".join(tmp))
-        else:
-            seq = seq + tmp_seq
             faout.write(">self" + "".join(tmp) + "\n" + str(seq) + "\n")
+            print(">self-gene" + "".join(tmp))
+        else:
+            for t in tmp:
+                tmp_seq = record_dict[t[0:-1]].seq
+                if t[-1] == '-':
+                    tmp_seq = record_dict[t[0:-1]].seq.reverse_complement()
+                seq = seq + tmp_seq
+                faout.write(">self" + "".join(tmp) + "\n" + str(seq) + "\n")
         continue
+
+    if cycle_tag:
+        # if tmp[0][0:-1] not in blast_segs or plasscore[idx] < 0.7:
+        #     continue
+        if genehit[idx + 1]:
+            print(">cycle-gene" + "".join(tmp))
+            res_count.add(''.join(tmp))
+        if plasscore[idx + 1] >= 0.9:
+            print(">cycle-score" + "".join(tmp))
+            res_count.add(''.join(tmp))
+
     flags = False
     is_gene = False
     blast_len = 0
     all_len = 0
+    if genehit[idx + 1]:
+        flags = True
+        is_gene = True
+        # if cycle_tag:
+        #     print(">cycle-gene" + "".join(tmp))
     for t in tmp:
-        if t[0:-1] in gene_res:
-            flags = True
-            is_gene = True
+        elen = int(t.split("_")[3])
         all_len = all_len + elen
         if t[0:-1] in blast_segs:
             blast_len = blast_len + elen
@@ -79,17 +116,22 @@ for idx, line in enumerate(orderin.readlines()):
         flags = True
     if all_len < 1000:
         flags = False
-    if not flags and plasscore[idx+1] < 0.7:
+    if not flags and plasscore[idx + 1] < 0.9 or all_len < 1000:
         continue
     for t in tmp:
         tmp_seq = record_dict[t[0:-1]].seq
         if t[-1] == '-':
             tmp_seq = record_dict[t[0:-1]].seq.reverse_complement()
         seq = seq + tmp_seq
-    if is_gene and plasscore[idx+1] >= 0.7:
+    if genehit[idx + 1] and plasscore[idx + 1] >= 0.9:
         print(">gene_score" + "".join(tmp))
+        faout.write(">score" + "".join(tmp) + "\n" + str(seq) + "\n")
     else:
-        if plasscore[idx+1] >= 0.7:
+        if plasscore[idx + 1] >= 0.9:
             faout.write(">score" + "".join(tmp) + "\n" + str(seq) + "\n")
         else:
             faout.write(">gene" + "".join(tmp) + "\n" + str(seq) + "\n")
+
+with open(sys.argv[8], 'w') as res:
+    for s in res_count:
+        res.write(s+'\n')
