@@ -639,6 +639,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
 //    auto tm = resultG->getConjugateMatrix() == nullptr;
     auto* values = new float[4];
     for (auto iPath: *paths) {
+        if (this->isCycle(iPath.first))
 //        if (this->isCycle((*iPath.second)[0])) continue;
         resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2);
     }
@@ -671,14 +672,14 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
 //    auto matrix = originGraph->getConjugateMatrix();
     for (auto iPath: *paths) {
         if (!BREAK_C){
-            if (this->isCycle(iPath.second->front())) continue;
+            if (this->isCycle(iPath.first)) continue;
         }
         v1 = resultG->getVertexByIdQ(std::to_string(iPath.second->front()));
         if (idx2Str(iPath.second->front()) == "EDGE_5532997_length_1440_cov_2.471753_0")
             int iii = 9;
         for (auto jPath: *paths) {
             if (!BREAK_C){
-                if (this->isCycle(jPath.second->front())) continue;
+                if (this->isCycle(jPath.first)) continue;
             }
             if (idx2Str(jPath.second->front()) == "EDGE_62388_length_682_cov_5.543802_0")
                 int idi = 9;
