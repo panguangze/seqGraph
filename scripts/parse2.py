@@ -78,6 +78,10 @@ for line in inp2:
         # outs.write(" ".join(vs)+"\n")
         tmp[vc].remove(kc)
     if vs[1] in blast_segs or vs[3] in blast_segs or ((vs[1] in relevate_blast_segs or vs[3] in relevate_blast_segs) and float(vs[-1]) >= float(depth)/2 and get_len(vs[1]) <= relevate_edge_len and get_len(vs[3]) <= relevate_edge_len):
+        if vs[1] not in blast_segs and get_len(vs[1]) > relevate_edge_len:
+            continue
+        if vs[3] not in blast_segs and get_len(vs[3]) > relevate_edge_len:
+            continue
         write_juncs.append(" ".join(vs)+"\n")
         write_segs.add(all_segs[vs[1]])
         write_segs.add(all_segs[vs[3]])
@@ -107,6 +111,10 @@ for item in tmp.keys():
             write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
             continue
         if first in blast_segs or second in blast_segs or (first in relevate_blast_segs or second in relevate_blast_segs and get_len(first) <= relevate_edge_len and get_len(second) <= relevate_edge_len):
+            if first not in blast_segs and get_len(first) > relevate_edge_len:
+                continue
+            if second not in blast_segs and get_len(second) > relevate_edge_len:
+                continue
             write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
             write_segs.add(all_segs[first])
             write_segs.add(all_segs[second])
