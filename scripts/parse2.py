@@ -10,6 +10,9 @@ blast_segs = set()
 relevate_blast_segs = set()
 prev_seg = ""
 prev_len = 0
+relevate_edge_len = 2000
+def get_len(edge):
+    return int(edge.split("_")[3])
 for line in blast_in.readlines():
     t = line.strip().split("\t")
     if prev_seg != t[0] and prev_seg != "":
@@ -67,7 +70,7 @@ for line in inp2:
         #write_juncs.append(" ".join(vs)+"\n")
         # outs.write(" ".join(vs)+"\n")
         tmp[vc].remove(kc)
-    if vs[1] in blast_segs or vs[3] in blast_segs or ((vs[1] in relevate_blast_segs or vs[3] in relevate_blast_segs) and float(vs[-1]) >= float(depth)/2):
+    if vs[1] in blast_segs or vs[3] in blast_segs or ((vs[1] in relevate_blast_segs or vs[3] in relevate_blast_segs) and float(vs[-1]) >= float(depth)/2 and get_len(vs[1]) <= relevate_edge_len and get_len(vs[3]) <= relevate_edge_len):
         write_juncs.append(" ".join(vs)+"\n")
         write_segs.add(all_segs[vs[1]])
         write_segs.add(all_segs[vs[3]])
@@ -91,7 +94,7 @@ for item in tmp.keys():
         if i[-1] == "'":
             second = i[0:-1]
             sdir = "-"
-        if first in blast_segs or second in blast_segs or (first in relevate_blast_segs or second in relevate_blast_segs):
+        if first in blast_segs or second in blast_segs or (first in relevate_blast_segs or second in relevate_blast_segs and get_len(first) <= relevate_edge_len and get_len(second) <= relevate_edge_len):
             write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
             write_segs.add(all_segs[first])
             write_segs.add(all_segs[second])
