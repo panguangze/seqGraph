@@ -46,7 +46,7 @@ for line in orderin.readlines():
             blast_len = blast_len + elen
     if (float(blast_len) / float(all_len)) > 0.1:
         flags = True
-    if all_len < 1000:
+    if flags and all_len < 1000:
         flags = False
     if not flags:
         continue
