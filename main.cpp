@@ -16,6 +16,7 @@ bool BREAK_C = false;
 int TYPE = 0;
 bool SELF_L = false;
 int MIN_L = 1000;
+int MODEL = 0;
 std::string SUB_ONLY = "";
 bool check_visited_path(std::vector<std::vector<std::string>>& visited_vec, std::vector<std::string>& path){
     for (auto& p: visited_vec){
@@ -155,6 +156,7 @@ int main(int argc, char *argv[]) {
             ("s,self_l", "Cycle result", cxxopts::value<bool>()->default_value("true"))
             ("min_l", "Min length to print", cxxopts::value<int>()->default_value("-1"))
             ("sub_only", "Only get all sub graph",cxxopts::value<std::string>()->default_value(""))
+            ("model", "0, plasmid; 1: phage or single strain;",cxxopts::value<int>()->default_value("0"))
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
@@ -167,6 +169,7 @@ int main(int argc, char *argv[]) {
     std::string resultCF = result["result_c"].as<std::string>();
         int iterRounds = result["iteration"].as<int>();
     VERBOSE = result["verbose"].as<int>();
+    MODEL = result["model"].as<int>();
 
 
     std::ifstream infile(graphF);
@@ -224,7 +227,7 @@ int main(int argc, char *argv[]) {
 //                int mm = 9;
 //            }
             auto v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
-            score = 1;
+//            score = 1;
             v->setGeneAndScore(cGene, score);
             for (int i = 1; i < copyNum; i++) {
                 source.pop_back();

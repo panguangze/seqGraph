@@ -11,6 +11,7 @@
 #include "map"
 #include "unordered_map"
 extern std::string SUB_ONLY;
+extern int MODEL;
 
 namespace seqGraph {
     typedef std::vector<EndPoint *> EndPointPath;

@@ -158,8 +158,9 @@ if (targetVertex->getId() == "EDGE_2331069_length_139_cov_10.154762_0") {
     int kk = 33;
 }
 auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
-//    float plasCopy = (sourceVertex->getScore() + targetVertex->getScore()) / 2 * copyNum;
-    float plasCopy = copyNum;
+float plasCopy = copyNum;
+    if (MODEL == 0)
+        plasCopy = (sourceVertex->getScore() + targetVertex->getScore()) / 2 * copyNum;
     if (jun == nullptr) {
 //        auto  k = sourceVertex->getId()+ targetVertex->getId()+sourceDir+targetDir;
         auto k = std::to_string(sourceVertex->getIdx()) + sourceDir + std::to_string(targetVertex->getIdx()) +targetDir;
