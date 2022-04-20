@@ -639,7 +639,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
 //    auto tm = resultG->getConjugateMatrix() == nullptr;
     auto* values = new float[4];
     for (auto iPath: *paths) {
-        if (this->isCycle(iPath.first))
+        if (this->isCycle(iPath.first)) continue;
 //        if (this->isCycle((*iPath.second)[0])) continue;
         resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2);
     }
