@@ -118,7 +118,7 @@ for item in tmp.keys():
             if second not in blast_segs and get_len(second) > relevate_edge_len:
                 continue
             if first in blast_segs and second in blast_segs:
-                write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth * 2/3)))
+                write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth) * 2/3))
             else:
                 write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
             write_segs.add(all_segs[first])
