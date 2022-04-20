@@ -6,6 +6,7 @@ outs = open(sys.argv[3],"w")
 depth = sys.argv[4]
 f_th = sys.argv[5]
 blastin = open(sys.argv[6])
+blast_ratio = float(sys.argv[7])
 blast_segs = set()
 relevate_blast_segs = set()
 prev_seg = ""
@@ -14,7 +15,7 @@ relevate_edge_len = 2000
 self_l_segs = set()
 def get_len(edge):
     return int(edge.split("_")[3])
-for line in blast_in.readlines():
+for line in blastin.readlines():
     t = line.strip().split("\t")
     if prev_seg != t[0] and prev_seg != "":
         elen = prev_seg.split("_")[3]
