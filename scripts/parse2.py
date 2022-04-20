@@ -49,7 +49,7 @@ for line in inp2:
         write_segs.add(all_segs[vs[1]])
         write_juncs.append(" ".join(vs)+"\n")
         continue
-    if int(vs[-1]) < int(f_th) and (vs[1] not in blast_segs and vs[3] not in blast_segs):
+    if int(vs[-1]) < int(f_th) and (vs[1] not in blast_segs or vs[3] not in blast_segs):
         continue
     k = vs[1]
     kc = vs[1]+"'"
