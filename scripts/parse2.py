@@ -82,6 +82,8 @@ for line in inp2:
             continue
         if vs[3] not in blast_segs and get_len(vs[3]) > relevate_edge_len:
             continue
+        if vs[1] in blast_segs and vs[2] in blast_segs:
+            vs[-1] = str(int(vs[-1]) * 1.5)
         write_juncs.append(" ".join(vs)+"\n")
         write_segs.add(all_segs[vs[1]])
         write_segs.add(all_segs[vs[3]])
@@ -115,7 +117,10 @@ for item in tmp.keys():
                 continue
             if second not in blast_segs and get_len(second) > relevate_edge_len:
                 continue
-            write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
+            if first in blast_segs and second in blast_segs:
+                write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth * 2/3)))
+            else:
+                write_juncs.append("JUNC {} {} {} {} {}\n".format(first,fdir,second,sdir,int(depth)/2))
             write_segs.add(all_segs[first])
             write_segs.add(all_segs[second])
             # blast_segs.add(first)
