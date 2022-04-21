@@ -94,6 +94,7 @@ Graph::Graph() {
     this->junctions = new std::vector<Junction *>();
     verticesIdx = new std::map<std::string, int>();
     junctionIdx = new std::unordered_map<std::string, int>();
+    this->isolatedVs = new std::vector<Vertex *>();
     ConjugateMatrix = nullptr;
     source = nullptr;
     sink = nullptr;
