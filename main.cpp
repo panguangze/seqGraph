@@ -293,6 +293,10 @@ int main(int argc, char *argv[]) {
     if (SUB_ONLY != "") return 0;
     std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
     int maxI = g->subGraphCount();
+    std::cout<<"Isolated nodes"<<g->getIsolatedVs()->size()<<std::endl;
+    for (auto item : *g->getIsolatedVs()) {
+        resultFile<<item->getOriginId()<<"+"<<"\n";
+    }
     std::vector<std::string> to_be_remove_sl;
     while (n< maxI) {
 //        if(n==6){

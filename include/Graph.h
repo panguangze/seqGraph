@@ -53,6 +53,7 @@ namespace seqGraph {
         std::map<std::string, int>* verticesIdx;
         std::unordered_map<std::string, int>* junctionIdx;
         std::vector<std::set<int>* > connectedJunctionsIdx;
+        std::vector<Vertex *> *isolatedVs;
         std::map<int, float> rowMaxV;
         SparseMatrix sparseMatrix;
         bool sparse;
@@ -81,6 +82,10 @@ namespace seqGraph {
 
         inline bool isSparse() const {
             return this->sparse;
+        }
+
+        inline std::vector<Vertex*> * getIsolatedVs() const {
+            return this->isolatedVs;
         }
 
         void removeJunc(Junction* junc);

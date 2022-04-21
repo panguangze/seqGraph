@@ -668,6 +668,8 @@ void Graph::parseConnectedComponents() {
             i += connectedIdx->size();
             if (!connectedIdx->empty()){
                 this->connectedJunctionsIdx.push_back(connectedIdx);
+            } else {
+                this->isolatedVs->push_back(vertice);
             }
         }
     }
