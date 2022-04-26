@@ -126,6 +126,7 @@ for line in inp2:
         relevate_blast_segs.add(vs[3])
 
     if (vs[1] in blast_segs or vs[1] in gene_res or left_score >= 0.7) and (vs[3] in blast_segs or vs[3] in gene_res or right_score >= 0.7):
+
         # or (
             # vs[1] == vs[3]) or (left_score >= 0.6 and right_score >= 0.6):
         write_juncs.append(" ".join(vs) + "\n")

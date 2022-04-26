@@ -72,29 +72,6 @@ for ref in ref_list:
             cover[i] = 1
     # print(cover)
     un_covered = cover.count(0)
-    # print(un_covered)
-    # for c_k in contig_cov.keys():
-    #     contig_l
-    # contig_num = 10
-
-    # f_in = open(sys.argv[1])
-    # # plot
-    # plt.figure(figsize=(20, 10))
-    # plt.tight_layout()
-    # plt.axis('off')
-    # plt.xlim(xmin=0-5)
-    # plt.xlim(xmax=ref_length+1000)
-    # plt.ylim(ymin=-0.5)
-    # plt.ylim(ymax=contig_num+2)
-
-    # currentAxis = plt.gca()
-    # rect = patches.Rectangle((1, contig_num), width=ref_length, height=0.3, linewidth=2, edgecolor="black", facecolor="#549FCF")
-    # currentAxis.add_patch(rect)
-    # contig = ""
-    # count = contig_num - 1
-    # print(un_covered)
-
-    # un_covered = 0
     if ref in ref_contig.keys():
         # if (float(ref_contig_l[ref])/float(ref_length))<0.8:
         if un_covered / ref_length > 0.4:
@@ -102,39 +79,6 @@ for ref in ref_list:
             plt.close()
             f_in.close()
             continue
-
-    #     vs = ref_contig[ref]
-    #     print(ref,ref_contig_l[ref],ref_length,float(ref_contig_l[ref])/float(ref_length))
-    #     for v in vs:
-    #         if v[-1] == contig:
-    #             rect = patches.Rectangle((v[0], count), width=(v[1]-v[0]), height=0.3, linewidth=2, edgecolor="black", facecolor="#FF8C00")
-    #             currentAxis.add_patch(rect)
-    #         else:
-    #             count -= 1
-    #             contig = v[-1]
-    #             rect = patches.Rectangle((v[0], count), width=(v[1]-v[0]), height=0.3, linewidth=2, edgecolor="black", facecolor="#FF8C00")
-    #             currentAxis.add_patch(rect)
-
-    # for k in ref_contig.keys():
-    #     vs = ref_contig[k]
-    #     for v in vs:
-    #         currentAxis.add_patch(rect)
-    #     line = line.strip("\n").split("\t")
-    #     if line[1] == ref:
-    #         if line[0] == contig:
-    #             start = min(int(line[10]), int(line[11]))
-    #             stop = max(int(line[10]), int(line[11]))
-    #             rect = patches.Rectangle((start, count), width=(stop-start), height=0.3, linewidth=2, edgecolor="black", facecolor="#FF8C00")
-    #             currentAxis.add_patch(rect)
-    #             title.add(line[0])
-    #         else:
-    #             count -= 1
-    #             contig = line[0]
-    #             start = min(int(line[10]), int(line[11]))
-    #             stop = max(int(line[10]), int(line[11]))
-    #             rect = patches.Rectangle((start, count), width=(stop-start), height=0.3, linewidth=2, edgecolor="black", facecolor="#FF8C00")
-    #             currentAxis.add_patch(rect)
-    #             title.add(line[0])
     pt = ""
     for i in title_contig[ref]:
         pt = pt + i
@@ -142,12 +86,7 @@ for ref in ref_list:
         contig_ref[pt].append(ref)
     else:
         contig_ref[pt] = [ref]
-    # plt.title(pt)
-    # plt.savefig("%s_blast.png"%ref, dpi=600)
-    # plt.close()
-    # f_in.close()
-# for k in contig_ref.keys():
-#     print(k,[ref_list[i] for i in contig_ref[k]], contig_ref)
+
 import re
 
 k_lens = {}
@@ -267,7 +206,7 @@ for k in result:
             k2 = k
         print("res: ", k2)
         res.add(k2)
-        plt.savefig("N" + k2[0:15] + "_" + k2[-15:-1] + "%s_blast.png" % ref, dpi=600)
+        plt.savefig("N" + k2[0:15] + "_" + k2[-15:-1] + "%s_blast.png" % ref, dpi=300)
         plt.close()
         f_in.close()
-print(len(res))
+print('all plasmid segs: ', len(res))
