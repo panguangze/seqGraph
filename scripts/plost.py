@@ -19,7 +19,7 @@ with open(sys.argv[2]) as r:
         res.add(line.strip())
 
 # 生成需要第二步match的文件： format: res \t ref
-second_match = open(sys.argv[3])
+second_match = open(sys.argv[3], 'w')
 
 title_contig = {}
 ref_contig_l = {}
