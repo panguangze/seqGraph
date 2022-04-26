@@ -18,6 +18,9 @@ with open(sys.argv[2]) as r:
     for line in r.readlines():
         res.add(line.strip())
 
+# 生成需要第二步match的文件： format: res \t ref
+second_match = open(sys.argv[3])
+
 title_contig = {}
 ref_contig_l = {}
 
@@ -205,8 +208,10 @@ for k in result:
         else:
             k2 = k
         print("res: ", k2)
+        second_match.write(k2+'\t'+ref+'\n')
         res.add(k2)
         plt.savefig("N" + k2[0:15] + "_" + k2[-15:-1] + "%s_blast.png" % ref, dpi=300)
         plt.close()
         f_in.close()
 print('all plasmid segs: ', len(res))
+second_match.close()
