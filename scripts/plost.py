@@ -208,7 +208,9 @@ for k in result:
         else:
             k2 = k
         print("res: ", k2)
-        second_match.write(k2+'\t'+ref+'\n')
+        path = k2.replace("gene_score", "").replace("score", "").replace("gene", "").replace("self", "").replace("self-gene",
+                                                                                                          "")
+        second_match.write(path + '\t' + ref + '\n')
         res.add(k2)
         plt.savefig("N" + k2[0:15] + "_" + k2[-15:-1] + "%s_blast.png" % ref, dpi=300)
         plt.close()
