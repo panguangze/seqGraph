@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
             ("l,local_order", "Local order information", cxxopts::value<std::string>())
             ("m,result_m","Matching result", cxxopts::value<std::string>())
             ("b,break_c", "Whether break and merge cycle into line paths", cxxopts::value<bool>()->default_value("false"))
-            ("s,self_l", "Cycle result", cxxopts::value<bool>()->default_value("true"))
+            ("s,self_l", "Cycle result", cxxopts::value<bool>()->default_value("false"))
             ("min_l", "Min length to print", cxxopts::value<int>()->default_value("-1"))
             ("sub_only", "Only get all sub graph",cxxopts::value<std::string>()->default_value(""))
             ("model", "0, plasmid; 1: phage or single strain;",cxxopts::value<int>()->default_value("0"))
