@@ -362,15 +362,15 @@ int main(int argc, char *argv[]) {
 //                    path.emplace_back(v)
                     int idx = (&v-&*(item.second->begin()));
                     // record IDX OF A-B-A_0-B_0
-                    if (m->idx2StrDir(v)=="EDGE_74036_length_196_cov_93.191489+"){
-                        std::cout<<'fk'<<std::endl;
-                        if (idx!=0 ){
-                            std::cout<<m->idx2StrDir(item.second->front())<<std::endl;
-                            std::cout<<m->idx2StrDir(v)<<std::endl;
-                            std::cout<<m->idx2StrDir((*item.second)[idx-1])<<std::endl;
-                            std::cout<<m->idx2StrDir(item.second->back())<<std::endl;
-                        }
-                    }
+//                    if (m->idx2StrDir(v)=="EDGE_74036_length_196_cov_93.191489+"){
+//                        std::cout<<'fk'<<std::endl;
+//                        if (idx!=0 ){
+//                            std::cout<<m->idx2StrDir(item.second->front())<<std::endl;
+//                            std::cout<<m->idx2StrDir(v)<<std::endl;
+//                            std::cout<<m->idx2StrDir((*item.second)[idx-1])<<std::endl;
+//                            std::cout<<m->idx2StrDir(item.second->back())<<std::endl;
+//                        }
+//                    }
                     std::string true_name_front;
                     std::string true_name_current;
                     std::string true_name_pre;
@@ -411,12 +411,14 @@ int main(int argc, char *argv[]) {
 //                    else{
 //                        not_print_tag = false;
 //                    }
-                    std::vector<std::string> tokens;
-                    tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
-                    int length = std::stoi(tokens[3]);
-                    total_length+=length;
+                    if (MODEL == 0) {
+                        std::vector<std::string> tokens;
+                        tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
+                        int length = std::stoi(tokens[3]);
+                        total_length+=length;
+                    }
                 }
-                if(total_length<MIN_L|| not_print_tag){
+                if(MODEL ==0 and (total_length<MIN_L|| not_print_tag)){
                     continue;
                 }
 //                bool self_loop_flag = false;
@@ -472,7 +474,7 @@ int main(int argc, char *argv[]) {
         int prevPathSize = paths->size();
         if (paths->size() != 1) {
             while (iterRounds !=0) {
-                std::cout<<"Iteration "<<iterN + 1<<",nodes count"<<paths->size()<<"...\n";
+                std::cout<<"Iteration "<<iterN + 1<<",nodes count"<<paths->size()<<std::endl;
 //                TODO if v==1 or juncs ==1 continue
                 m->reconstructMatrix(paths, subGraph);
 //                checkMatrixConjugate(m->getMatrix(), m->getN());
@@ -501,10 +503,12 @@ int main(int argc, char *argv[]) {
             int total_length = 0;
             std::string current_path;
             for(const auto& v: *item.second) {
-                std::vector<std::string> tokens;
-                tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
-                int length = std::stoi(tokens[3]);
-                total_length+=length;
+                if (MODEL == 0) {
+                    std::vector<std::string> tokens;
+                    tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
+                    int length = std::stoi(tokens[3]);
+                    total_length+=length;
+                }
                 if (v == -1) {
                     resultFile<<'c';
                     continue;
@@ -512,13 +516,20 @@ int main(int argc, char *argv[]) {
 //                if (MIN_L != -1 && total_length < MIN_L) continue;
                 current_path.append(m->idx2StrDir(v)).append("\t");
             }
-            if (total_length>500){
+            if (MODEL == 0) {
+                if (total_length>500){
+                    if (std::find(all_paths.begin(), all_paths.end(), current_path) != all_paths.end())
+                        continue;
+                    all_paths.push_back(current_path);
+                    resultFile<<current_path<<std::endl;
+                }else{
+                    std::cout<<"not pass for: "<<current_path<<std::endl;
+                }
+            } else {
                 if (std::find(all_paths.begin(), all_paths.end(), current_path) != all_paths.end())
                     continue;
                 all_paths.push_back(current_path);
                 resultFile<<current_path<<std::endl;
-            }else{
-                std::cout<<"not pass for: "<<current_path<<std::endl;
             }
         }
         free(m);
@@ -527,16 +538,21 @@ int main(int argc, char *argv[]) {
     }
     for(auto& self_loop: visited_self_loop){
         if (std::find(to_be_remove_sl.begin(), to_be_remove_sl.end(), self_loop)==to_be_remove_sl.end()){
-            std::vector<std::string> tokens;
-            tokenize(self_loop, tokens, "_");
-            std::cout<<self_loop<<std::endl;
-            int length = std::stoi(tokens[3]);
-            if (length>1000){
-                std::cout<<"pass for: "<<self_loop<<std::endl;
+            if (MODEL == 0) {
+                std::vector<std::string> tokens;
+                tokenize(self_loop, tokens, "_");
+                std::cout<<self_loop<<std::endl;
+                int length = std::stoi(tokens[3]);
+                if (length>1000){
+                    std::cout<<"pass for: "<<self_loop<<std::endl;
+                    cyclePathsFile<< "self loop: "<<std::endl;
+                    cyclePathsFile<<self_loop+"+"<<std::endl;
+                }else{
+                    std::cout<<"not pass for: "<<self_loop<<std::endl;
+                }
+            } else {
                 cyclePathsFile<< "self loop: "<<std::endl;
                 cyclePathsFile<<self_loop+"+"<<std::endl;
-            }else{
-                std::cout<<"not pass for: "<<self_loop<<std::endl;
             }
         }
     }

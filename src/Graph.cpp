@@ -726,7 +726,7 @@ void Graph::removeJunc(Junction *junc) {
 }
 void Graph::initRowMax() {
 
-    if (this->junctions->size() == 0 || this->vertices->size() / this->junctions->size() > 50) this->sparse = false;
+    if (this->junctions->size() == 0 || this->vertices->size() / this->junctions->size() > 30) this->sparse = false;
     else this->sparse = true;
     //   vertices are sorted by idx already
     this->sparseMatrix.IA.push_back(0);
