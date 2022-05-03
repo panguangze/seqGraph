@@ -14,6 +14,10 @@ extern bool BREAK_C;
 class matching {
 private:
     seqGraph::Graph* graph;
+public:
+    seqGraph::Graph *getGraph() const;
+
+private:
 //    float** currentMatrix;
 //    float** originalMatrix;
     std::vector<seqGraph::Vertex*>* originalVertices;
@@ -45,6 +49,7 @@ public:
     inline bool isCycle(int i) {
         return std::find(cyclePaths.begin(), cyclePaths.end(), i) != cyclePaths.end();
     }
+    bool needMatch();
 //    inline float** getMatrix() const {
 //        return this->currentMatrix;
 //    };

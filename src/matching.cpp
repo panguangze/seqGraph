@@ -959,3 +959,38 @@ void matching::writeMatchResult(std::ofstream& outS) {
         outS << "JUNC " << this->idx2StrDir(i, " ") << " " << this->idx2StrDir(this->matched[i], " ") << " " << this->getIJ(this->matched[i], i) << "\n";
     }
 }
+
+bool matching::needMatch() {
+    if (this->graph->getJuncSize()==0) {
+        return false;
+    }
+//    if (this->graph->getVertices()->size() == 2 && this->graph->getJuncSize() ==1) {
+//        auto sV = graph->getJunctions()->front()->getSource()->getOriginId();
+//        auto tV = graph->getJunctions()->front()->getTarget()->getOriginId();
+//        auto sD = graph->getJunctions()->front()->getSourceDir();
+//        auto tD = graph->getJunctions()->front()->getTargetDir();
+//        if (sD == '+') {
+//            if (tD == '+') {
+//                this->matched[1] = 3;
+//                this->matched[2] = 0;
+//            } else {
+//                this->matched[1] = 2;
+//                this->matched[3] = 0;
+//            }
+//        } else {
+//            if (tD == '+') {
+//                this->matched[0] = 3;
+//                this->matched[2] = 1;
+//            } else {
+//                this->matched[0] = 2;
+//                this->matched[3] = 1;
+//            }
+//        }
+//        return false;
+//    }
+    return true;
+}
+
+seqGraph::Graph *matching::getGraph() const {
+    return graph;
+}

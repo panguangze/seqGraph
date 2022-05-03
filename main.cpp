@@ -312,15 +312,15 @@ int main(int argc, char *argv[]) {
             n++;
             continue;
         }
-        if (subGraph->getJuncSize() == 1) {
-            auto sV = subGraph->getJunctions()->front()->getSource()->getOriginId();
-            auto tV = subGraph->getJunctions()->front()->getTarget()->getOriginId();
-            auto sD = subGraph->getJunctions()->front()->getSourceDir();
-            auto tD = subGraph->getJunctions()->front()->getTargetDir();
-            resultFile<<sV<<sD<<"\t"<<tV<<tD<<"\n";
-            n++;
-            continue;
-        }
+//        if (subGraph->getJuncSize() == 1) {
+//            auto sV = subGraph->getJunctions()->front()->getSource()->getOriginId();
+//            auto tV = subGraph->getJunctions()->front()->getTarget()->getOriginId();
+//            auto sD = subGraph->getJunctions()->front()->getSourceDir();
+//            auto tD = subGraph->getJunctions()->front()->getTargetDir();
+//            resultFile<<sV<<sD<<"\t"<<tV<<tD<<"\n";
+//            n++;
+//            continue;
+//        }
         auto* m = new matching(subGraph);
 //        m->checkConjugateMatrix();
 //
@@ -477,10 +477,15 @@ int main(int argc, char *argv[]) {
                 std::cout<<"Iteration "<<iterN + 1<<",nodes count"<<paths->size()<<std::endl;
 //                TODO if v==1 or juncs ==1 continue
                 m->reconstructMatrix(paths, subGraph);
-//                checkMatrixConjugate(m->getMatrix(), m->getN());
-                std::cout<<"start hungarian"<<std::endl;
-//                m->hungarian();
-                m->main_steps();
+                if (m->getGraph()->getJuncSize() == 0) {
+                    std::cout << "No match needed" << std::endl;
+                    break;
+                }else{
+                    //                checkMatrixConjugate(m->getMatrix(), m->getN());
+                    std::cout<<"start hungarian"<<std::endl;
+                    //                m->hungarian();
+                    m->main_steps();
+                }
                 paths = m->resolvePath(paths);
                 if (paths->size() == prevPathSize || paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}
                 for (auto item: *paths) {
