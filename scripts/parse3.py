@@ -119,9 +119,9 @@ for line in inp2:
         # print(all_segs[vs[1]].strip()+" "+(gene_res[vs[1]] if vs[1] in gene_res else '0')+" "+(scores[vs[1]] if vs[
         # 1] in scores else '0')+"\n")
         write_segs.add(all_segs[vs[1]].strip() + " " + (gene_res[vs[1]] if vs[1] in gene_res else '0') + (
-            " " + scores[vs[1]] if vs[1] in scores else '0') + "\n")
+            " " + str(scores[vs[1]]) if vs[1] in scores else '0') + "\n")
         write_segs.add(all_segs[vs[3]].strip() + " " + (gene_res[vs[3]] if vs[3] in gene_res else '0') + " " + (
-            scores[vs[3]] if vs[3] in scores else '0') + "\n")
+            str(scores[vs[3]]) if vs[3] in scores else '0') + "\n")
         relevate_blast_segs.add(vs[1])
         relevate_blast_segs.add(vs[3])
 
@@ -133,9 +133,9 @@ for line in inp2:
         # print(all_segs[vs[1]].strip()+" "+(gene_res[vs[1]] if vs[1] in gene_res else '0')+" "+(scores[vs[1]] if vs[
         # 1] in scores else '0')+"\n")
         write_segs.add(all_segs[vs[1]].strip() + " " + (gene_res[vs[1]] if vs[1] in gene_res else '0') + (
-            " " + scores[vs[1]] if vs[1] in scores else '0') + "\n")
+            " " + str(scores[vs[1]]) if vs[1] in scores else '0') + "\n")
         write_segs.add(all_segs[vs[3]].strip() + " " + (gene_res[vs[3]] if vs[3] in gene_res else '0') + " " + (
-            scores[vs[3]] if vs[3] in scores else '0') + "\n")
+            str(scores[vs[3]]) if vs[3] in scores else '0') + "\n")
         relevate_blast_segs.add(vs[1])
         relevate_blast_segs.add(vs[3])
         print(vs)
@@ -170,9 +170,9 @@ for item in tmp.keys():
         if first == second:
             write_juncs.append("JUNC {} {} {} {} {}\n".format(first, fdir, second, sdir, int(depth) / 2))
             write_segs.add(all_segs[first].strip() + " " + (gene_res[first] if first in gene_res else '0') + " " + (
-                scores[first] if first in scores else '0') + "\n")
+                str(scores[first]) if first in scores else '0') + "\n")
             write_segs.add(all_segs[second].strip() + " " + (gene_res[second] if second in gene_res else '0') + " " + (
-                scores[second] if second in scores else '0') + "\n")
+                str(scores[second]) if second in scores else '0') + "\n")
         # if ((left_score < 0.2 and left_node_len > 10000) or (right_score < 0.2 and right_node_len > 10000)) or \
         #         (first not in blast_segs or second not in blast_segs) or (
         #         first not in gene_res or second not in gene_res) or (
@@ -182,9 +182,9 @@ for item in tmp.keys():
         if (vs[1] in blast_segs or vs[1] in gene_res or left_score >= 0.7) and (vs[3] in blast_segs or vs[3] in gene_res or right_score >= 0.7):
             write_juncs.append("JUNC {} {} {} {} {}\n".format(first, fdir, second, sdir, int(depth) / 2))
             write_segs.add(all_segs[first].strip() + " " + (gene_res[first] if first in gene_res else '0') + " " + (
-                scores[first] if first in scores else '0') + "\n")
+                str(scores[first]) if first in scores else '0') + "\n")
             write_segs.add(all_segs[second].strip() + " " + (gene_res[second] if second in gene_res else '0') + " " + (
-                scores[second] if second in scores else '0') + "\n")
+                str(scores[second]) if second in scores else '0') + "\n")
             relevate_blast_segs.add(first)
             relevate_blast_segs.add(second)
 for item in write_segs:
