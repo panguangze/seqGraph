@@ -14,7 +14,7 @@ blast_segs = set()
 prev_seg = ""
 prev_len = 0
 res_count = set()
-cycle_gene_self  = open("cycle_gene_self.txt", "w")
+# cycle_gene_self  = open("cycle_gene_self.txt", "w")
 for line in blastin.readlines():
     t = line.strip().split("\t")
     if prev_seg != t[0] and prev_seg != "":
@@ -81,7 +81,7 @@ for idx, line in enumerate(orderin.readlines()):
             faout.write(">self" + "".join(tmp) + "\n" + str(seq) + "\n")
             print(">self-gene" + "".join(tmp))
             res_count.add(''.join(tmp))
-            cycle_gene_self.write(tmp+'\n')
+            # cycle_gene_self.write(tmp+'\n')
         else:
             for t in tmp:
                 tmp_seq = record_dict[t[0:-1]].seq
@@ -98,11 +98,11 @@ for idx, line in enumerate(orderin.readlines()):
         if genehit[idx + 1]:
             print(">cycle-gene" + "".join(tmp))
             res_count.add(''.join(tmp))
-            cycle_gene_self.write(tmp+'\n')
+            # cycle_gene_self.write(tmp+'\n')
         if plasscore[idx + 1] >= 0.9:
             print(">cycle-score" + "".join(tmp))
             res_count.add(''.join(tmp))
-            cycle_gene_self.write(tmp+'\n')
+            # cycle_gene_self.write(tmp+'\n')
 
     flags = False
     is_gene = False
