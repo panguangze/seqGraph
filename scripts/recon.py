@@ -18,7 +18,7 @@ for line in fai:
 ref_name_records = {}
 for idx, line in enumerate(segf):
     l = line.strip().split('\t')
-    t = re.split(r"[\+\-]", l[0])
+    t = re.split(r"[\+\-]", l[0])[:-1]
     ref_name_records[idx] = l[1]
     line_segs = []
     out_juncs.append([])
@@ -36,7 +36,7 @@ def in_segs(seg1, seg2=None):
             if seg1 in s:
                 return 1
     else:
-        for i in len(segs):
+        for i in range(len(segs)):
             s = segs[i]
             if seg1 in s and seg2 in s:
                 return i + 1
