@@ -84,14 +84,14 @@ for item in tmp.keys():
 # s_juncs = sorted(out_juncs, key=itemgetter(2))
 i = 0
 for js in out_segs:
-    outs_f = open(outs + str(i) + "_" + ref_name_records[i] + ".txt", "w")
+    outs_f = open(outs + "_" + str(i) + "_" + ref_name_records[i] + ".txt", "w")
     i = i + 1
     for j in js:
         outs_f.write(" ".join(j) + "\n")
     outs_f.close()
 i = 0
 for js in out_juncs:
-    outs_f = open(outs + str(i) + "_" + ref_name_records[i] + ".txt", "a")
+    outs_f = open(outs+ "_" + str(i) + "_" + ref_name_records[i] + ".txt", "a")
     i = i + 1
     for j in sorted(js):
         outs_f.write(" ".join(j) + "\n")
