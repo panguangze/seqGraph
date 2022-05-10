@@ -114,28 +114,44 @@ count = 0
 result = []
 skip = []
 replace = {}
+similar_array = []
 for fk in k_lens.keys():
     if fk in skip:
         continue
     a = k_lens[fk]
-    flag = True
+    oflag = True
     for sk in k_lens.keys():
         b = k_lens[sk]
         if fk == sk or sk < fk or sk in skip:
             continue
         tmp = [j for j in a if j in b]
-        if sum(tmp) / sum(a) > 0.9 and sum(tmp) / sum(b) > 0.9:
+        if sum(tmp) / sum(a) > 0.8 or sum(tmp) / sum(b) > 0.8:
+            oflag = False
+            flag = True
+            for suba in similar_array:
+                if fk in suba:
+                    suba.append(sk)
+                    flag = False
+                    break
+                elif sk in suba:
+                    suba.append(fk)
+                    flag = False
+                    break
+            if flag:
+                similar_array.append([fk,sk])
+                # else:
+
             # min_diff_ref_with_contig = 1
-            # min_ref = ""
+            # min_ref = ""i
             # for ref in contig_ref[fk]:
             #     if math.abs(1-ref_list[ref]/sum(a)) >
             # pass
-            print(sum(tmp) / sum(a), sum(tmp) / sum(b))
-            count = count + 1
+            # print(sum(tmp) / sum(a), sum(tmp) / sum(b))
+            # count = count + 1
             # flag = False
             # print(fk,"----------",sk,"duplicate",tmp)
             # replace[fk] = sk
-            replace[sk] = fk
+            # replace[sk] = fk
             # if sum(b) < sum(a):
             #     if sk not in result:
             #         result.append(sk)
@@ -146,15 +162,26 @@ for fk in k_lens.keys():
             #     skip.append(sk)
         # else:
 
-    if flag:
-        result.append(fk)
+    if oflag:
+        similar_array.append([fk])
 
 # print(count)
 # # print(tmp)
 # print(len(contig_ref))
 # print(result)
+for s in similar_array:
+    max_v = 0
+    max_it = ""
+    for it in s:
+        a = k_lens[it]
+        if sum(a) > max_v:
+            max_v = sum(a)
+            max_it = it
+    result.append(max_it)
+
 
 t = 0
+visited_path = []
 for k in result:
     if "self" in k or "gene" in k:
         pass
@@ -208,11 +235,12 @@ for k in result:
         else:
             k2 = k
         print("res: ", k2)
-        path = k2.replace("gene_score", "").replace("score", "").replace("gene", "").replace("self", "").replace("self-gene",
-                                                                                                          "")
-        second_match.write(path + '\t' + ref + '\n')
-        res.add(k2)
-        plt.savefig("N" + k2[0:15] + "_" + k2[-15:-1] + "%s_blast.png" % ref, dpi=300)
+        if k2 not in visited_path:
+            path = k2.replace("gene_score", "").replace("score", "").replace("gene", "").replace("self", "").replace("self-gene",                                                                                          "")
+            second_match.write(path + '\t' + ref + '\n')
+            res.add(k2)
+            plt.savefig("N" + k2[0:15] + "_" + k2[-15:-1] + "%s_blast.png" % ref, dpi=300)
+        visited_path.append(k2)
         plt.close()
         f_in.close()
 print('all plasmid segs: ', len(res))
