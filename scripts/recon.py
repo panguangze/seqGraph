@@ -42,10 +42,12 @@ def in_segs(seg1, seg2=None):
             if seg1 in s:
                 return 1
     else:
+        res = []
         for i in range(len(segs)):
             s = segs[i]
             if seg1 in s and seg2 in s:
-                return i + 1
+                res.append(i+1)
+        return res
     return 0
 
 
@@ -72,8 +74,10 @@ for line in graph:
         # print(in_segs(vs[1], vs[3]), "rrrrrrrrrr")
     # if vs ==[]:
         # print(in_segs(vs[1], vs[3]), 'dddddddd')
+
     if in_segs(vs[1], vs[3]):
-        out_juncs[in_segs(vs[1], vs[3]) - 1].append(vs)
+        for it in in_segs(vs[1], vs[3]):
+            out_juncs[it - 1].append(vs)
 # for item in tmp.keys():
 #     first = item
 #     fdir = "+"
