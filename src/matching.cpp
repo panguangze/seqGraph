@@ -679,7 +679,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
 //    auto tm = resultG->getConjugateMatrix() == nullptr;
     auto* values = new float[4];
     for (auto iPath: *paths) {
-        if (this->isCycle(iPath.first)) continue;
+        if (this->isCycle(iPath.first) && !BREAK_C) continue;
 //        if (this->isCycle((*iPath.second)[0])) continue;
         resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2);
     }
@@ -898,7 +898,7 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
 //        如果环中没有任何一个点拷贝数大于1那就是一个单纯环，无法merge到任何上面，直接再权重最小处断开
         if(BREAK_C && isNoCopyCycle) {
             auto tmp = breakCycle(cur);
-//            this->cyclePaths.push_back((*tmp)[0]);
+            this->cyclePaths.push_back((*tmp)[0]);
             result->emplace((*tmp)[0],tmp);
 //            cur->clear();
 //            cur->shrink_to_fit();
