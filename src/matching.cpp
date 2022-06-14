@@ -597,10 +597,50 @@ float* matching::mergePath(std::vector<int>* p1, std::vector<int>* p2, float* re
     result[1] = this->getIJFromOrigG(seqGraph::conjugateIdx(back_2),back_1);
     result[2] = this->getIJFromOrigG(front_2, seqGraph::conjugateIdx(front_1));
     result[3] = this->getIJFromOrigG(seqGraph::conjugateIdx(back_2),seqGraph::conjugateIdx(front_1));
+    float max_r = result[0];
+    if (max_r < result[1]) {
+        max_r = result[1];
+    }
+    if (max_r < result[2]) {
+        max_r = result[2];
+    }
+    if (max_r < result[3]) {
+        max_r = result[3];
+    }
 
-//    if (isCycle_1) {
-//
-//    }
+    if (isCycle_1) {
+        front_1 = seqGraph::conjugateIdx(front_1);
+        back_1 = seqGraph::conjugateIdx(back_1);
+//        front_2 = seqGraph::conjugateIdx(front_2);
+        auto tmp0 = this->getIJFromOrigG(front_2,back_1);
+        auto tmp1 = this->getIJFromOrigG(seqGraph::conjugateIdx(back_2),back_1);
+        auto tmp2 = this->getIJFromOrigG(front_2, seqGraph::conjugateIdx(front_1));
+        auto tmp3 = this->getIJFromOrigG(seqGraph::conjugateIdx(back_2),seqGraph::conjugateIdx(front_1));
+
+        if (tmp0 > max_r || tmp1 > max_r || tmp2 > max_r || tmp3 > max_r) {
+            result[0] = tmp0;
+            result[1] = tmp1;
+            result[2] = tmp2;
+            result[3] = tmp3;
+        }
+    }
+
+    if (isCycle_2) {
+        front_2 = seqGraph::conjugateIdx(front_2);
+        back_2 = seqGraph::conjugateIdx(back_2);
+//        front_2 = seqGraph::conjugateIdx(front_2);
+        auto tmp0 = this->getIJFromOrigG(front_2,back_1);
+        auto tmp1 = this->getIJFromOrigG(seqGraph::conjugateIdx(back_2),back_1);
+        auto tmp2 = this->getIJFromOrigG(front_2, seqGraph::conjugateIdx(front_1));
+        auto tmp3 = this->getIJFromOrigG(seqGraph::conjugateIdx(back_2),seqGraph::conjugateIdx(front_1));
+
+        if (tmp0 > max_r || tmp1 > max_r || tmp2 > max_r || tmp3 > max_r) {
+            result[0] = tmp0;
+            result[1] = tmp1;
+            result[2] = tmp2;
+            result[3] = tmp3;
+        }
+    }
 //    int max_p1 = 5 > p1->size() ? p1->size():5;
 //    int max_p2 = 5 > p2->size() ? p2->size():5;
 //
