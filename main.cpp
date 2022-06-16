@@ -279,16 +279,18 @@ int main(int argc, char *argv[]) {
             float c1 = v1t->getWeight()->getCopyNum();
             float c2 = v2t->getWeight()->getCopyNum();
             auto avg_weight = weight / (v1t->getWeight()->getCopyNum() * v2t->getWeight()->getCopyNum());
-//            g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
-            for (int i = 0; i <  c1; i++) {
-                v1t = g->getVertexById(source.append("_").append(std::to_string(i)));
+            g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
+            if (!ignore_copy) {
+                for (int i = 0; i <  c1; i++) {
+                    v1t = g->getVertexById(source.append("_").append(std::to_string(i)));
 //                g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
-                for (int j = 0; j <  c2; j++) {
-                    v2t = g->getVertexById(target.append("_").append(std::to_string(j)));
-                    g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
-                    target = originalTarget;
+                    for (int j = 0; j <  c2; j++) {
+                        v2t = g->getVertexById(target.append("_").append(std::to_string(j)));
+                        g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
+                        target = originalTarget;
+                    }
+                    source = originalSource;
                 }
-                source = originalSource;
             }
 //            g->addJunction(v1t, v2t, sDir, tDir, weight, 1 , 1);
         }
