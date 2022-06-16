@@ -157,6 +157,7 @@ int main(int argc, char *argv[]) {
             ("min_l", "Min length to print", cxxopts::value<int>()->default_value("-1"))
             ("sub_only", "Only get all sub graph",cxxopts::value<std::string>()->default_value(""))
             ("model", "0, plasmid; 1: phage or single strain;",cxxopts::value<int>()->default_value("0"))
+            ("ignore_copy", "Ignore copy number", cxxopts::value<bool>()->default_value("false"))
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
@@ -186,6 +187,10 @@ int main(int argc, char *argv[]) {
     }
     if (result.count("sub_only")) {
         SUB_ONLY = result["sub_only"].as<std::string>();
+    }
+    bool ignore_copy = false;
+    if (result.count("ignore_copy")) {
+        ignore_copy = result["ignore_copy"].as<bool>();
     }
     if (result.count("self_l")) {
         SELF_L = true;
@@ -229,17 +234,18 @@ int main(int argc, char *argv[]) {
             auto v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
 //            score = 1;
             v->setGeneAndScore(cGene, score);
-            for (int i = 1; i < copyNum; i++) {
-                source.pop_back();
-                if (i>=11)
+            if (!ignore_copy) {
+                for (int i = 1; i < copyNum; i++) {
                     source.pop_back();
-                if (i>=101)
-                    source.pop_back();
-                source.append(std::to_string(i));
-                v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
-                v->setGeneAndScore(cGene, score);
-
+                    if (i>=11)
+                        source.pop_back();
+                    if (i>=101)
+                        source.pop_back();
+                    source.append(std::to_string(i));
+                    v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
+                    v->setGeneAndScore(cGene, score);
 //                source = originalSource;
+                }
             }
         } else {
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
