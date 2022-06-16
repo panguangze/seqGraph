@@ -15,6 +15,7 @@ Junction::Junction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, c
     this->source = sourceVertex;
     this->target = targetVertex;
     this->hasLowerBoundLimit = aIsBounded;
+    this->removed = false;
     this->junctionToEdge();
 }
 
