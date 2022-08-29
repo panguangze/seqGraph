@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.10)
 project(seqGraph VERSION 1.0.1 DESCRIPTION "seq graph")
 
 set(CMAKE_CXX_STANDARD 14)
@@ -30,6 +30,7 @@ add_executable(eref extract_ref.cpp )
 add_executable(bDistance utils/bDistance.cpp utils/bDistance.h include/util.h)
 target_link_libraries(rDistance -lhts)
 target_link_libraries(bDistance -lhts)
+target_link_libraries(matching -lhts)
 target_link_libraries(eref -lpthread)
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

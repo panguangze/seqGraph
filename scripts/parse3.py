@@ -20,7 +20,7 @@ blast_segs = set()
 relevate_blast_segs = set()
 prev_seg = ""
 prev_len = 0
-
+prev_ref = ""
 
 def get_len(edge):
     return int(edge.split("_")[3])
@@ -28,16 +28,24 @@ def get_len(edge):
 
 for line in blast_in.readlines():
     t = line.strip().split("\t")
-    if prev_seg != t[0] and prev_seg != "":
+    if "EDGE_27711765_length_1685_cov_5" in prev_seg:
+        print(prev_len,"tdtd")
+    if (prev_seg != t[0] and prev_seg != "") or (prev_ref != t[1] and prev_ref != ""):
+        if "EDGE_27711765_length_1685_cov_5" in prev_seg:
+            print(prev_len, elen,"xdxd")
         elen = prev_seg.split("_")[3]
         if float(prev_len) / float(elen) > blast_ratio or prev_len > 2000:
             blast_segs.add(prev_seg)
         prev_seg = t[0]
+        prev_ref = t[1]
         prev_len = int(t[3])
     else:
-        if float(t[2]) > 60:
+        if float(t[2]) > blast_ratio*100:
+            if "EDGE_27711765_length_1685_cov_5" in prev_seg:
+                print(prev_len,float(t[2]),blast_ratio*100,"mmm")
             prev_len = prev_len + int(t[3])
         prev_seg = t[0]
+        prev_ref = t[1]
 elen = prev_seg.split("_")[3]
 if float(prev_len) / float(elen) > blast_ratio or prev_len > 2000:
     blast_segs.add(t[0])
@@ -52,7 +60,6 @@ if len(sys.argv) > 5:
             line_lst = score_r.strip().split("\t")
             scores[line_lst[0]] = str(line_lst[1])
 
-print(blast_segs)
 for line in inp:
     vs = line.split("\t")
     a = re.split(":|,|;", vs[0])
@@ -138,7 +145,6 @@ for line in inp2:
             str(scores[vs[3]]) if vs[3] in scores else '0') + "\n")
         relevate_blast_segs.add(vs[1])
         relevate_blast_segs.add(vs[3])
-        print(vs)
 # print(tmp['EDGE_5369_length_3828_cov_7.082378'])
 
 for item in tmp.keys():

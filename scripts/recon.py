@@ -101,7 +101,7 @@ for line in graph:
 i = 0
 # print(out_segs)
 for js in out_segs:
-    outs_f = open(outs + "_" + str(i) + "_" + ref_name_records[i] + ".txt", "w")
+    outs_f = open(outs + "_" + str(i) + "_" + ref_name_records[i] + ".second", "w")
     i = i + 1
     # print(i, js)
     for j in js:
@@ -111,7 +111,7 @@ i = 0
 # print(out_juncs)
 for js in out_juncs:
     print(i, js)
-    outs_f = open(outs + "_" + str(i) + "_" + ref_name_records[i] + ".txt", "a")
+    outs_f = open(outs + "_" + str(i) + "_" + ref_name_records[i] + ".second", "a")
     i = i + 1
     for j in sorted(js):
         outs_f.write(" ".join(j) + "\n")

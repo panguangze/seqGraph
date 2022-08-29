@@ -1,46 +1,99 @@
 import matplotlib.pyplot as plt
+from operator import itemgetter
 import matplotlib.patches as patches
 import sys
-
+import re
+import os
 ref_list = {}
 f = open(sys.argv[1])
+blast_ratio=0.5
 for line in f:
     line = line.strip("\n").split()
     if line[1] not in ref_list:
         ref_list[line[1]] = int(line[4])
 f.close()
-
+def get_line_len(line):
+    result_len = 0
+    vs = re.split(r'[+-]',line)
+    for v in vs:
+        if v == "":
+            continue
+        edgev = v.split("_")
+        if len(edgev) <= 4:
+            result_len = result_len + int(edgev[2])
+        else:
+            result_len = result_len + int(edgev[3])
+    return result_len
 ref_contig = {}
 f_in = open(sys.argv[1])
 res = set()
-
-with open(sys.argv[2]) as r:
-    for line in r.readlines():
-        res.add(line.strip())
-
+if sys.argv[4] == "1":
+    with open(sys.argv[2]) as r:
+        for line in r.readlines():
+            line_len = 0
+            splited=re.split(r'[+-]',line.strip())
+            for v in splited:
+                if v == "" or v ==" ":
+                    continue
+                line_len = line_len + int(v.split('_')[3])
+            if line_len >= 10000:
+            #print(line,"xxx\n")
+                liner = line.replace("cycle","").replace("score","").replace("self","").replace("gene","")
+                res.add(liner.strip("\n"))
 # 生成需要第二步match的文件： format: res \t ref
 second_match = open(sys.argv[3], 'w')
 
 title_contig = {}
 ref_contig_l = {}
-
-for line in f_in:
+blast_segs = set()
+prev_seg = ""
+prev_len = 0
+prev_ref = ""
+for line in f_in.readlines():
+    t = line.strip().split("\t")
+    #if "EDGE_28981966_length_1824_cov_10" in prev_seg:
+    #    print(prev_len,"tdtd")
+    if (prev_seg != t[0] and prev_seg != "") or (prev_ref != t[1] and prev_ref != ""):
+    #    if "EDGE_28981966_length_1824_cov_10" in prev_seg:
+    #        print(prev_len, elen,"xdxd")
+        elen = get_line_len(prev_seg)
+        if float(prev_len) / float(elen) > blast_ratio or prev_len > 2000:
+            blast_segs.add(prev_seg)
+        prev_seg = t[0]
+        prev_ref = t[1]
+        prev_len = int(t[5])
+    else:
+        if float(t[2]) > 75:
+     #       if "EDGE_28981966_length_1824_cov_10" in prev_seg:
+     #           print(prev_len,float(t[2]),blast_ratio*100,"mmm")
+            prev_len = prev_len + int(t[5])
+        prev_seg = t[0]
+        prev_ref = t[1]
+elen = get_line_len(prev_seg)
+if float(prev_len) / float(elen) > blast_ratio or prev_len > 2000:
+    blast_segs.add(t[0])
+f_in.close()
+for fline in open(sys.argv[1]).readlines():
     # ref_length = ref_list[ref]
     contig_num = 10
     count = contig_num - 1
     contig = ""
-    line = line.strip("\n").split("\t")
+    line = fline.strip("\n").split("\t")
+    if line[0] not in blast_segs:
+        continue
+    #if (float(line[2]) < 75 or int(line[5])/int(line[3]) < 0.5) and int(line[5]) < 2000:
+    #    continue
     if line[1] not in ref_contig.keys():
         ref_contig[line[1]] = []
-        title_contig[line[1]] = []
+        #title_contig[line[1]] = []
         ref_contig_l[line[1]] = 0
     if line[0] == contig:
         start = min(int(line[10]), int(line[11]))
         stop = max(int(line[10]), int(line[11]))
         # rect = patches.Rectangle((start, count), width=(stop-start), height=0.3, linewidth=2, edgecolor="black", facecolor="#FF8C00")
         ref_contig[line[1]].append([start, stop, line[0]])
-        if line[0] not in title_contig[line[1]]:
-            title_contig[line[1]].append(line[0])
+        #if line[0] not in title_contig[line[1]]:
+        #    title_contig[line[1]].append(line[0])
         ref_contig_l[line[1]] = ref_contig_l[line[1]] + (stop - start)
         # currentAxis.add_patch(rect)
         # title.add(line[0])
@@ -51,15 +104,21 @@ for line in f_in:
         stop = max(int(line[10]), int(line[11]))
         # rect = patches.Rectangle((start, count), width=(stop-start), height=0.3, linewidth=2, edgecolor="black", facecolor="#FF8C00")
         ref_contig[line[1]].append([start, stop, line[0]])
-        if line[0] not in title_contig[line[1]]:
-            title_contig[line[1]].append(line[0])
+        #if line[0] not in title_contig[line[1]]:
+        #    title_contig[line[1]].append(line[0])
         ref_contig_l[line[1]] = ref_contig_l[line[1]] + (stop - start)
         # currentAxis.add_patch(rect)
         # title.add(line[0])
+for key, value in ref_contig.items():
+    title_contig[key] = []
+    ref_contig[key] = sorted(value, key=itemgetter(1))
+    for v in ref_contig[key]:
+        if v[2] not in title_contig[key]:
+            title_contig[key].append(v[2])
 contig_ref = {}
-# print(title_contig)
-
 for ref in ref_list:
+    if ref not in ref_contig.keys():
+        continue
     title = set()
     ref_length = ref_list[ref]
     cover = [0] * ref_length
@@ -78,7 +137,7 @@ for ref in ref_list:
     if ref in ref_contig.keys():
         # if (float(ref_contig_l[ref])/float(ref_length))<0.8:
         if un_covered / ref_length > 0.4:
-            print("not ok", ref, un_covered, un_covered / ref_length, ref_length)
+            #print("not ok", ref, un_covered, un_covered / ref_length, ref_length)
             plt.close()
             f_in.close()
             continue
@@ -97,11 +156,11 @@ for k in contig_ref.keys():
     k_lens[k] = []
     t_l = 0
     t = re.split(r"[+-]", k.strip())
-    # print(t,"ewwe")
+    #print(t,"ewwe")
     for i in t:
         if i == "":
             continue
-        l = int(i.split("_")[3])
+        l = get_line_len(i)
         k_lens[k].append(l)
 
 # print("k_lens===============================================")
@@ -234,14 +293,14 @@ for k in result:
             k2 = replace[k]
         else:
             k2 = k
-        print("res: ", k2)
         if k2 not in visited_path:
-            path = k2.replace("gene_score", "").replace("score", "").replace("gene", "").replace("self", "").replace("self-gene",                                                                                          "")
+            path = k2.replace("gene_score", "").replace("score", "").replace("gene", "").replace("self", "").replace("self-gene",                                                                                          "").replace("ref","")
             second_match.write(path + '\t' + ref + '\n')
-            res.add(k2)
-            plt.savefig("N" + k2[0:15] + "_" + k2[-15:-1] + "%s_blast.png" % ref, dpi=300)
+            res.add(path.strip("\n"))
+            plt.savefig(os.path.join(os.path.dirname(sys.argv[1]), "N" + k2[0:15] + "_" + k2[-15:-1] + "%s_blast.png" % ref), dpi=300)
         visited_path.append(k2)
         plt.close()
         f_in.close()
-print('all plasmid segs: ', len(res))
+for item in res:
+    print(item.replace("+","+\t").replace("-","-\t"))
 second_match.close()

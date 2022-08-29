@@ -19,6 +19,7 @@ def rev_comp(s):
 if __name__ == "__main__":
     fa = pysam.FastaFile(sys.argv[1])
     res = open(sys.argv[3], "w")
+    model = sys.argv[4]
     paths = open(sys.argv[2], 'r')
     # fa = pysam.FastaFile("/Users/troye/Documents/Recycler/bin/sim800/all.fa")
     # res = open("/Users/troye/Documents/Recycler/bin/sim800/neo800.fa", "w")
@@ -44,7 +45,10 @@ if __name__ == "__main__":
                     name = "_".join(contig[:-1].split('_')[:-1])
                     print("not found: ", name)
                     fasta += rev_comp(fa.fetch(name))
-        res.write(">res_" + str(idx + 1) + "_" + str(len(fasta)) + "\n")
+        if model == "0":
+            res.write(">res_" + str(idx + 1) + "_" + str(len(fasta))+ "\n")
+        else:
+            res.write(">"+"".join(contigs)+"\n")
         res.write(fasta + "\n")
 
     #
