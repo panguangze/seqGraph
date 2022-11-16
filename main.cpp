@@ -278,7 +278,10 @@ int main(int argc, char *argv[]) {
 //            v2 = v2t == nullptr ? g->addVertex(target,"xx",1,2,1,1,2) : v2t;
             float c1 = v1t->getWeight()->getCopyNum();
             float c2 = v2t->getWeight()->getCopyNum();
-            auto avg_weight = weight / (v1t->getWeight()->getCopyNum() * v2t->getWeight()->getCopyNum());
+            if (c1 == 0 || c2 == 0) {
+                continue;
+            }
+            auto avg_weight = weight / (c1 * c2);
             g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
             if (!ignore_copy) {
                 for (int i = 0; i <  c1; i++) {
@@ -306,7 +309,7 @@ int main(int argc, char *argv[]) {
         resultFile<<item->getOriginId()<<"+"<<"\n";
     }
     std::vector<std::string> to_be_remove_sl;
-    while (n< maxI) {
+    while (n == 0) {
 //        if(n==6){
 //            int m = 9;
 //        }
@@ -344,9 +347,9 @@ int main(int argc, char *argv[]) {
         }
         std::cout<<"\nresolve path"<<std::endl;
 //    TODO , make the path and cycles info into mathicng class
-//        if (result.count("result_m")) {
-//            m->writeMatchResult(matchResultFile);
-//        }
+        if (result.count("result_m")) {
+            m->writeMatchResult(matchResultFile);
+        }
         auto paths = m->resolvePath(nullptr);
 
 //        cyclePathsFile<<"sub\n";
@@ -512,7 +515,7 @@ int main(int argc, char *argv[]) {
         }
         std::vector<std::string> all_paths;
         for(auto item : *paths) {
-            if (BREAK_C && m->isCycle(item.first)) continue;
+//            if (BREAK_C && m->isCycle(item.first)) continue;
             int total_length = 0;
             std::string current_path;
             for(const auto& v: *item.second) {

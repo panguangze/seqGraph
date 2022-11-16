@@ -77,6 +77,9 @@ namespace seqGraph {
         }
 
         inline float getIRowMaxV(int i ) {
+            if (rowMaxV.count(i) == 0){
+                return 0;
+            }
             return rowMaxV[i];
         }
 

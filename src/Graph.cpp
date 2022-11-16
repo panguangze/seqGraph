@@ -84,6 +84,9 @@ float SparseMatrix::getIRowMax(int i) {
 //        if (values[k] > maxV) maxV = values[k];
 //    }
 //    return maxV;
+    if(rowMaxV.count(i) == 0) {
+        return 0;
+    }
     return rowMaxV[i];
 }
 
@@ -748,6 +751,9 @@ void Graph::initRowMax() {
                 toPositiveVs.push_back(junc->getWeight()->getCopyNum());
                 toPositiveJAs.push_back(j);
             } else {
+                if (junc->getWeight()->getCopyNum() >= 1000) {
+                    auto tmppp = 99;
+                }
                 toNegativeVs.push_back(junc->getWeight()->getCopyNum());
                 toNegativeJAs.push_back(j);
             }
@@ -772,12 +778,18 @@ void Graph::initRowMax() {
             if ( junc->getSourceDir() == '-') {
                 toPositiveVs.push_back(junc->getWeight()->getCopyNum());
             } else {
+                if (junc->getWeight()->getCopyNum() >= 1000) {
+                    auto tmppp = 99;
+                }
                 toNegativeVs.push_back(junc->getWeight()->getCopyNum());
             }
         }
 
         float pM = toPositiveVs.empty() ? 0 : *std::max_element(toPositiveVs.begin(),toPositiveVs.end());
         float nM = toNegativeVs.empty() ? 0 : *std::max_element(toNegativeVs.begin(),toNegativeVs.end());
+        if (2 * (v->getIdx() + 1) == 54) {
+            auto tmppp = 99;
+        }
         this->rowMaxV.emplace(2 * v->getIdx() + 1, pM);
         this->rowMaxV.emplace(2 * (v->getIdx() + 1), nM);
         this->sparseMatrix.rowMaxV.emplace(2 * v->getIdx() + 1, pM);
