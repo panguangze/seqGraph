@@ -236,7 +236,7 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
                 slack[i] = ex[x] + ey[i] - mIJ;
                 pre[i] = y; //表示 y对应的 点 y 需要减小的权值
             }
-            if(slack[i] < d){
+            if(slack[i] <= d){
                 d = slack[i],yy = i; //找出减少最小的那条边
                 //            如果没有matched，并且是zero就break
                 if ((matched[i] == -1 ) && d < ZERO)
