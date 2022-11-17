@@ -309,7 +309,7 @@ int main(int argc, char *argv[]) {
         resultFile<<item->getOriginId()<<"+"<<"\n";
     }
     std::vector<std::string> to_be_remove_sl;
-    while (n == 0) {
+    while (n < maxI) {
 //        if(n==6){
 //            int m = 9;
 //        }
