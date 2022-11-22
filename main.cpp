@@ -515,7 +515,7 @@ int main(int argc, char *argv[]) {
         }
         std::vector<std::string> all_paths;
         for(auto item : *paths) {
-//            if (BREAK_C && m->isCycle(item.first)) continue;
+            if (BREAK_C && m->isMergedPath(item.first)) continue;
             int total_length = 0;
             std::string current_path;
             for(const auto& v: *item.second) {

@@ -132,6 +132,7 @@ void matching::resetGraph(seqGraph::Graph* g) {
     this->getMatrix();
     this->cyclePaths.clear();
     this->cyclePaths.shrink_to_fit();
+    this->mergedPaths.clear();
 }
 
 bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, float ex[], float ey[], float slack[]) {
@@ -874,15 +875,18 @@ void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
         auto v1 = idx2VertexInCurrentGraph(item);
         auto cPath = (*result)[item];
         for (auto& p : *result) {
-            if (p.first == item) continue;
+//           avoid A merged into B and B merged into A again
+            if (p.first == item or (this->mergedPaths.find(p.first) != this->mergedPaths.end() and this->mergedPaths[p.first] == *(cPath->begin()))) continue;
             bool hit = false;
             for (int i = 0 ; i < p.second->size(); i++) {
                 auto idx = (*p.second)[i];
                 auto v2 = idx2VertexInCurrentGraph(idx);
                 if(v1->sameVertex(*v2)) {
-//
-                    auto pos = p.second->begin() + i;
-                    p.second->insert(pos, cPath->begin(), cPath->end());
+//                    merge a cycle into this path.
+                    this->mergedPaths.insert({*(cPath->begin()), *(p.second->begin())});
+                    auto pos = p.second->begin() + i + 1;
+//                    keep the original first to be first
+                    p.second->insert(pos, cPath->rbegin(), cPath->rend());
                     hit = true;
                     break;
                 }
@@ -898,10 +902,10 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
         bool isNoCopyCycle = true;
         auto cSize = cur->size();
         for (int i = 0; i < cSize;i++){
-            if (this->idx2VertexInOriginalGraph((*cur)[i])->getWeight()->getCopyNum() >= 2) {
+            if (this->idx2VertexInOriginalGraph((*cur)[0])->getWeight()->getCopyNum() >= 2) {
                 isNoCopyCycle = false;
-                this->cyclePaths.push_back((*cur)[i]);
-                result->emplace((*cur)[i], cur);
+//                this->cyclePaths.push_back((*cur)[0]);
+//                result->emplace((*cur)[0], cur);
                 break;
             }
             cur->push_back(cur->front());

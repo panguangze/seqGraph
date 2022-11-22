@@ -31,6 +31,7 @@ private:
     int* matched;
 
     std::vector<int> cyclePaths;
+    std::map<int, int> mergedPaths; // those paths have been merged into other path
     void init_labels();
     void update_labels();
     void bfs(int i, float ex[], float ey[], bool visity[],int pre[], std::set<int>& skipped, float []);
@@ -48,6 +49,9 @@ public:
     }
     inline bool isCycle(int i) {
         return std::find(cyclePaths.begin(), cyclePaths.end(), i) != cyclePaths.end();
+    }
+    inline bool isMergedPath(int i) {
+        return this->mergedPaths.find(i) != mergedPaths.end();
     }
     bool needMatch();
 //    inline float** getMatrix() const {
