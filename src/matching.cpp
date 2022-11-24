@@ -228,7 +228,7 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
             if(ex[x] > 1000) {
                 int k = 88;
             }
-            if (i == 53) {
+            if (i == 12) {
                 auto tmppp = 3;
             }
             if(visity[i] or i == x) continue;
@@ -240,7 +240,7 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
             if(slack[i] <= d){
                 d = slack[i],yy = i; //找出减少最小的那条边
                 //            如果没有matched，并且是zero就break
-                if ((matched[i] == -1 ) && d < ZERO)
+                if ((matched[i] == -1 || getIJ(matched[i],i) == 0) && d < ZERO)
                     break;
             }
         }
@@ -259,7 +259,7 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
 
         y = yy;
 
-        if(matched[y] == -1 ) {
+        if(matched[y] == -1 || getIJ(matched[y],y) == 0) {
             break;
         }
     }
@@ -267,7 +267,8 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
         matched[y] = matched[pre[y]];
         matched[seqGraph::conjugateIdx(matched[pre[y]])] = seqGraph::conjugateIdx(y);
         skipped.emplace(matched[pre[y]]);
-        skipped.emplace(seqGraph::conjugateIdx(y));
+        if (getIJ(matched[y], y) != 0)
+            skipped.emplace(seqGraph::conjugateIdx(y));
         y = pre[y]; // 更新每个点对应的点
     }
 }
@@ -417,16 +418,21 @@ void matching::main_steps() {
     }
     std::set<int> skipped;
     for( int i = 1 ; i < N+1 ; i++ ){
+        if (i == 11) {
+            auto tmpp = 2;
+        }
         if (i == 7) {
             int ii = 99;
         }
         if (skipped.find(i) != skipped.end()) continue;
+//        if (ex[i] == 0){
+//            matched[i] = i;
+//            continue;
+//        }
         memset( visity , false , sizeof(visity) );
         std::fill_n(pre, N+1, 0);
         std::fill_n(slack, N+1, 10000000);
-        if (i == 57) {
-            auto tmpp = 2;
-        }
+
         bfs(i,ex,ey, visity,pre, skipped, slack);
         if (VERBOSE >= 1) {
             std::cout << i << " " << this->idx2StrDir(i) <<std::endl;
@@ -522,14 +528,15 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
         std::deque<int> zeroBreakPoint;
         while (true) {
             auto tmp = this->idx2StrDir(now);
+            auto tmp2 = this->idx2StrDir(matched[now]);
             auto mIJ = this->getIJ(matched[now],now);
-            if (now == 77 || matched[now] == 77) {
+            if (now == 9 || matched[now] == 11) {
                 int mmd = 99;
             }
             if (visited[matched[now]]) {
-//                if (mIJ == 0) {
-//                    zeroBreakPoint.push_back(matched[now]);
-//                }
+                if (mIJ == 0) {
+                    zeroBreakPoint.push_back(matched[now]);
+                }
                 break;
             }
 //            如果连上之前断裂的路径

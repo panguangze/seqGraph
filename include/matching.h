@@ -28,7 +28,14 @@ private:
 
     float* lx;
     float* ly;
-    int* matched;
+    int* matched; //
+    /**
+     * 1   .1
+     * 2  . 2
+     * 3 .  3
+     * 4.   4
+     * if matched[1] == 4,
+     */
 
     std::vector<int> cyclePaths;
     std::map<int, int> mergedPaths; // those paths have been merged into other path

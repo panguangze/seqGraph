@@ -281,7 +281,9 @@ int main(int argc, char *argv[]) {
             if (c1 == 0 || c2 == 0) {
                 continue;
             }
-            auto avg_weight = weight / (c1 * c2);
+//            divide with min copy and only assign
+            auto min_copy = std::min(c1,c2);
+            auto avg_weight = weight / min_copy;
             g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
             if (!ignore_copy) {
                 for (int i = 0; i <  c1; i++) {
