@@ -84,6 +84,7 @@ namespace seqGraph {
         }
 
         inline bool isSparse() const {
+//            return false;
             return this->sparse;
         }
 

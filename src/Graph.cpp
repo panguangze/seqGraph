@@ -751,9 +751,6 @@ void Graph::initRowMax() {
                 toPositiveVs.push_back(junc->getWeight()->getCopyNum());
                 toPositiveJAs.push_back(j);
             } else {
-                if (junc->getWeight()->getCopyNum() >= 1000) {
-                    auto tmppp = 99;
-                }
                 toNegativeVs.push_back(junc->getWeight()->getCopyNum());
                 toNegativeJAs.push_back(j);
             }

@@ -225,12 +225,6 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
         visity[seqGraph::conjugateIdx(x)] = true;
 //        visity[x] = true;
         for(int i = 1; i < N + 1; i++){
-            if(ex[x] > 1000) {
-                int k = 88;
-            }
-            if (i == 12) {
-                auto tmppp = 3;
-            }
             if(visity[i] or i == x) continue;
             auto mIJ = this->getIJ(x,i);
             if(slack[i] >= ex[x] + ey[i] - mIJ){
@@ -248,9 +242,6 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
             d = 0;
         }
         if (d != 0) {
-            if (d >= 1000) {
-                auto tmppps = 3;
-            }
             for(int i = 0; i < N+1; i++){
                 if(visity[i]) ex[matched[i]] -= d,ey[i] += d;
                 else slack[i] -= d;
@@ -346,9 +337,6 @@ void matching::hungarian() {
         std::cout<<std::endl;
     }
     for (int i = 1; i < N + 1; i++) {
-        if (this->idx2Str(i) == "EDGE_1557_length_248_cov_191.793388_0") {
-            auto im = 33;
-        }
         std::fill_n(slack, N+1, 10000000);
 //        for( int l = 1 ; l <=N ; l++ ) slack[l] = 1000;
         if (pre->find(i) != pre->end()) {
@@ -408,9 +396,6 @@ void matching::main_steps() {
 
 //TODO get row max
     for( int i = 1 ; i < N +1 ; i++ ){
-        if (i == 54) {
-            auto tmpp = 99;
-        }
         ex[i] = this->getIRowMax(i);
 //        for( int j = 1 ; j <= N ; j++ ){
 //            if( ex[i] < matrix[i][j] ) ex[i] = matrix[i][j];
@@ -418,12 +403,6 @@ void matching::main_steps() {
     }
     std::set<int> skipped;
     for( int i = 1 ; i < N+1 ; i++ ){
-        if (i == 11) {
-            auto tmpp = 2;
-        }
-        if (i == 7) {
-            int ii = 99;
-        }
         if (skipped.find(i) != skipped.end()) continue;
 //        if (ex[i] == 0){
 //            matched[i] = i;
@@ -527,17 +506,15 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
         bool isCycle = false;
         std::deque<int> zeroBreakPoint;
         while (true) {
-            auto tmp = this->idx2StrDir(now);
-            auto tmp2 = this->idx2StrDir(matched[now]);
+//            auto tmp = this->idx2StrDir(now);
+//            auto tmp2 = this->idx2StrDir(matched[now]);
             auto mIJ = this->getIJ(matched[now],now);
-            if (now == 9 || matched[now] == 11) {
-                int mmd = 99;
-            }
             if (visited[matched[now]]) {
                 if (mIJ == 0) {
+                    break;
+                } else {
                     zeroBreakPoint.push_back(matched[now]);
                 }
-                break;
             }
 //            如果连上之前断裂的路径
 //            if (resolvedPath->find(matched[now]) != resolvedPath->end()) {
@@ -573,8 +550,9 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
             visited[seqGraph::conjugateIdx(now)] = true;
         }
         if(currentInsert) {
+//            break zero edge and connect 1 2 3 4 and 4 5 6 7
             breakResolvedPaths(currentPath, zeroBreakPoint, resolvedPath);
-            zeroBreakPoint.empty();
+            zeroBreakPoint.clear();
 //            resolvedPath->emplace((*currentPath)[0], currentPath);
 //            if (isCycle) {
 //                this->cyclePaths.push_back((*currentPath)[0]);
@@ -985,9 +963,6 @@ std::vector<int>* matching::addPrevPath(std::map<int, std::vector<int>*>* prevPa
     if (prevPaths == nullptr) return curPath;
     auto res = new std::vector<int>();
     for(auto item : *curPath) {
-//        if (item == 0)
-//            int tmi = 9;
-//        if (item == -1) continue;
         int vIdx = (item + 1) / 2;
         int dir = item % 2;
         auto prevIdx = std::stoi((*this->graph->getVertices())[vIdx - 1]->getId());
