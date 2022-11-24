@@ -513,7 +513,9 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
                 if (mIJ == 0) {
                     break;
                 } else {
-                    zeroBreakPoint.push_back(matched[now]);
+                    currentPath->push_back(matched[now]);
+                    break;
+//                    zeroBreakPoint.push_back(matched[now]);
                 }
             }
 //            如果连上之前断裂的路径
