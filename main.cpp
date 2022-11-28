@@ -502,6 +502,7 @@ int main(int argc, char *argv[]) {
                 paths = m->resolvePath(paths);
                 if (paths->size() == prevPathSize || paths->size() == 1) {std::cout<<paths->begin()->second->size()<<"break"<<std::endl; break;}
                 for (auto item: *paths) {
+                    if (BREAK_C && m->isMergedPath(item.first)) continue;
                     if (m->isCycle(item.first)) {
                         cyclePathsFile<<"iter "<<iterN<<",graph"<<n<<"\n";
                         for(const auto& v: *item.second) {

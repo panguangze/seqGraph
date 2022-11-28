@@ -564,6 +564,7 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
     if (BREAK_C) {
         breakAndMergeCycle(resolvedPath);
     }
+//    auto tmp = this->idx2VertexInCurrentGraph(this->cyclePaths.front());
     for (auto path : *resolvedPath) {
         auto extendPath = this->addPrevPath(prevPaths, path.second);
         resPath->emplace(extendPath->front(),extendPath);
@@ -859,11 +860,12 @@ void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
     std::vector<std::pair<int, std::vector<int>*>> A;
     sort(*result,A);
     for (auto item: this->cyclePaths) {
+//        Here we only consider the break point of the cycle path, have copy (a bug here may be, we don't consider the copied node at other place)
         auto v1 = idx2VertexInCurrentGraph(item);
         auto cPath = (*result)[item];
         for (auto& p : *result) {
 //           avoid A merged into B and B merged into A again
-            if (p.first == item or (this->mergedPaths.find(p.first) != this->mergedPaths.end() and this->mergedPaths[p.first] == *(cPath->begin()))) continue;
+            if (p.first == item or (this->mergedPaths.find(p.first) != this->mergedPaths.end())) continue;
             bool hit = false;
             for (int i = 0 ; i < p.second->size(); i++) {
                 auto idx = (*p.second)[i];
@@ -871,9 +873,9 @@ void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
                 if(v1->sameVertex(*v2)) {
 //                    merge a cycle into this path.
                     this->mergedPaths.insert({*(cPath->begin()), *(p.second->begin())});
-                    auto pos = p.second->begin() + i + 1;
+                    auto pos = p.second->begin() + i;
 //                    keep the original first to be first
-                    p.second->insert(pos, cPath->rbegin(), cPath->rend());
+                    p.second->insert(pos, cPath->begin(), cPath->end());
                     hit = true;
                     break;
                 }
