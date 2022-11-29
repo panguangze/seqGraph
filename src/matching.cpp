@@ -474,7 +474,7 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
 //        std::cout<<"check conjugate done\n";
     std::vector<int> cyclePaths;
     for(int i = 1; i < N + 1; i++) {
-        if(i == 77) {
+        if(i == 71) {
             int m = 88;
         }
         if (visited[i]) continue;
@@ -860,6 +860,9 @@ void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
     std::vector<std::pair<int, std::vector<int>*>> A;
     sort(*result,A);
     for (auto item: this->cyclePaths) {
+        if (item == 46) {
+            auto tmp = 33;
+        }
 //        Here we only consider the break point of the cycle path, have copy (a bug here may be, we don't consider the copied node at other place)
         auto v1 = idx2VertexInCurrentGraph(item);
         auto cPath = (*result)[item];
@@ -872,11 +875,18 @@ void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
                 auto v2 = idx2VertexInCurrentGraph(idx);
                 if(v1->sameVertex(*v2)) {
 //                    merge a cycle into this path.
-                    this->mergedPaths.insert({*(cPath->begin()), *(p.second->begin())});
+                    this->mergedPaths.insert({item, p.first});
                     auto pos = p.second->begin() + i;
 //                    keep the original first to be first
                     p.second->insert(pos, cPath->begin(), cPath->end());
                     hit = true;
+//                    process A1xxxxx insert to A0xxxxx, this will make the front diff from the key.
+                    if (i == 0) {
+                        auto cPathLen = cPath->size();
+                        int swapV = p.second->front();
+                        (*p.second)[0] = (*p.second)[cPathLen];
+                        (*p.second)[cPathLen] = swapV;
+                    }
                     break;
                 }
             }
@@ -963,10 +973,11 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
     }
 }
 
+// This function will expand the curPath with prevPath, at the same time, it will modify this.cyclePaths and this.mergedPath corresponding
 std::vector<int>* matching::addPrevPath(std::map<int, std::vector<int>*>* prevPaths, std::vector<int>* curPath) {
     if (prevPaths == nullptr) return curPath;
     auto res = new std::vector<int>();
-    for(auto item : *curPath) {
+    for(int & item : *curPath) {
         int vIdx = (item + 1) / 2;
         int dir = item % 2;
         auto prevIdx = std::stoi((*this->graph->getVertices())[vIdx - 1]->getId());
@@ -989,9 +1000,39 @@ std::vector<int>* matching::addPrevPath(std::map<int, std::vector<int>*>* prevPa
                 }
             }
         } else {
-            std::cout<<"error, prev path not found "<<prevIdx<<std::endl;
+            std::cout<<"error, prev path not found, when parse cycle "<<prevIdx<<std::endl;
         }
     }
+
+//    modify the cyclePaths and mergedPath
+    for(int & item : cyclePaths) {
+        int vIdx = (item + 1) / 2;
+        int dir = item % 2;
+        auto prevIdx = std::stoi((*this->graph->getVertices())[vIdx - 1]->getId());
+        if (prevPaths->find(prevIdx) != prevPaths->end()) {
+            item = prevIdx;
+        } else {
+            std::cout << "error, prev path not found, when modify cycle " << prevIdx << std::endl;
+        }
+    }
+
+    std::map<int, int> tmpMergedPaths;
+    for(auto & item : mergedPaths) {
+//        first
+        auto first = item.first;
+        int vIdx = (first + 1) / 2;
+        auto firstPrevIdx = std::stoi((*this->graph->getVertices())[vIdx - 1]->getId());
+//        second
+        auto second = item.second;
+        vIdx = (second + 1) / 2;
+        auto secondPrevIdx = std::stoi((*this->graph->getVertices())[vIdx - 1]->getId());
+        if (prevPaths->find(firstPrevIdx) != prevPaths->end() || prevPaths->find(second) != prevPaths->end()) {
+            tmpMergedPaths[firstPrevIdx] = secondPrevIdx;
+        } else {
+            std::cout << "error, prev path not found, when modify cycle " << firstPrevIdx << std::endl;
+        }
+    }
+    this->mergedPaths = tmpMergedPaths;
     return res;
 }
 

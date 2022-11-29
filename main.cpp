@@ -360,6 +360,7 @@ int main(int argc, char *argv[]) {
         std::vector<std::vector<std::string>> visited_path;
 
         for (auto &item: *paths) {
+            if (BREAK_C && m->isMergedPath(item.first)) continue;
             if (m->isCycle(item.first)) {
 //                if (m->graph->getVertexByIdQ(m->idx2IdStr(item.second->front()))->sameVertex(*m->graph->getVertexByIdQ(m->idx2IdStr(item.second->back()))) ){
 //                    item.second->pop_back();
