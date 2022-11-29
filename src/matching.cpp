@@ -511,12 +511,15 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
             auto mIJ = this->getIJ(matched[now],now);
             if (visited[matched[now]]) {
                 if (mIJ == 0) {
-                    break;
+                    zeroBreakPoint.push_back(currentPath->front());
                 } else {
+                if (matched[now] != currentPath->front()) {
+                    zeroBreakPoint.push_back(currentPath->front());
                     currentPath->push_back(matched[now]);
-                    break;
+                }
 //                    zeroBreakPoint.push_back(matched[now]);
                 }
+                break;
             }
 //            如果连上之前断裂的路径
 //            if (resolvedPath->find(matched[now]) != resolvedPath->end()) {
@@ -948,12 +951,24 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
     }
     if (!tmp->empty()) {
         if(!lastCfirst) {
+            // connect 1 2 3 4 and 4 5 6 7
+            for (auto item : *result) {
+                if (item.first == tmp->back()) {
+                    tmp->pop_back();
+                    for(auto i : *item.second){
+                        tmp->push_back(i);
+                    }
+                    result->erase(item.first);
+                    break;
+                }
+            }
             //            if front v same back v
             if (tmp->size() != 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
                     tmp->back()))) {
                 this->cyclePaths.push_back((*tmp)[0]);
                 tmp->pop_back();
             }
+
             result->emplace((*tmp)[0], tmp);
         }
         else{
