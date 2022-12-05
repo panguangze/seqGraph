@@ -501,7 +501,8 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
 
 //        std::cout<< (*this->graph->getVertices())[vIdx - 1]->getId()<<dir<<'\t';
         visited[now] = true;
-        visited[seqGraph::conjugateIdx(now)] = true;
+//        a+ b+ ..., a- ..., can merge two
+//        visited[seqGraph::conjugateIdx(now)] = true;
         bool currentInsert = true;
         bool isCycle = false;
         std::deque<int> zeroBreakPoint;
@@ -926,17 +927,38 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
         }
         return;
     }
+
 //    如果最后断开
     auto lastCfirst = false;
     if (zereBK.back() == cur->front()) zereBK.pop_back();
     else{ //如果最后一个链接第一个
         lastCfirst = true;
     }
-    auto * tmp = new std::vector<int>();;
+    auto * tmp = new std::vector<int>();
+//    check the first break path, situation: 1- 2+ ... can reversed merged with 1+ 3+...
+    auto isTheFirstPath = true;
     for(auto &item : *cur) {
         if (!zereBK.empty() && item == zereBK.front()) {
+//          1- 2+ ... can reversed merged with 1+ 3+...
+            if (isTheFirstPath && !tmp->empty()) {
+                if(!lastCfirst) {
+                    // connect 1 2 3 4 and 4 5 6 7
+                    for (auto oldPath: *result) {
+                        if (oldPath.first == seqGraph::conjugateIdx(tmp->front())) {
+                            seqGraph::conjugatePath(tmp);
+                            tmp->pop_back();
+                            for (auto i: *oldPath.second) {
+                                tmp->push_back(i);
+                            }
+                            result->erase(oldPath.first);
+                            break;
+                        }
+                    }
+                }
+                isTheFirstPath = false;
+            }
             //            if front v same back v
-            if (tmp->size() != 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
+            if (tmp->size() > 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
                     tmp->back()))) {
                 this->cyclePaths.push_back((*tmp)[0]);
                 tmp->pop_back();
@@ -951,7 +973,9 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
     }
     if (!tmp->empty()) {
         if(!lastCfirst) {
-            // connect 1 2 3 4 and 4 5 6 7
+//  if the path only break at the last,  1- 2+ ... view not reversed merged with 1+ 3+. we need check if this path might be a "middle path",
+//  which means can connect two other path. xxx curr_path xxx
+// connect 1 2 3 4 and 4 5 6 7
             for (auto item : *result) {
                 if (item.first == tmp->back()) {
                     tmp->pop_back();
@@ -962,8 +986,26 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
                     break;
                 }
             }
+//  1- 2+ ... can reversed merged with 1+ 3+...
+            if (isTheFirstPath) {
+                if(!lastCfirst) {
+                    // connect 1 2 3 4 and 4 5 6 7
+                    for (auto oldPath: *result) {
+                        if (oldPath.first == seqGraph::conjugateIdx(tmp->front())) {
+                            seqGraph::conjugatePath(tmp);
+                            tmp->pop_back();
+                            for (auto i: *oldPath.second) {
+                                tmp->push_back(i);
+                            }
+                            result->erase(oldPath.first);
+                            break;
+                        }
+                    }
+                }
+                isTheFirstPath = false;
+            }
             //            if front v same back v
-            if (tmp->size() != 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
+            if (tmp->size() > 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
                     tmp->back()))) {
                 this->cyclePaths.push_back((*tmp)[0]);
                 tmp->pop_back();
@@ -978,7 +1020,7 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
             }
             result->erase(cur->front());
             //            if front v same back v
-            if (tmp->size() != 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
+            if (tmp->size() > 1 && this->idx2VertexInCurrentGraph(tmp->front())->sameVertex(*this->idx2VertexInCurrentGraph(
                     tmp->back()))) {
                 this->cyclePaths.push_back((*tmp)[0]);
                 tmp->pop_back();
