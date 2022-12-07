@@ -474,7 +474,7 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
 //        std::cout<<"check conjugate done\n";
     std::vector<int> cyclePaths;
     for(int i = 1; i < N + 1; i++) {
-        if(i == 71) {
+        if(i == 126) {
             int m = 88;
         }
         if (visited[i]) continue;
@@ -502,6 +502,9 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
 //        std::cout<< (*this->graph->getVertices())[vIdx - 1]->getId()<<dir<<'\t';
         visited[now] = true;
 //        a+ b+ ..., a- ..., can merge two
+        if (this->getIJ(matched[seqGraph::conjugateIdx(now)], seqGraph::conjugateIdx(now)) == 0) {
+            visited[seqGraph::conjugateIdx(now)] = true;
+        }
 //        visited[seqGraph::conjugateIdx(now)] = true;
         bool currentInsert = true;
         bool isCycle = false;
@@ -556,6 +559,10 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
             visited[seqGraph::conjugateIdx(now)] = true;
         }
         if(currentInsert) {
+            //  seems bug here, a cycle path want to connect with a cycle path 126 127 , 125 128, fix with add it conjugate into visited
+            if (zeroBreakPoint.empty() || zeroBreakPoint.back() != currentPath->front()) {
+                visited[seqGraph::conjugateIdx(currentPath->front())] = true;
+            }
 //            break zero edge and connect 1 2 3 4 and 4 5 6 7
             breakResolvedPaths(currentPath, zeroBreakPoint, resolvedPath);
             zeroBreakPoint.clear();
@@ -864,7 +871,7 @@ void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
     std::vector<std::pair<int, std::vector<int>*>> A;
     sort(*result,A);
     for (auto item: this->cyclePaths) {
-        if (item == 46) {
+        if (item == 125) {
             auto tmp = 33;
         }
 //        Here we only consider the break point of the cycle path, have copy (a bug here may be, we don't consider the copied node at other place)
