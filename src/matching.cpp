@@ -474,7 +474,7 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
 //        std::cout<<"check conjugate done\n";
     std::vector<int> cyclePaths;
     for(int i = 1; i < N + 1; i++) {
-        if(i == 126) {
+        if(i == 93) {
             int m = 88;
         }
         if (visited[i]) continue;
@@ -951,6 +951,10 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
                 if(!lastCfirst) {
                     // connect 1 2 3 4 and 4 5 6 7
                     for (auto oldPath: *result) {
+//                        the cycle path will merge at next method
+                        if(this->isCycle(oldPath.first)) {
+                            continue;
+                        }
                         if (oldPath.first == seqGraph::conjugateIdx(tmp->front())) {
                             seqGraph::conjugatePath(tmp);
                             tmp->pop_back();
@@ -984,6 +988,9 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
 //  which means can connect two other path. xxx curr_path xxx
 // connect 1 2 3 4 and 4 5 6 7
             for (auto item : *result) {
+                if(this->isCycle(item.first)) {
+                    continue;
+                }
                 if (item.first == tmp->back()) {
                     tmp->pop_back();
                     for(auto i : *item.second){
@@ -998,6 +1005,9 @@ void matching::breakResolvedPaths(std::vector<int> *cur, std::deque<int> & zereB
                 if(!lastCfirst) {
                     // connect 1 2 3 4 and 4 5 6 7
                     for (auto oldPath: *result) {
+                        if(this->isCycle(oldPath.first)) {
+                            continue;
+                        }
                         if (oldPath.first == seqGraph::conjugateIdx(tmp->front())) {
                             seqGraph::conjugatePath(tmp);
                             tmp->pop_back();
