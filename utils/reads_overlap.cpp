@@ -13,7 +13,7 @@ int THRESHOLD = 0;
 int main(int argc, char **argv) {
 
     //    parse options
-    cxxopts::Options options("Reads overlap", "Extract reads overlap from bam");
+    cxxopts::Options options("Reads overlap", "Extract reads and barcodes overlap from bam");
 
     options.add_options()
             ("b,bam", "Bam file", cxxopts::value<std::string>())

@@ -118,13 +118,13 @@ void parse_tgs(std::string& f_name, seqGraph::Graph* g){
                 dir1 = course[course.size()-1];
                 course.pop_back();
                 v1 = course;
-                vertex1 = g->addVertex(v1,"xx",1,2,1,1,2);
+                vertex1 = g->addVertex(v1,"xx",1,2,1,1,2,0);
             } else {
                 dir2 = course[course.size()-1];
                 course.pop_back();
                 v2 = course;
 //                add to grap
-                vertex2 = g->addVertex(v2,"xx",1,2,1,1,2);
+                vertex2 = g->addVertex(v2,"xx",1,2,1,1,2,0);
                 g->addJunction(vertex1, vertex2, dir1, dir2, M_WEIGHT, 1 , 1);
                 vertex1 = vertex2;
                 vertex2 = nullptr;
@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
             ("s,self_l", "Cycle result", cxxopts::value<bool>()->default_value("false"))
             ("min_l", "Min length to print", cxxopts::value<int>()->default_value("-1"))
             ("sub_only", "Only get all sub graph",cxxopts::value<std::string>()->default_value(""))
-            ("model", "0, plasmid; 1: phage or single strain;",cxxopts::value<int>()->default_value("0"))
+            ("model", "0, meta; 1: single strain; ",cxxopts::value<int>()->default_value("0"))
             ("ignore_copy", "Ignore copy number", cxxopts::value<bool>()->default_value("false"))
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
@@ -231,7 +231,7 @@ int main(int argc, char *argv[]) {
 //            if(source == "EDGE_1499493_length_56_cov_55.000000_0") {
 //                int mm = 9;
 //            }
-            auto v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
+            auto v = g->addVertex(source,"xx",1,2,coverage,1,copyNum, 0);
 //            score = 1;
             v->setGeneAndScore(cGene, score);
             if (!ignore_copy) {
@@ -242,13 +242,16 @@ int main(int argc, char *argv[]) {
                     if (i>=101)
                         source.pop_back();
                     source.append(std::to_string(i));
-                    v = g->addVertex(source,"xx",1,2,coverage,1,copyNum);
+                    v = g->addVertex(source,"xx",1,2,coverage,1,copyNum, i);
                     v->setGeneAndScore(cGene, score);
 //                source = originalSource;
                 }
             }
         } else {
             iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
+            if (originalSource == "H:960") {
+                auto tmppp = 44;
+            }
             if(SELF_L && originalSource == originalTarget) {
                 if (visited_self_loop.find(originalSource) == visited_self_loop.end()){
 //                    std::vector<std::string> tokens;
@@ -283,19 +286,23 @@ int main(int argc, char *argv[]) {
             }
 //            divide with min copy and only assign
             auto min_copy = std::min(c1,c2);
+//            auto divide_copy = std::min(c1,c2);
+            auto multi_copy = c1 * c2;
             auto avg_weight = weight / min_copy;
             g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
             if (!ignore_copy) {
-                for (int i = 0; i <  c1; i++) {
-                    v1t = g->getVertexById(source.append("_").append(std::to_string(i)));
+//                if (MODEL == 2) {
+                    for (int i = 0; i < c1; i++) {
+                        v1t = g->getVertexById(source.append("_").append(std::to_string(i)));
 //                g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
-                    for (int j = 0; j <  c2; j++) {
-                        v2t = g->getVertexById(target.append("_").append(std::to_string(j)));
-                        g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
-                        target = originalTarget;
+                        for (int j = 0; j < c2; j++) {
+                            v2t = g->getVertexById(target.append("_").append(std::to_string(j)));
+                            g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1, 1);
+                            target = originalTarget;
+                        }
+                        source = originalSource;
                     }
-                    source = originalSource;
-                }
+//                }
             }
 //            g->addJunction(v1t, v2t, sDir, tDir, weight, 1 , 1);
         }

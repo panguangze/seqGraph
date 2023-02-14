@@ -144,11 +144,11 @@ Graph* Graph::getSubgraph(int i) {
     subG->isReconstructed = false;
     return subG;
 }
-Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum) {
+Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum, int copy_idx) {
 //    create vertex add push
     auto v1 = this->getVertexById(mId);
     if(v1 != nullptr) return v1;
-    auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum, this->vertices->size());
+    auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum, this->vertices->size(),copy_idx);
 //    vertex->setIdx(this->vertices->size());
     this->vertices->push_back(vertex);
     this->verticesIdx->emplace(mId, vertex->getIdx());

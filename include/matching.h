@@ -98,6 +98,9 @@ public:
     void breakAndMergeCycle(std::map<int,std::vector<int>*> *result);
     std::vector<int>* breakCycle(std::vector<int> *);
     float* mergePath(std::vector<int>* p1, std::vector<int>* p2, float* result);
+
+//    If we already have a match A1 --> B1, we will ignore A2 --> B2 when model == 2.
+    bool vertexLookup(int i, int j);
 };
 
 //seqGraph::Graph* reconstructMatrix(float** matrix, std::map<int, std::vector<int>*>*);

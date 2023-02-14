@@ -225,7 +225,9 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
         visity[seqGraph::conjugateIdx(x)] = true;
 //        visity[x] = true;
         for(int i = 1; i < N + 1; i++){
-            if(visity[i] or i == x) continue;
+//            if i is visited or i == x or (A1 -- B1 is in match already ,A2 -- B2, and model == 2)
+            if(visity[i] or i == x or this->vertexLookup(x,i)) continue;
+//            if(visity[i] or i == x) continue;
             auto mIJ = this->getIJ(x,i);
             if(slack[i] >= ex[x] + ey[i] - mIJ){
                 slack[i] = ex[x] + ey[i] - mIJ;
@@ -403,6 +405,9 @@ void matching::main_steps() {
     }
     std::set<int> skipped;
     for( int i = 1 ; i < N+1 ; i++ ){
+        if (i == 19) {
+            auto tmpp = 33;
+        }
         if (skipped.find(i) != skipped.end()) continue;
 //        if (ex[i] == 0){
 //            matched[i] = i;
@@ -595,6 +600,49 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
     return resPath;
 }
 
+bool matching::vertexLookup(int i, int j)  {
+    auto isMatched = false;
+    auto iVertex = this->idx2VertexInCurrentGraph(i);
+    auto jVertex = this->idx2VertexInCurrentGraph(j);
+
+    int jStart = j - (jVertex->getCopyIdx()) * 2;
+    int jEnd = j + (jVertex->getWeight()->getCopyNum() - jVertex->getCopyIdx()) * 2;
+
+    int iStart = i - (iVertex->getCopyIdx())  * 2;
+    int iEnd = i + (iVertex->getWeight()->getCopyNum() - 1 - iVertex->getCopyIdx()) * 2;
+    //    check if i have matched all path already
+    auto maxMatched = iVertex->getPrevJuncCountIgnoreCopy();
+    int matchedCount = 0;
+    bool isMaxMatched = false;
+    for (int p = iStart; p <= iEnd; p+=2) {
+        if (matched[seqGraph::conjugateIdx(p)] != -1 && this->getIJ(matched[seqGraph::conjugateIdx(p)] ,seqGraph::conjugateIdx(p)) != 0){
+            matchedCount++;
+            if (matchedCount >= maxMatched) {
+                isMaxMatched = true;
+                break;
+            }
+        }
+    }
+//    if max matched, can use this
+    if (isMaxMatched) {
+        return false;
+    }
+//  else  check if have matched[j1] = i1
+    for (int p = jStart; p <= jEnd; p+=2) {
+        for (int q = iStart; q <= iEnd; q+=2) {
+            if (this->matched[p] == q) {
+                isMatched = true;
+                break;
+            }
+        }
+    }
+
+    if (isMatched) {
+        return true;
+    }
+    return false;
+}
+
 float* matching::mergePath(std::vector<int>* p1, std::vector<int>* p2, float* result) {
 //    auto result = new float[4];
 //    for(int i = 0 ; i< 4 ; i ++) result[i] = 0;
@@ -693,7 +741,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
     for (auto iPath: *paths) {
         if (this->isCycle(iPath.first) && !BREAK_C) continue;
 //        if (this->isCycle((*iPath.second)[0])) continue;
-        resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2);
+        resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2,0);
     }
     seqGraph::Vertex* v1;
     seqGraph::Vertex* v2;

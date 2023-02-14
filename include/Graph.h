@@ -93,7 +93,7 @@ namespace seqGraph {
         }
 
         void removeJunc(Junction* junc);
-        Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum);
+        Vertex *addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum, int copy_idx);
 
         Junction *
         addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, float copyNum,

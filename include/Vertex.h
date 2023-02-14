@@ -25,7 +25,20 @@ namespace seqGraph {
         float depth;
         float credibility;
         int idx;
-        int copy_idx; //
+        int copy_idx;
+        int nextJuncCountIgnoreCopy;
+    public:
+        int getNextJuncCountIgnoreCopy() const;
+
+        int getPrevJuncCountIgnoreCopy() const;
+
+    protected:
+        int prevJuncCountIgnoreCopy;
+    public:
+        int getCopyIdx() const;
+
+    protected:
+        //
         bool containsGene;
         float score;
     public:
@@ -55,7 +68,7 @@ namespace seqGraph {
 
         const std::vector<Junction *> &getPrevJuncs() const;
     public:
-        Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum, int idx);
+        Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum, int idx, int copy_idx);
         bool sameVertex(const seqGraph::Vertex & v2);
 
         ~Vertex();

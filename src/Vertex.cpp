@@ -12,7 +12,8 @@ bool Vertex::sameVertex(const seqGraph::Vertex &v2) {
     return this->Id.substr(0, idx1) == v2.getId().substr(0,idx2);
 }
 
-Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float aCredibility, int aCopyNum, int idx) {
+Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float aCredibility, int aCopyNum, int idx, int copy_idx) {
+    this->copy_idx = copy_idx;
     this->Id = mId;
     this->orphan = true;
     this->chrom = aChrom;
@@ -218,9 +219,15 @@ const std::vector<Junction *> &Vertex::getPrevJuncs() const {
 
 void Vertex::setNextJunc(Junction* v) {
     this->nextJuncs.push_back(v);
+    if(v->getTarget()->getCopyIdx() == 0){
+        this->nextJuncCountIgnoreCopy++;
+    }
 }
 void Vertex::setPrevJunc(Junction* v){
     this->prevJuncs.push_back(v);
+    if (v->getSource()->getCopyIdx() == 0) {
+        this->prevJuncCountIgnoreCopy++;
+    }
 }
 
 void Vertex::setGeneAndScore(bool gene, float s) {
@@ -241,4 +248,16 @@ void Vertex::setIsVisited(bool visited) {
 
 float Vertex::getScore() const {
     return score;
+}
+
+int Vertex::getCopyIdx() const {
+    return copy_idx;
+}
+
+int Vertex::getNextJuncCountIgnoreCopy() const {
+    return nextJuncCountIgnoreCopy;
+}
+
+int Vertex::getPrevJuncCountIgnoreCopy() const {
+    return prevJuncCountIgnoreCopy;
 }
