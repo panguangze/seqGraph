@@ -308,7 +308,7 @@ int main(int argc, char *argv[]) {
         }
     }
 //    matching for each connected graph
-    int n = 4;
+    int n = 0;
     g->parseConnectedComponents();
     if (SUB_ONLY != "") return 0;
     std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
