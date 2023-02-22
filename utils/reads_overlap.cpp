@@ -185,7 +185,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::vector<std::
     std::string prev;
     std::string next;
     for (const auto& item : refCopys ){
-
+        if (std::find(fais.begin(),fais.end(),item.first) == fais.end()) continue;
         int copy;
         if (DEPTH != -1) {
             auto hapd = item.second/DEPTH;
@@ -201,7 +201,6 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::vector<std::
         } else {
             copy = 1;
         }
-
         fout<<"SEG "<<item.first<<" "<<item.second<<" "<<copy<<"\n";
     }
     for (auto& it: iMap) {
