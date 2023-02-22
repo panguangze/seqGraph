@@ -5,17 +5,39 @@
 #include "reads_overlap.h"
 #include "../include/cxxopts.hpp"
 #include <math.h>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include <vector>
 // arg1 输入bam，arg2输出jaccard
 float DEPTH = -1;
 int CUTOFF = 300;
 bool SELFLOOP = false;
 int THRESHOLD = 0;
+
+void parse_fai(const std::string& contig_fai, std::vector<std::string>& contigs) {
+    std::ifstream file(contig_fai);
+    std::string line;
+
+//    std::vector<std::string> tokens;
+
+    while(std::getline(file, line)) {     // '\n' is the default delimiter
+
+        std::istringstream iss(line);
+        std::string token;
+        std::getline(iss, token, '\t');
+//        while(std::getline(iss, token, '\t'))   // but we can specify a different one
+        contigs.push_back(token);
+    }
+}
+
 int main(int argc, char **argv) {
 
     //    parse options
     cxxopts::Options options("Reads overlap", "Extract reads and barcodes overlap from bam");
 
     options.add_options()
+            ("fai", "contigs fai file", cxxopts::value<std::string>())
             ("b,bam", "Bam file", cxxopts::value<std::string>())
             ("o,out","Out file", cxxopts::value<std::string>())
             ("c,cut_off", "Cute off size", cxxopts::value<int>()->default_value("300"))
@@ -31,6 +53,10 @@ int main(int argc, char **argv) {
     }
     std::string bamF = result["bam"].as<std::string>();
     std::string resultF = result["out"].as<std::string>();
+    std::string fai_file;
+    if(result.count("fai")) {
+        fai_file = result["fai"].as<std::string>();
+    }
 
     if(result.count("cut_off")) {
         CUTOFF = result["cut_off"].as<int>();
@@ -53,8 +79,11 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Error opening '%s'\n", bamF.c_str());
         return -1;
     }
-
-    readBAM(in, resultF, 100);
+    std::vector<std::string> fais;
+    if (!fai_file.empty()) {
+        parse_fai(fai_file,fais);
+    }
+    readBAM(in, resultF, 100,fais);
 
 }
 
@@ -82,7 +111,7 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, float>& 
     }
 }
 
-void readBAM(htsFile *in, std::string& out_file, int readsLen) {
+void readBAM(htsFile *in, std::string& out_file, int readsLen, std::vector<std::string>& fais) {
     Interactions iMap;
     sam_hdr_t *hdr;
     bam1_t *b;
@@ -128,6 +157,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen) {
 //            else if(rev == mrev) continue;
 //        }
         if (refName == mRefName)continue;
+        if (!fais.empty() && (std::find(fais.begin(),fais.end(),refName) == fais.end() || std::find(fais.begin(),fais.end(),mRefName) == fais.end())) continue;
         if (rev)
             refName = refName.append(" -");
         if (!mrev)
