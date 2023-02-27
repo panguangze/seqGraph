@@ -185,7 +185,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::vector<std::
     std::string prev;
     std::string next;
     for (const auto& item : refCopys ){
-        if (std::find(fais.begin(),fais.end(),item.first) == fais.end()) continue;
+        if (!fais.empty() && std::find(fais.begin(),fais.end(),item.first) == fais.end()) continue;
         int copy;
         if (DEPTH != -1) {
             auto hapd = item.second/DEPTH;
