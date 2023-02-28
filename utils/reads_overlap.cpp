@@ -255,6 +255,9 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::vector<std::
         } else {
             copy = 1;
         }
+        if (ISTGS) {
+            copy = 1;
+        }
         fout<<"SEG "<<item.first<<" "<<item.second<<" "<<copy<<"\n";
     }
     for (auto& it: iMap) {
