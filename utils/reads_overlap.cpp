@@ -13,6 +13,7 @@
 float DEPTH = -1;
 int CUTOFF = 300;
 bool SELFLOOP = false;
+bool ISTGS = false;
 int THRESHOLD = 0;
 
 void parse_fai(const std::string& contig_fai, std::vector<std::string>& contigs) {
@@ -44,6 +45,7 @@ int main(int argc, char **argv) {
             ("d,depth", "Bam depth", cxxopts::value<float>())
             ("t,threshold", "Threshold for graph weigh filter", cxxopts::value<int>()->default_value("0"))
             ("s,self_l", "If self_loop take into consideration", cxxopts::value<bool>()->default_value("false"))
+            ("tgs", "If self_loop take into consideration", cxxopts::value<bool>()->default_value("false"))
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
@@ -66,6 +68,12 @@ int main(int argc, char **argv) {
     }
     if(result.count("self_l")) {
         SELFLOOP = result["self_l"].as<bool>();
+    }
+    if(result.count("self_l")) {
+        SELFLOOP = result["self_l"].as<bool>();
+    }
+    if(result.count("tgs")) {
+        ISTGS = result["tgs"].as<bool>();
     }
     if(result.count("threshold")) {
         THRESHOLD = result["threshold"].as<int>();
@@ -110,6 +118,17 @@ void initIMap (sam_hdr_t *hdr,Interactions& iMap, std::map<std::string, float>& 
         iMap[revRef]= rvtmp;
     }
 }
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::stringstream ss(s);
+    std::string item;
+    std::vector<std::string> elems;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+        // elems.push_back(std::move(item)); // if C++11 (based on comment from @mchiasson)
+    }
+    return elems;
+}
+
 
 void readBAM(htsFile *in, std::string& out_file, int readsLen, std::vector<std::string>& fais) {
     Interactions iMap;
@@ -133,22 +152,57 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::vector<std::
             if (b) bam_destroy1(b);
             if (hdr) sam_hdr_destroy(hdr);
         }
-        if (b->core.tid == -1 || b->core.mtid == -1)
-            continue;
-        refLen = sam_hdr_tid2len(hdr, b->core.tid);
-        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
-        refName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
-
-        mRefName = std::string(sam_hdr_tid2name(hdr, b->core.mtid));
         pos = b->core.pos;
         mpos = b->core.mpos;
         auto flags = b->core.flag;
         if (flags & 0x80) continue;
+        if (ISTGS && !(flags & 0x800)) continue;
         auto rev = flags & 0x10;
         auto mrev = flags & 0x20;
-        if (CUTOFF != -1) {
-            if (pos < refLen - CUTOFF && mpos > CUTOFF) continue;
-            if (mpos < mRefLen - CUTOFF && pos > CUTOFF) continue;
+        if (ISTGS) {
+            auto p = bam_aux_get(b, "SA");
+            std::string pstring = std::string(reinterpret_cast<const char *>(p));
+            auto pvector = split(pstring,',');
+//            refName = pvector[0].substr(1);
+//            mRefName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
+//            rev = pvector[2] == "+" ? 0:1 ;
+            auto cigars = bam_get_cigar(b);
+            auto op=bam_cigar_op(cigars[0]);
+            if (op == BAM_CHARD_CLIP) {
+                continue;
+            }
+            auto op_len = bam_cigar_oplen(cigars[0]);
+            int indexS = pvector[3].find('S');
+            int indexH = pvector[3].find('H');
+//            if (indexH < indexS) continue;
+            int minidx = std::min(indexS, indexH);
+            int mop_len = std::stoi(pvector[3].substr(0,minidx));
+            mpos =  std::stoi(pvector[1]);
+            if ((pos > 1000 && mpos > 1000) || (pos < 1000 && mpos < 1000) ) continue;
+            if (op_len <= mop_len) {
+                refName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
+                mRefName = pvector[0].substr(1);
+                rev = 0;
+                mrev  = 1 ;
+            } else {
+                mRefName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
+                refName = pvector[0].substr(1);
+                rev  = 0;
+                mrev = 1;
+            }
+//            mrev =
+        } else {
+            if (!ISTGS && (b->core.tid == -1 || b->core.mtid == -1))
+                continue;
+            refLen = sam_hdr_tid2len(hdr, b->core.tid);
+            mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
+            refName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
+            if (!ISTGS)
+                mRefName = std::string(sam_hdr_tid2name(hdr, b->core.mtid));
+            if (!ISTGS && CUTOFF != -1) {
+                if (pos < refLen - CUTOFF && mpos > CUTOFF) continue;
+                if (mpos < mRefLen - CUTOFF && pos > CUTOFF) continue;
+            }
         }
 //        refLen = sam_hdr_tid2len(hdr, b->core.tid);
 //        mRefLen = sam_hdr_tid2len(hdr, b->core.mtid);
@@ -185,7 +239,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::vector<std::
     std::string prev;
     std::string next;
     for (const auto& item : refCopys ){
-        if (std::find(fais.begin(),fais.end(),item.first) == fais.end()) continue;
+        if (!fais.empty() && std::find(fais.begin(),fais.end(),item.first) == fais.end()) continue;
         int copy;
         if (DEPTH != -1) {
             auto hapd = item.second/DEPTH;
@@ -199,6 +253,9 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::vector<std::
 //            int copy = int(cov/DEPTH) == 0 ? 1 : int(cov/DEPTH);
             refCopys.emplace(refName, copy);
         } else {
+            copy = 1;
+        }
+        if (ISTGS) {
             copy = 1;
         }
         fout<<"SEG "<<item.first<<" "<<item.second<<" "<<copy<<"\n";
