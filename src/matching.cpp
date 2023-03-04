@@ -514,7 +514,12 @@ std::map<int, std::vector<int>*>* matching::resolvePath(std::map<int, std::vecto
         bool currentInsert = true;
         bool isCycle = false;
         std::deque<int> zeroBreakPoint;
+        int timesi = 0;
         while (true) {
+            timesi++;
+            if (timesi >= 10* this->getN()) {
+                break;
+            }
 //            auto tmp = this->idx2StrDir(now);
 //            auto tmp2 = this->idx2StrDir(matched[now]);
             auto mIJ = this->getIJ(matched[now],now);
