@@ -161,13 +161,13 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, flo
         if(std::abs(ex[u] + ey[i] - mIJ) <= ZERO) {
             visity[i] = true;
             candidates.push_back(i);
-//            if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
-//                pre->insert(u);
-//                pre->insert(seqGraph::conjugateIdx(i));
-//                matched[i] = u;
-//                matched[seqGraph::conjugateIdx(u)] = seqGraph::conjugateIdx(i);
-//                return true;
-//            }
+            if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
+                pre->insert(u);
+                pre->insert(seqGraph::conjugateIdx(i));
+                matched[i] = u;
+                matched[seqGraph::conjugateIdx(u)] = seqGraph::conjugateIdx(i);
+                return true;
+            }
         } else if(slack[i] > ex[u] + ey[i] - mIJ) {
 //            auto tt1 = ex[u];
 //            auto tt2 = ey[i];
@@ -179,16 +179,16 @@ bool matching::kmDfs(int u, bool visity[],bool visitx[], std::set<int>* pre, flo
         }
     }
 //    sort(candidates.begin(),candidates.end(), this->cmpVertex());
-    Quicksort(this, this->idx2VertexInCurrentGraph(u)->getOutCoverage(), candidates, 0, candidates.size() - 1);
-    for (auto i : candidates) {
-        if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
-            pre->insert(u);
-            pre->insert(seqGraph::conjugateIdx(i));
-            matched[i] = u;
-            matched[seqGraph::conjugateIdx(u)] = seqGraph::conjugateIdx(i);
-            return true;
-        }
-    }
+//    Quicksort(this, this->idx2VertexInCurrentGraph(u)->getOutCoverage(), candidates, 0, candidates.size() - 1);
+//    for (auto i : candidates) {
+//        if((matched[i] == -1) || (kmDfs(matched[i], visity, visitx, pre, ex, ey, slack))) {
+//            pre->insert(u);
+//            pre->insert(seqGraph::conjugateIdx(i));
+//            matched[i] = u;
+//            matched[seqGraph::conjugateIdx(u)] = seqGraph::conjugateIdx(i);
+//            return true;
+//        }
+//    }
 
     return false;
 }
