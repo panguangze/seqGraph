@@ -10,7 +10,7 @@
 #include "limits"
 #include <fstream>
 
-const float ZERO = 0.0000001;
+const float ZERO = 0.00001;
 //
 bool cmp(std::pair<int, std::vector<int>* >& a,
          std::pair<int, std::vector<int>* >& b)
