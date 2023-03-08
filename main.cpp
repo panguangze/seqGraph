@@ -188,7 +188,7 @@ int main(int argc, char *argv[]) {
         BREAK_C = true;
     }
     if (result.count("debug")) {
-        BREAK_C = true;
+        DEBUG = true;
     }
     if (result.count("sub_only")) {
         SUB_ONLY = result["sub_only"].as<std::string>();
