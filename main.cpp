@@ -17,6 +17,7 @@ int TYPE = 0;
 bool SELF_L = false;
 int MIN_L = 1000;
 int MODEL = 0;
+bool DEBUG = false;
 std::string SUB_ONLY = "";
 bool check_visited_path(std::vector<std::vector<std::string>>& visited_vec, std::vector<std::string>& path){
     for (auto& p: visited_vec){
@@ -158,7 +159,8 @@ int main(int argc, char *argv[]) {
             ("sub_only", "Only get all sub graph",cxxopts::value<std::string>()->default_value(""))
             ("model", "0, meta; 1: single strain; ",cxxopts::value<int>()->default_value("0"))
             ("ignore_copy", "Ignore copy number", cxxopts::value<bool>()->default_value("false"))
-            ("h,help", "Print usage");
+            ("d,debug","debug user", cxxopts::value<bool>()->default_value("false"))
+    ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
     if (result.count("help"))
     {
@@ -183,6 +185,9 @@ int main(int argc, char *argv[]) {
         matchResultFile.open(resultM);
     }
     if (result.count("break_c")) {
+        BREAK_C = true;
+    }
+    if (result.count("debug")) {
         BREAK_C = true;
     }
     if (result.count("sub_only")) {
@@ -544,7 +549,13 @@ int main(int argc, char *argv[]) {
                     continue;
                 }
 //                if (MIN_L != -1 && total_length < MIN_L) continue;
+                if (DEBUG && m->inDegree(v) > 1) {
+                    current_path.append("\n");
+                }
                 current_path.append(m->idx2StrDir(v)).append("\t");
+                if (DEBUG && m->outDegree(v) > 1) {
+                    current_path.append("\n");
+                }
             }
             if (MODEL == 0) {
                 if (total_length>500){

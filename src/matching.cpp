@@ -433,6 +433,20 @@ void matching::main_steps() {
     std::cout<<std::endl;
 }
 
+int  matching::inDegree(int idx) {
+    int now = idx;
+    int vIdx = (now + 1) / 2;
+    char dir = now % 2 == 0 ? '-':'+';
+    return (*this->originalGraph->getVertices())[vIdx - 1]->getPrevJuncCountIgnoreCopy();
+}
+
+int  matching::outDegree(int idx) {
+    int now = idx;
+    int vIdx = (now + 1) / 2;
+    char dir = now % 2 == 0 ? '-':'+';
+    return (*this->originalGraph->getVertices())[vIdx - 1]->getNextJuncCountIgnoreCopy();
+}
+
 std::string matching::idx2StrDir(int idx, const std::string& token) {
     int now = idx;
     int vIdx = (now + 1) / 2;
