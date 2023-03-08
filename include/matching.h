@@ -101,6 +101,8 @@ public:
 
 //    If we already have a match A1 --> B1, we will ignore A2 --> B2 when model == 2.
     bool vertexLookup(int i, int j);
+    int  inDegree(int idx);
+    int  outDegree(int idx);
 };
 
 //seqGraph::Graph* reconstructMatrix(float** matrix, std::map<int, std::vector<int>*>*);
