@@ -347,7 +347,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::unordered_ma
 //                continue;
 //            }
             int ncount =  nSize(it2.second, hdr);
-            result_out<<it.first<<it2.first<<ncount<<std::endl;
+            result_out<<it.first<<"\t"<<it2.first<<"\t"<<ncount<<std::endl;
             for (auto item: it2.second) {
                 state = sam_write1(fpout,hdr,item);
                 int temp = 4;
