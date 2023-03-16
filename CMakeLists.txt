@@ -32,7 +32,7 @@ add_executable(bDistance utils/bDistance.cpp utils/bDistance.h include/util.h)
 target_link_libraries(rDistance -lhts)
 target_link_libraries(eResult -lhts)
 target_link_libraries(bDistance -lhts)
-target_link_libraries(matching -lhts)
+target_link_libraries(matching)
 target_link_libraries(eref -lpthread)
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
