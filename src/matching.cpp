@@ -437,14 +437,14 @@ int  matching::inDegree(int idx) {
     int now = idx;
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
-    return (*this->originalGraph->getVertices())[vIdx - 1]->getPrevJuncCountIgnoreCopy();
+    return (*this->originalGraph->getVertices())[vIdx - 1]->getEp3()->getInEdges()->size();
 }
 
 int  matching::outDegree(int idx) {
     int now = idx;
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
-    return (*this->originalGraph->getVertices())[vIdx - 1]->getNextJuncCountIgnoreCopy();
+    return (*this->originalGraph->getVertices())[vIdx - 1]->getEp5()->getOutEdges()->size();
 }
 
 std::string matching::idx2StrDir(int idx, const std::string& token) {
