@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
     options.add_options()
             ("fai", "contigs result", cxxopts::value<std::string>())
             ("b,bam", "Bam file", cxxopts::value<std::string>())
+            ("o,out","Out bam", cxxopts::value<std::string>())
             ("insert_size","average insertion size", cxxopts::value<int>())
             ("insert_std","insertion size standard deviation", cxxopts::value<int>())
             ("min_count","contig pairs less min count will be break", cxxopts::value<int>())
