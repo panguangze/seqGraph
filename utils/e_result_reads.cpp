@@ -20,6 +20,10 @@ bool SELFLOOP = false;
 bool ISTGS = false;
 int THRESHOLD = 0;
 int INSERT_SIZE = 500;
+int INSERT_STD = 500;
+int MIN_COUNT = 5;
+int MAX_GAP = 500;
+
 std::string RESULT;
 
 void parse_fai(const std::string& contig_fai, std::unordered_map<std::string, int>& contigs) {
@@ -57,7 +61,10 @@ int main(int argc, char **argv) {
     options.add_options()
             ("fai", "contigs result", cxxopts::value<std::string>())
             ("b,bam", "Bam file", cxxopts::value<std::string>())
-            ("o,out","Out bam", cxxopts::value<std::string>())
+            ("insert_size","average insertion size", cxxopts::value<int>())
+            ("insert_std","insertion size standard deviation", cxxopts::value<int>())
+            ("min_count","contig pairs less min count will be break", cxxopts::value<int>())
+//            ("max-gap","max gaps", cxxopts::value<int>())
             ("r,result","result N", cxxopts::value<std::string>())
             ("h,help", "Print usage");
     auto result = options.parse(argc,argv);
@@ -74,6 +81,17 @@ int main(int argc, char **argv) {
     }
     if(result.count("result")) {
         RESULT = result["result"].as<std::string>();
+    }
+
+    if(result.count("insert_size")) {
+        INSERT_SIZE = result["insert_size"].as<int>();
+    }
+    if(result.count("insert_std")) {
+        INSERT_STD = result["insert_std"].as<int>();
+    }
+
+    if(result.count("min_count")) {
+        MIN_COUNT = result["min_count"].as<int>();
     }
 
     htsFile *in;
@@ -193,13 +211,22 @@ int nSize(std::vector<bam1_t*>& recs, bam_hdr_t* hdr) {
         if (refpadding > INSERT_SIZE/2 || mrefPadding > INSERT_SIZE/2) continue;
 
 //        int gapsC = INSERT_SIZE + 50 - (refpadding + mrefPadding) - (item->core.l_qseq - refunMatchs) - (item->core.l_qseq - mrefunMatchs);
-        int gapsC = refunMatchs + mrefunMatchs + 50 - (refpadding + mrefPadding);
-        if (gapsC > 0)
-            total_gap += gapsC;
+        int gapsC = (INSERT_SIZE - 2*item->core.l_qseq) + (refunMatchs + mrefunMatchs) - (refpadding + mrefPadding);
+        if (gapsC > INSERT_SIZE + INSERT_STD || gapsC < -(INSERT_STD/INSERT_SIZE) * INSERT_STD) {
+            continue;
+        }
+//        if (gapsC > 0)
+        total_gap += gapsC;
         count++;
     }
-    if (count != 0)
-        return total_gap/count;
+    if (count < MIN_COUNT) {
+        return -1000000;
+    }
+    if (count != 0) {
+        int gap_avg = total_gap/count;
+        return gap_avg;
+    }
+//        return ;
 }
 
 void readBAM(htsFile *in, std::string& out_file, int readsLen, std::unordered_map<std::string, int>& fais) {
