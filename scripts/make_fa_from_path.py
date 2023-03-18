@@ -29,10 +29,10 @@ def get_len_long_substr(str1, str2):
 
     return idx1, idx2, len(substring), substring
 
-def negative_n(contig1,contig2, ncount):
+def negative_n(contig1,contig2, fa,ncount):
     c1 = fa.fetch(contig1[:-1])
     if contig1[-1] == "-":
-        c1 = rev_comp(fa.fetch(contig1[:-1]))
+        c1 = rev_comp(fa.fetch(contig2[:-1]))
     c2 = fa.fetch(contig2[:-1])
     if contig2[-1] == "-":
         c2 = rev_comp(fa.fetch(contig2[:-1]))
@@ -96,8 +96,8 @@ if __name__ == "__main__":
                     fasta += fa.fetch(contig[:-1])
                     if cidx != clen - 1:
                         if (ns[0] < 0):
-                            next_fasta = fa.fetch(contigs[cidx + 1][:-1])
-                            cut_len = negative_n(fasta,next_fasta)
+                            next_contig = contigs[cidx + 1]
+                            cut_len = negative_n(contig,next_contig, fa, ns[0])
                             if cut_len > 0:
                                 fasta = fasta [0:len(fasta) - cut_len]
                         else:
@@ -118,7 +118,13 @@ if __name__ == "__main__":
                     print("not found: ", name)
                     fasta += rev_comp(fa.fetch(name))
                     if cidx != clen - 1:
-                        fasta += 'N'*ns[0]
+                        if (ns[0] < 0):
+                            next_contig = contigs[cidx + 1]
+                            cut_len = negative_n(contig,next_contig, fa, ns[0])
+                            if cut_len > 0:
+                                fasta = fasta [0:len(fasta) - cut_len]
+                        else:
+                            fasta += 'N'*ns[0]
             ns.pop(0)
         res.write(">res_" + str(idx + 1) + "_" + str(len(fasta)) + "\n")
         res.write(fasta + "\n")
