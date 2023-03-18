@@ -209,7 +209,7 @@ int nSize(std::vector<bam1_t*>& recs, bam_hdr_t* hdr) {
             mrefPadding = pos_end;
             mrefunMatchs = splitstrcigar(mcigar, true);
         }
-        if (refpadding > INSERT_SIZE/2 || mrefPadding > INSERT_SIZE/2) continue;
+//        if (refpadding > INSERT_SIZE/2 || mrefPadding > INSERT_SIZE/2) continue;
 
 //        int gapsC = INSERT_SIZE + 50 - (refpadding + mrefPadding) - (item->core.l_qseq - refunMatchs) - (item->core.l_qseq - mrefunMatchs);
         int gapsC = (INSERT_SIZE - 2*item->core.l_qseq) + (refunMatchs + mrefunMatchs) - (refpadding + mrefPadding);
