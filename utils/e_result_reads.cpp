@@ -215,7 +215,7 @@ int nSize(std::vector<bam1_t*>& recs, bam_hdr_t* hdr) {
 
 //        int gapsC = INSERT_SIZE + 50 - (refpadding + mrefPadding) - (item->core.l_qseq - refunMatchs) - (item->core.l_qseq - mrefunMatchs);
         int gapsC = (INSERT_SIZE - 2*item->core.l_qseq) + (refunMatchs + mrefunMatchs) - (refpadding + mrefPadding);
-        if (gapsC > INSERT_SIZE + INSERT_STD || gapsC < -) {
+        if (gapsC > INSERT_SIZE + INSERT_STD || gapsC < -negative_size) {
             continue;
         }
 //        if (gapsC > 0)
