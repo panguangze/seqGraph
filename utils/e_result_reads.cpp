@@ -176,6 +176,8 @@ int splitcigar(unsigned int * cigar,int n_cigar, bool first) {
 
 
 int nSize(std::vector<bam1_t*>& recs, bam_hdr_t* hdr) {
+//    int negative_size = int (((float )INSERT_STD/(float)INSERT_SIZE) * (float )INSERT_STD);
+    int negative_size = int (((float )INSERT_STD/(float)INSERT_SIZE) * (float )INSERT_STD) + INSERT_STD;
     int refLen = sam_hdr_tid2len(hdr, recs[0]->core.tid);
     int mrefLen = sam_hdr_tid2len(hdr, recs[0]->core.mtid);
     int total_gap = 0;
@@ -213,7 +215,7 @@ int nSize(std::vector<bam1_t*>& recs, bam_hdr_t* hdr) {
 
 //        int gapsC = INSERT_SIZE + 50 - (refpadding + mrefPadding) - (item->core.l_qseq - refunMatchs) - (item->core.l_qseq - mrefunMatchs);
         int gapsC = (INSERT_SIZE - 2*item->core.l_qseq) + (refunMatchs + mrefunMatchs) - (refpadding + mrefPadding);
-        if (gapsC > INSERT_SIZE + INSERT_STD || gapsC < -((float )INSERT_STD/(float)INSERT_SIZE) * (float )INSERT_STD) {
+        if (gapsC > INSERT_SIZE + INSERT_STD || gapsC < -) {
             continue;
         }
 //        if (gapsC > 0)
