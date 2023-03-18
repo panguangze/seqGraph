@@ -20,8 +20,8 @@ bool SELFLOOP = false;
 bool ISTGS = false;
 int THRESHOLD = 0;
 int INSERT_SIZE = 500;
-int INSERT_STD = 500;
-int MIN_COUNT = 5;
+int INSERT_STD = 300;
+int MIN_COUNT = 2;
 int MAX_GAP = 500;
 
 std::string RESULT;
@@ -186,7 +186,7 @@ int nSize(std::vector<bam1_t*>& recs, bam_hdr_t* hdr) {
         int refunMatchs = 0;
         int mrefunMatchs = 0;
         auto mcigar = bam_aux2Z(bam_aux_get(item,"MC"));
-        
+
 //        auto op_len = bam_cigar_oplen(mcigar[1]);
         if (item->core.pos > refLen/2) {
             int pos_end = item->core.pos + item->core.l_qseq;
@@ -213,7 +213,7 @@ int nSize(std::vector<bam1_t*>& recs, bam_hdr_t* hdr) {
 
 //        int gapsC = INSERT_SIZE + 50 - (refpadding + mrefPadding) - (item->core.l_qseq - refunMatchs) - (item->core.l_qseq - mrefunMatchs);
         int gapsC = (INSERT_SIZE - 2*item->core.l_qseq) + (refunMatchs + mrefunMatchs) - (refpadding + mrefPadding);
-        if (gapsC > INSERT_SIZE + INSERT_STD || gapsC < -(INSERT_STD/INSERT_SIZE) * INSERT_STD) {
+        if (gapsC > INSERT_SIZE + INSERT_STD || gapsC < -((float )INSERT_STD/(float)INSERT_SIZE) * (float )INSERT_STD) {
             continue;
         }
 //        if (gapsC > 0)
@@ -248,7 +248,11 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::unordered_ma
     std::string readName, refName, mRefName;
     initIMap(hdr, iMap, refCopys);
     int pos, mpos, refLen, mRefLen;
+    int times = 1;
     while ((ret = sam_read1(in, hdr, b)) >= 0) {
+        if (times > 1000000) {
+            break;
+        } times++;
         if (ret < -1) {
             fprintf(stderr, "[E::%s] Error parsing input.\n", __func__);
             if (b) bam_destroy1(b);
@@ -282,7 +286,7 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::unordered_ma
             int minidx = std::min(indexS, indexH);
             int mop_len = std::stoi(pvector[3].substr(0,minidx));
             mpos =  std::stoi(pvector[1]);
-            if ((pos > 1000 && mpos > 1000) || (pos < 1000 && mpos < 1000) ) continue;
+            if ((pos > 2000 && mpos > 2000) || (pos < 2000 && mpos < 2000) ) continue;
             if (op_len <= mop_len) {
                 refName = std::string(sam_hdr_tid2name(hdr, b->core.tid));
                 mRefName = pvector[0].substr(1);
