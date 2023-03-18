@@ -248,11 +248,11 @@ void readBAM(htsFile *in, std::string& out_file, int readsLen, std::unordered_ma
     std::string readName, refName, mRefName;
     initIMap(hdr, iMap, refCopys);
     int pos, mpos, refLen, mRefLen;
-    int times = 1;
+//    int times = 1;
     while ((ret = sam_read1(in, hdr, b)) >= 0) {
-        if (times > 1000000) {
-            break;
-        } times++;
+//        if (times > 1000000) {
+//            break;
+//        } times++;
         if (ret < -1) {
             fprintf(stderr, "[E::%s] Error parsing input.\n", __func__);
             if (b) bam_destroy1(b);
