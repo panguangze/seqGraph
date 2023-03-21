@@ -318,6 +318,7 @@ int main(int argc, char *argv[]) {
     if (SUB_ONLY != "") return 0;
     std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
     int maxI = g->subGraphCount();
+//    int maxI = 3;
     std::cout<<"Isolated nodes"<<g->getIsolatedVs()->size()<<std::endl;
     for (auto item : *g->getIsolatedVs()) {
         resultFile<<item->getOriginId()<<"+"<<"\n";
@@ -549,6 +550,8 @@ int main(int argc, char *argv[]) {
                     continue;
                 }
 //                if (MIN_L != -1 && total_length < MIN_L) continue;
+//                int v_indegree = m->inDegree(v);
+//                int v_outdegree = m->outDegree(v);
                 if (DEBUG && m->inDegree(v) > 1) {
                     current_path.append("\n");
                 }

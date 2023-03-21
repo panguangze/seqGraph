@@ -26,14 +26,26 @@ namespace seqGraph {
         float credibility;
         int idx;
         int copy_idx;
-        int nextJuncCountIgnoreCopy;
+        int nextJuncCountIgnoreCopyPositive;
+    public:
+        int getNextJuncCountIgnoreCopyPositive() const;
+
+        int getNextJuncCountIgnoreCopyNegative() const;
+
+        int getPrevJuncCountIgnoreCopyPositive() const;
+
+        int getPrevJuncCountIgnoreCopyNegative() const;
+
+    protected:
+        int nextJuncCountIgnoreCopyNegative;
+        int prevJuncCountIgnoreCopyPositive;
+        int prevJuncCountIgnoreCopyNegative;
     public:
         int getNextJuncCountIgnoreCopy() const;
 
         int getPrevJuncCountIgnoreCopy() const;
 
     protected:
-        int prevJuncCountIgnoreCopy;
     public:
         int getCopyIdx() const;
 

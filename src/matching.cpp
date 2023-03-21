@@ -437,14 +437,35 @@ int  matching::inDegree(int idx) {
     int now = idx;
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
-    return (*this->originalGraph->getVertices())[vIdx - 1]->getEp3()->getInEdges()->size();
+    if ((*this->originalGraph->getVertices())[vIdx - 1]->getId() == "NZ_CP028684.1:62109-92725_0") {
+        auto tmp = 44;
+    }
+//    int edge_count = (*this->originalGraph->getVertices())[vIdx - 1]->getPrevJuncCountIgnoreCopy();
+
+    if (dir == '+')
+        return (*this->originalGraph->getVertices())[vIdx - 1]->getPrevJuncCountIgnoreCopyPositive();
+    else return  (*this->originalGraph->getVertices())[vIdx - 1]->getPrevJuncCountIgnoreCopyNegative();
+//    for (auto item : *(*this->originalGraph->getVertices())[vIdx - 1]->getEp3()->getInEdges()) {
+//        if (item.)
+//    }
+//    if (edge_count >1 ) {
+//        auto tmp = 22;
+//    }
+//    return (*this->originalGraph->getVertices())[vIdx - 1]->getEp3()->getInEdges()->size();
 }
 
 int  matching::outDegree(int idx) {
     int now = idx;
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
-    return (*this->originalGraph->getVertices())[vIdx - 1]->getEp5()->getOutEdges()->size();
+//    return (*this->originalGraph->getVertices())[vIdx - 1]->getEp5()->getOutEdges()->size();
+    if ((*this->originalGraph->getVertices())[vIdx - 1]->getId() == "NZ_CP028684.1:62109-92725_0") {
+        auto tmp = 44;
+    }
+//    return (*this->originalGraph->getVertices())[vIdx - 1]->getNextJuncCountIgnoreCopy();
+    if (dir == '+')
+        return (*this->originalGraph->getVertices())[vIdx - 1]->getNextJuncCountIgnoreCopyPositive();
+    else return  (*this->originalGraph->getVertices())[vIdx - 1]->getNextJuncCountIgnoreCopyNegative();
 }
 
 std::string matching::idx2StrDir(int idx, const std::string& token) {
@@ -630,7 +651,7 @@ bool matching::vertexLookup(int i, int j)  {
     int iStart = i - (iVertex->getCopyIdx())  * 2;
     int iEnd = i + (iVertex->getWeight()->getCopyNum() - 1 - iVertex->getCopyIdx()) * 2;
     //    check if i have matched all path already
-    auto maxMatched = iVertex->getPrevJuncCountIgnoreCopy();
+    auto maxMatched = iVertex->getPrevJuncCountIgnoreCopyNegative() + iVertex->getPrevJuncCountIgnoreCopyPositive();
     int matchedCount = 0;
     bool isMaxMatched = false;
     for (int p = iStart; p <= iEnd; p+=2) {
