@@ -352,11 +352,12 @@ int main(int argc, char *argv[]) {
 //
         if (VERBOSE >= 2)
             checkMatrixConjugate(m->getMatrix(), m->getN());
-        if (g->getVertices()->size() >= 1000) {
-            m->main_steps();
-        } else {
-            m->hungarian();
-        }
+//        if (g->getVertices()->size() >= 1000) {
+//            m->main_steps();
+//        } else {
+//            m->hungarian();
+//        }
+        m->main_steps();
         if (VERBOSE >= 2) {
             std::cout<<"final matched relation\n";
             for(int i = 0; i < m->getN() + 1; i++) {
