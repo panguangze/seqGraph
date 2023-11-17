@@ -437,7 +437,7 @@ int  matching::inDegree(int idx) {
     int now = idx;
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
-    if ((*this->originalGraph->getVertices())[vIdx - 1]->getId() == "NZ_CP028684.1:62109-92725_0") {
+    if ((*this->originalGraph->getVertices())[vIdx - 1]->getId() == "NODE_19_length_818_cov_50.619433_0") {
         auto tmp = 44;
     }
 //    int edge_count = (*this->originalGraph->getVertices())[vIdx - 1]->getPrevJuncCountIgnoreCopy();
@@ -459,7 +459,7 @@ int  matching::outDegree(int idx) {
     int vIdx = (now + 1) / 2;
     char dir = now % 2 == 0 ? '-':'+';
 //    return (*this->originalGraph->getVertices())[vIdx - 1]->getEp5()->getOutEdges()->size();
-    if ((*this->originalGraph->getVertices())[vIdx - 1]->getId() == "NZ_CP028684.1:62109-92725_0") {
+    if ((*this->originalGraph->getVertices())[vIdx - 1]->getId() == "NZ_CP049085.2:1-114526_0") {
         auto tmp = 44;
     }
 //    return (*this->originalGraph->getVertices())[vIdx - 1]->getNextJuncCountIgnoreCopy();
@@ -781,7 +781,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
     for (auto iPath: *paths) {
         if (this->isCycle(iPath.first) && !BREAK_C) continue;
 //        if (this->isCycle((*iPath.second)[0])) continue;
-        resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,2,0);
+        resultG->addVertex(std::to_string(iPath.second->front()),"xx",1,2,1,1,1,0);
     }
     seqGraph::Vertex* v1;
     seqGraph::Vertex* v2;
@@ -814,6 +814,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
         if (!BREAK_C){
             if (this->isCycle(iPath.first)) continue;
         }
+        if (iPath.first == -1) continue;
         v1 = resultG->getVertexByIdQ(std::to_string(iPath.second->front()));
         if (idx2Str(iPath.second->front()) == "EDGE_5532997_length_1440_cov_2.471753_0")
             int iii = 9;
@@ -821,6 +822,7 @@ void matching::reconstructMatrix(std::map<int, std::vector<int>*>* paths, seqGra
             if (!BREAK_C){
                 if (this->isCycle(jPath.first)) continue;
             }
+            if (jPath.first == -1) continue;
             if (idx2Str(jPath.second->front()) == "EDGE_62388_length_682_cov_5.543802_0")
                 int idi = 9;
             if (iPath.first == jPath.first) continue;

@@ -217,20 +217,44 @@ const std::vector<Junction *> &Vertex::getPrevJuncs() const {
     return prevJuncs;
 }
 
-void Vertex::setNextJunc(Junction* v) {
+void Vertex::setJuncSource(Junction* v) {
     this->nextJuncs.push_back(v);
-    if(v->getTarget()->getCopyIdx() == 0){
-        if (v->getTargetDir() == '+') this->nextJuncCountIgnoreCopyPositive++;
-        else this->nextJuncCountIgnoreCopyNegative++;
+    if (v->getSourceDir() == '+') {
+        if (v->getTarget()->getCopyIdx() == 0) {
+            this->nextJuncCountIgnoreCopyPositive++;
+            this->prevJuncCountIgnoreCopyNegative++;
+        }
     }
+    else {
+        if (v->getTarget()->getCopyIdx() == 0) {
+            this->nextJuncCountIgnoreCopyNegative++;
+            this->prevJuncCountIgnoreCopyPositive++;
+        }
+    }
+//    if(v->getTarget()->getCopyIdx() == 0){
+//        if (v->getTargetDir() == '+') this->nextJuncCountIgnoreCopyPositive++;
+//        else this->nextJuncCountIgnoreCopyNegative++;
+//    }
 }
-void Vertex::setPrevJunc(Junction* v){
+void Vertex::setJuncTarget(Junction* v){
     this->prevJuncs.push_back(v);
-    if (v->getSource()->getCopyIdx() == 0) {
-        if (v->getTargetDir() == '+')
-        this->prevJuncCountIgnoreCopyPositive++;
-        else this->prevJuncCountIgnoreCopyNegative++;
+    if (v->getTargetDir() == '+'){
+        if (v->getSource()->getCopyIdx() == 0) {
+            this->prevJuncCountIgnoreCopyPositive++;
+            this->nextJuncCountIgnoreCopyNegative++;
+        }
     }
+    else {
+        if (v->getSource()->getCopyIdx() == 0) {
+            this->prevJuncCountIgnoreCopyNegative++;
+            this->nextJuncCountIgnoreCopyPositive++;
+        }
+    }
+//    if (v->getSource()->getCopyIdx() == 0) {
+//        if (v->getTargetDir() == '+')
+//        this->prevJuncCountIgnoreCopyPositive++;
+//        else this->prevJuncCountIgnoreCopyNegative++;
+//    }
 }
 
 void Vertex::setGeneAndScore(bool gene, float s) {

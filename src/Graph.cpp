@@ -180,13 +180,15 @@ float plasCopy = copyNum;
     //    set vertex not orphan
         sourceVertex->setOrphan(false);
         targetVertex->setOrphan(false);
-        sourceVertex->setNextJunc(junction);
-        targetVertex->setPrevJunc(junction);
+        sourceVertex->setJuncSource(junction);
+        targetVertex->setJuncTarget(junction);
         return junction;
     } else {
-        if (plasCopy > jun->getWeight()->getCopyNum()) {
-            jun->getWeight()->setCopyNum(plasCopy);
-        }
+        // todo, use max junc or average jun
+//        if (plasCopy > jun->getWeight()->getCopyNum()) {
+//            jun->getWeight()->setCopyNum(plasCopy);
+//        }
+        jun->getWeight()->setCopyNum((plasCopy+jun->getWeight()->getCopyNum())/2);
     }
     return jun;
 }

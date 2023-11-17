@@ -26,7 +26,6 @@ namespace seqGraph {
         float credibility;
         int idx;
         int copy_idx;
-        int nextJuncCountIgnoreCopyPositive;
     public:
         int getNextJuncCountIgnoreCopyPositive() const;
 
@@ -37,13 +36,11 @@ namespace seqGraph {
         int getPrevJuncCountIgnoreCopyNegative() const;
 
     protected:
-        int nextJuncCountIgnoreCopyNegative;
-        int prevJuncCountIgnoreCopyPositive;
-        int prevJuncCountIgnoreCopyNegative;
+        int nextJuncCountIgnoreCopyPositive = 0;
+        int nextJuncCountIgnoreCopyNegative = 0;
+        int prevJuncCountIgnoreCopyPositive = 0;
+        int prevJuncCountIgnoreCopyNegative = 0;
     public:
-        int getNextJuncCountIgnoreCopy() const;
-
-        int getPrevJuncCountIgnoreCopy() const;
 
     protected:
     public:
@@ -85,8 +82,8 @@ namespace seqGraph {
 
         ~Vertex();
 
-        void setNextJunc(Junction*);
-        void setPrevJunc(Junction*);
+        void setJuncSource(Junction* v);
+        void setJuncTarget(Junction* v);
         void setGeneAndScore(bool gene, float s);
         bool isGeneAndScoreOk();
 

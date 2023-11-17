@@ -119,13 +119,13 @@ void parse_tgs(std::string& f_name, seqGraph::Graph* g){
                 dir1 = course[course.size()-1];
                 course.pop_back();
                 v1 = course;
-                vertex1 = g->addVertex(v1,"xx",1,2,1,1,2,0);
+                vertex1 = g->addVertex(v1,"xx",1,2,1,1,1,0);
             } else {
                 dir2 = course[course.size()-1];
                 course.pop_back();
                 v2 = course;
 //                add to grap
-                vertex2 = g->addVertex(v2,"xx",1,2,1,1,2,0);
+                vertex2 = g->addVertex(v2,"xx",1,2,1,1,1,0);
                 g->addJunction(vertex1, vertex2, dir1, dir2, M_WEIGHT, 1 , 1);
                 vertex1 = vertex2;
                 vertex2 = nullptr;
@@ -539,7 +539,10 @@ int main(int argc, char *argv[]) {
             if (BREAK_C && m->isMergedPath(item.first)) continue;
             int total_length = 0;
             std::string current_path;
-            for(const auto& v: *item.second) {
+//            if copy = 1 or copy > and nextjunc == 1, add, else break
+            for (int i = 0; i < item.second->size(); i ++) {
+                auto v = (*item.second)[i];
+//                auto v_next = (*item.second)[i + 1];
                 if (MODEL == 0) {
                     std::vector<std::string> tokens;
                     tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
@@ -547,20 +550,61 @@ int main(int argc, char *argv[]) {
                     total_length+=length;
                 }
                 if (v == -1) {
-                    resultFile<<'c';
                     continue;
                 }
 //                if (MIN_L != -1 && total_length < MIN_L) continue;
-//                int v_indegree = m->inDegree(v);
-//                int v_outdegree = m->outDegree(v);
-                if (DEBUG && m->inDegree(v) > 1) {
-                    current_path.append("\n");
+                int v_copy = m->idx2VertexInOriginalGraph(v)->getWeight()->getCopyNum();
+                auto tmp = m->idx2StrDir(v);
+
+                if (tmp == "NZ_CP049085.2:1-114526+") {
+                    int ttt = 0;
                 }
-                current_path.append(m->idx2StrDir(v)).append("\t");
-                if (DEBUG && m->outDegree(v) > 1) {
-                    current_path.append("\n");
+                int v_outdegree = m->outDegree(v);
+                int v_indegree = m->inDegree(v);
+                if (DEBUG && item.second->size() > 2) {
+//                    if ((v_copy == 1 || (v_copy > 1 && (v_outdegree <= 1 && v_indegree <= 1)))) {
+//                    if (((v_outdegree <= 1 && v_indegree <= 1))) {
+//                        current_path.append(m->idx2StrDir(v)).append("\t");
+//                    } else {
+//                        current_path.append("\n");
+//                        current_path.append(m->idx2StrDir(v)).append("\t");
+//                    }
+                    if (tmp == "NZ_CP049085.2:1-114526+") {
+                        int ttt = 0;
+                    }
+                    if (((v_outdegree > 1 && v_copy > 1) || (v_indegree > 1 && v_copy > 1))) {
+                        current_path.append(tmp).append("\t");
+                        current_path.append("\n");
+                    } else {
+                        current_path.append(m->idx2StrDir(v)).append("\t");
+                    }
+
+                } else {
+                    current_path.append(m->idx2StrDir(v)).append("\t");
                 }
             }
+//            for(const auto& v: *item.second) {
+//                if (MODEL == 0) {
+//                    std::vector<std::string> tokens;
+//                    tokenize(m->idx2StrDir(v).substr(0, m->idx2StrDir(v).length()-1), tokens, "_");
+//                    int length = std::stoi(tokens[3]);
+//                    total_length+=length;
+//                }
+//                if (v == -1) {
+//                    resultFile<<'c';
+//                    continue;
+//                }
+////                if (MIN_L != -1 && total_length < MIN_L) continue;
+//                int v_indegree = m->inDegree(v);
+//                int v_outdegree = m->outDegree(v);
+//                if (DEBUG && v_indegree > 1) {
+//                    current_path.append("\n");
+//                }
+//                current_path.append(m->idx2StrDir(v)).append("\t");
+//                if (DEBUG && v_outdegree > 1) {
+//                    current_path.append("\n");
+//                }
+//            }
             if (MODEL == 0) {
                 if (total_length>500){
                     if (std::find(all_paths.begin(), all_paths.end(), current_path) != all_paths.end())
