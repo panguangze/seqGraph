@@ -9,9 +9,11 @@
 #include <cstring>
 #include <sstream>
 #include "include/cxxopts.hpp"
+#include "include/Vertex.h"
 int VERBOSE = 0;
 const float ZERO = 0.00000001;
 const float M_WEIGHT = 1000000;
+float DEPTH = 100;
 bool BREAK_C = false;
 int TYPE = 0;
 bool SELF_L = false;
@@ -138,6 +140,104 @@ void parse_tgs(std::string& f_name, seqGraph::Graph* g){
     }
     tgs.close();
 }
+
+int update_by_gene_junc_remote(seqGraph::Vertex& v1, seqGraph::Vertex& v2, char v1d, char v2d, seqGraph::Graph* g) {
+    auto juncs_s = g->doesPathExists(v1,v2,v1d,v2d);
+    bool is_updated = false;
+    for (const auto& juncs : juncs_s) {
+        float juncs_count = juncs.size();
+        if (juncs_count == 0) return 0;
+        float path_weight = DEPTH/juncs_count;
+//    if (juncs_count > 5) return 0;
+        for (auto junc: juncs) {
+            junc->getWeight()->setCopyNum(junc->getWeight()->getCopyNum() + path_weight);
+        }
+        is_updated = true;
+    }
+    if(is_updated) return 1;
+    return 0;
+}
+
+int parse_gene_junc(std::string& f_name, seqGraph::Graph* g, float theta) {
+    std::string source, target, startTag, originalSource, originalTarget, prev_source;
+    char sDir, tDir;
+    int copyNum;
+    float coverage = 1;
+    int distance;
+    float score;
+    int cGene;
+    std::ifstream infile(f_name);
+//    this used for path backtrack
+    std::string line;
+    std::set<std::string> visited_self_loop;
+    float distance_idx = 0;
+    int is_updated = 0; //if A,B is updated we will skip all the next pair start from A
+    while (getline(infile, line)) {
+        std::istringstream iss(line);
+        iss >> startTag >> originalSource >> sDir >> originalTarget >> tDir >> distance;
+        if (originalSource == "H:960") {
+            auto tmppp = 44;
+        }
+        source = originalSource;
+        target = originalTarget;
+        if (source == "EDGE_54893_length_473_cov_4.568182")
+            auto mk = 33;
+        auto v1t = g->getVertexById(source + "_0");
+        auto v2t = g->getVertexById(target + "_0");
+        if(v1t == nullptr or v2t == nullptr) continue;
+//            v1 = v1t == nullptr ? g->addVertex(source,"xx",1,2,1,1,2) : v1t;
+//            v2 = v2t == nullptr ? g->addVertex(target,"xx",1,2,1,1,2) : v2t;
+        float c1 = v1t->getWeight()->getCopyNum();
+        float c2 = v2t->getWeight()->getCopyNum();
+        if (c1 == 0 || c2 == 0) {
+            continue;
+        }
+        if (source == prev_source) {
+            distance_idx++;
+        } else {
+            distance_idx = 1;
+        }
+//            divide with min copy and only assign
+        auto min_copy = std::min(c1, c2);
+//            auto divide_copy = std::min(c1,c2);
+        auto multi_copy = c1 * c2;
+        float gene_weight = DEPTH * (1/distance_idx) * theta;
+        gene_weight = gene_weight / min_copy;
+        source = originalSource;
+        target = originalTarget;
+//                if (MODEL == 2) {
+// if the closest jun have gene
+        if(source == "NODE_45_length_1665_cov_23.500000" && target == "NODE_46_length_1652_cov_28.206478_439_1652") {
+            int tmp = 33;
+        }
+//        update_by_gene_junc_remote(*v1t,*v2t,sDir,tDir, g);
+        if(!is_updated) {
+            is_updated = update_by_gene_junc_remote(*v1t,*v2t,sDir,tDir, g);
+        } else {
+            if (prev_source != originalSource) {
+                is_updated = update_by_gene_junc_remote(*v1t,*v2t,sDir,tDir, g);
+            }
+        }
+        for (int i = 0; i < c1; i++) {
+            v1t = g->getVertexById(source.append("_").append(std::to_string(i)));
+//                g->addJunction(v1t, v2t, sDir, tDir, avg_weight, 1 , 1);
+            for (int j = 0; j < c2; j++) {
+                v2t = g->getVertexById(target.append("_").append(std::to_string(j)));
+                target = originalTarget;
+                auto jun = g->doesJunctionExist(*v1t, *v2t, sDir, tDir);
+                if (jun == nullptr) continue;
+                jun->getWeight()->setCopyNum(gene_weight+jun->getWeight()->getCopyNum());
+            }
+            source = originalSource;
+        }
+        prev_source = originalSource;
+        // if a b c d, if a-d have a gene link,
+    }
+//                }
+//            g->addJunction(v1t, v2t, sDir, tDir, weight, 1 , 1);
+    infile.close();
+}
+
 //TODO add args support
 // 1 graph 2 result 3 result.c 4 iteration 5 verbose 7 tgs
 int main(int argc, char *argv[]) {
@@ -152,6 +252,7 @@ int main(int argc, char *argv[]) {
             ("i,iteration", "Iteration times", cxxopts::value<int>()->default_value("0"))
             ("v,verbose", "Verbose", cxxopts::value<int>()->default_value("0"))
             ("l,local_order", "Local order information", cxxopts::value<std::string>())
+            ("gene_junc", "Gene junc", cxxopts::value<std::string>())
             ("m,result_m","Matching result", cxxopts::value<std::string>())
             ("b,break_c", "Whether break and merge cycle into line paths", cxxopts::value<bool>()->default_value("false"))
             ("s,self_l", "Cycle result", cxxopts::value<bool>()->default_value("false"))
@@ -170,7 +271,7 @@ int main(int argc, char *argv[]) {
     std::string graphF = result["graph"].as<std::string>();
     std::string resultF = result["result"].as<std::string>();
     std::string resultCF = result["result_c"].as<std::string>();
-        int iterRounds = result["iteration"].as<int>();
+    int iterRounds = result["iteration"].as<int>();
     VERBOSE = result["verbose"].as<int>();
     MODEL = result["model"].as<int>();
 
@@ -200,6 +301,11 @@ int main(int argc, char *argv[]) {
     if (result.count("self_l")) {
         SELF_L = true;
     }
+    auto* g = new seqGraph::Graph;
+    if (result.count("local_order")) {
+        std::string localOrder = result["local_order"].as<std::string>();
+        parse_tgs(localOrder, g);
+    }
 
     std::string source, target, startTag, originalSource, originalTarget;
     char sDir, tDir;
@@ -208,13 +314,8 @@ int main(int argc, char *argv[]) {
     float weight;
     float score;
     int cGene;
-    auto* g = new seqGraph::Graph;
 
 //
-    if (result.count("local_order")) {
-        std::string localOrder = result["local_order"].as<std::string>();
-        parse_tgs(localOrder, g);
-    }
 
 //    this used for path backtrack
     std::string line;
@@ -312,13 +413,17 @@ int main(int argc, char *argv[]) {
 //            g->addJunction(v1t, v2t, sDir, tDir, weight, 1 , 1);
         }
     }
+    if (result.count("gene_junc")) {
+        std::string gene_junc_file = result["gene_junc"].as<std::string>();
+        parse_gene_junc(gene_junc_file, g, 1);
+    }
 //    matching for each connected graph
     int n = 0;
     g->parseConnectedComponents();
     if (SUB_ONLY != "") return 0;
     std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
     int maxI = g->subGraphCount();
-//    int maxI = 3;
+//    int maxI = 1;
     std::cout<<"Isolated nodes"<<g->getIsolatedVs()->size()<<std::endl;
     for (auto item : *g->getIsolatedVs()) {
         resultFile<<item->getOriginId()<<"+"<<"\n";
@@ -502,7 +607,7 @@ int main(int argc, char *argv[]) {
 //    recallPaths.push_back(paths);
         int iterN = 0;
         iterRounds = iterRoundsBK;
-        int prevPathSize = paths->size();
+        int prevPathSize = 0;
         if (paths->size() != 1) {
             while (iterRounds !=0) {
                 std::cout<<"Iteration "<<iterN + 1<<",nodes count"<<paths->size()<<std::endl;
@@ -569,14 +674,23 @@ int main(int argc, char *argv[]) {
 //                        current_path.append("\n");
 //                        current_path.append(m->idx2StrDir(v)).append("\t");
 //                    }
-                    if (tmp == "NZ_CP049085.2:1-114526+") {
+                    if (tmp == "NODE_51_length_1238_cov_40.515935_96_1238+") {
                         int ttt = 0;
                     }
-                    if (((v_outdegree > 1 && v_copy > 1) || (v_indegree > 1 && v_copy > 1))) {
+                    bool isprinted = false;
+                    if ((v_indegree > 1)) {
+                        current_path.append("\n");
                         current_path.append(tmp).append("\t");
+                        isprinted = true;
+                    }
+                    if (((v_outdegree > 1))) {
+                        if(!isprinted) {
+                            current_path.append(tmp).append("\t");
+                        }
                         current_path.append("\n");
                     } else {
-                        current_path.append(m->idx2StrDir(v)).append("\t");
+                        if(!isprinted)
+                            current_path.append(m->idx2StrDir(v)).append("\t");
                     }
 
                 } else {

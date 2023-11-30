@@ -107,6 +107,7 @@ namespace seqGraph {
 
         void setWeight(Weight *weight);
 
+
         EndPoint *getEp3() const;
 
         void setEp3(EndPoint *ep3);
@@ -155,6 +156,7 @@ namespace seqGraph {
 
         float getInCoverage();
         float getOutCoverage();
+
 
         void setMateEP();
     };

@@ -158,11 +158,11 @@ Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aE
 Junction *Graph::addJunction(Vertex *sourceVertex, Vertex *targetVertex, char sourceDir, char targetDir, float copyNum,
                              float coverage, bool aIsBounded) {
 //    auto *junction = new Junction(sourceVertex, targetVertex, sourceDir, targetDir, copyNum, coverage, aIsBounded);
-if (targetVertex->getId() == "EDGE_2331069_length_139_cov_10.154762_0") {
-    int kk = 33;
-}
-auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
-float plasCopy = copyNum;
+    if (targetVertex->getId() == "EDGE_2331069_length_139_cov_10.154762_0") {
+        int kk = 33;
+    }
+    auto jun = this->doesJunctionExist(*sourceVertex, *targetVertex, sourceDir, targetDir);
+    float plasCopy = copyNum;
     if (MODEL == 0)
         plasCopy = (sourceVertex->getScore() + targetVertex->getScore()) / 2 * copyNum;
     if (jun == nullptr) {
@@ -320,7 +320,14 @@ Junction* Graph::doesJunctionExist(Junction *aJunction) {
     }
     return nullptr;
 }
-
+Junction* Graph::doesJunctionExist(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint) {
+    char sdir = '+', tdir = '+';
+    if(sourceEndpoint->getType() < 0)
+        sdir = '-';
+    if (sinkEndpoint->getType() < 0)
+        tdir = '-';
+    return doesJunctionExist(*sourceEndpoint->getVertex(), *sinkEndpoint->getVertex(), sdir, tdir);
+}
 
 Junction* Graph::doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d) {
     auto  k = std::to_string(v1.getIdx()) +v1d + std::to_string(v2.getIdx())+v2d;
@@ -347,16 +354,76 @@ Junction* Graph::doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d) {
 //    }
     return nullptr;
 }
-bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
+std::vector<std::vector<Junction *>> Graph::doesPathExists(Vertex& v1, Vertex& v2, char v1d, char v2d) {
+    EndPoint *sourceEndPoint, *sinkEndpoint;
+    if(v1d == '+') {
+        sourceEndPoint = v1.getEp3();
+    } else {
+        sourceEndPoint = v1.getRep3();
+    }
+    if(v2d == '+') {
+        sinkEndpoint = v2.getEp5();
+    } else {
+        sinkEndpoint = v2.getRep5();
+    }
+    return getAllPaths(sourceEndPoint, sinkEndpoint);
+}
+
+
+void Graph::findAllPaths(EndPoint *sourceEndPoint, EndPoint *sinkEndPoint, EndPointPath &EPStack,
+                         std::vector<std::vector<Junction *>> &allPaths) {
+    EndPoint *startEP = sourceEndPoint;
+    EPStack.push_back(startEP);
+    Edge *nextEdge = startEP->getOneNextEdge();
+
+    while (!EPStack.empty()) {
+        if (nextEdge == NULL) {
+            EPStack.pop_back();
+            if (!EPStack.empty()) {
+                startEP = EPStack.back();
+                nextEdge = startEP->getOneNextEdge();
+            }
+        } else {
+            EndPoint *nextEP = nextEdge->getTarget();
+            if (nextEP == sinkEndPoint || nextEP == sinkEndPoint->getMateEp()) {
+                EPStack.push_back(sinkEndPoint);
+                std::vector<Junction *> js;
+                for (auto it = EPStack.begin(); it != EPStack.end() - 1; ++it) {
+                    auto ep1 = *it;
+                    auto ep2 = *(it + 1);
+                    js.push_back(doesJunctionExist(ep1, ep2));
+                }
+                allPaths.push_back(js);
+                EPStack.pop_back();
+            }
+            nextEdge->setVisited(true);
+            EPStack.push_back(nextEP);
+            startEP = nextEP;
+            nextEdge = startEP->getOneNextEdge();
+        }
+    }
+    this->resetJunctionVisitFlag();
+}
+
+std::vector<std::vector<Junction *>> Graph::getAllPaths(EndPoint *sourceEndPoint, EndPoint *sinkEndPoint) {
+    std::vector<std::vector<Junction *>> allPaths;
+    EndPointPath EPStack;
+    findAllPaths(sourceEndPoint, sinkEndPoint, EPStack, allPaths);
+    return allPaths;
+}
+
+
+std::vector<Junction *> *Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
     bool isReach = false;
     EndPoint *startEP = sourceEndPoint;
     EndPointPath EPStack;
     EPStack.push_back(startEP);
     Edge *nextEdge = startEP->getOneNextEdge();
-    std::vector<Junction*> js;
+    std::vector<Junction*>* js = new std::vector<Junction*>();
     while (true) {
         if (nextEdge == NULL) {
             EPStack.pop_back();
+            js->pop_back();
             if (EPStack.empty()) {
                 break;
             } else {
@@ -367,75 +434,80 @@ bool Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
             EndPoint *nextEP = nextEdge->getTarget();
             if (nextEP == sinkEndpoint || nextEP == sinkEndpoint->getMateEp()) {
                 isReach = true;
+                EPStack.push_back(sinkEndpoint);
+                js->push_back(nextEdge->getJunction());
                 break;
             }
-            js.push_back(nextEdge->getJunction());
             nextEdge->setVisited(true);
             EPStack.push_back(nextEP);
+            js->push_back(nextEdge->getJunction());
             startEP = nextEP;
             nextEdge = startEP->getOneNextEdge();
         }
     }
     this->resetJunctionVisitFlag();
-    if(isReach) {
-        for (auto j : js) {
-            j->getWeight()->setCopyNum(100000);
-        }
+//    if(isReach) {
+//        for (auto ep : EPStack) {
+//
+//        }
+//    }
+    if (!isReach) {
+        js->clear();
     }
-    return isReach;
+        return js;
 }
 
-void Graph::removeByGeneAndScore(std::ofstream& cycleFile) {
-//    for vertex, gene score.
-    bool  flag = false;
-    for (auto v : *this->getVertices()) {
-        if (!v->isGeneAndScoreOk()) continue;
-        for (auto junc : v->getNextJuncs()) {
-            auto sDir = junc->getSourceDir();
-            auto tDir = junc->getTargetDir();
-            if (sDir == '+') {
-                if (tDir == '+') {
-                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getEp5());
-                } else {
-                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getEp5());
-                }
-            } else {
-                if (tDir == '+') {
-                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getRep5());
-                } else {
-                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getRep5());
-                }
-            }
-            if (! flag) {
-                this->removeJunc(junc);
-            }
-        }
-
-        for (auto junc : v->getPrevJuncs()) {
-            if (junc->isRemoved()) continue;
-            auto sDir = junc->getSourceDir();
-            auto tDir = junc->getTargetDir();
-            if (sDir == '+') {
-                if (tDir == '+') {
-                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getEp5());
-                } else {
-                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getEp5());
-                }
-            } else {
-                if (tDir == '+') {
-                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getRep5());
-                } else {
-                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getRep5());
-                }
-            }
-            if (! flag) {
-                this->removeJunc(junc);
-            }
-        }
-
-    }
-
-}
+//void Graph::removeByGeneAndScore(std::ofstream& cycleFile) {
+////    for vertex, gene score.
+//    bool  flag = false;
+//    for (auto v : *this->getVertices()) {
+//        if (!v->isGeneAndScoreOk()) continue;
+//        for (auto junc : v->getNextJuncs()) {
+//            auto sDir = junc->getSourceDir();
+//            auto tDir = junc->getTargetDir();
+//            if (sDir == '+') {
+//                if (tDir == '+') {
+//                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getEp5());
+//                } else {
+//                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getEp5());
+//                }
+//            } else {
+//                if (tDir == '+') {
+//                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getRep5());
+//                } else {
+//                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getRep5());
+//                }
+//            }
+//            if (! flag) {
+//                this->removeJunc(junc);
+//            }
+//        }
+//
+//        for (auto junc : v->getPrevJuncs()) {
+//            if (junc->isRemoved()) continue;
+//            auto sDir = junc->getSourceDir();
+//            auto tDir = junc->getTargetDir();
+//            if (sDir == '+') {
+//                if (tDir == '+') {
+//                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getEp5());
+//                } else {
+//                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getEp5());
+//                }
+//            } else {
+//                if (tDir == '+') {
+//                    flag =doesPathExists(junc->getTarget()->getEp3(), v->getRep5());
+//                } else {
+//                    flag =doesPathExists(junc->getTarget()->getRep3(), v->getRep5());
+//                }
+//            }
+//            if (! flag) {
+//                this->removeJunc(junc);
+//            }
+//        }
+//
+//    }
+//
+//}
 
 float Graph::getIJ(int i, int j,char sDir,char tDir) {
     auto k = std::to_string(i) + sDir + std::to_string(j)  + tDir;

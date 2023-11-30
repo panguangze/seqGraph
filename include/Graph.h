@@ -118,7 +118,10 @@ namespace seqGraph {
 
         float getIJ(int i, int j,char sDir,char tDir);
 
-        bool doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);
+        std::vector<std::vector<Junction *>> doesPathExists(Vertex& v1, Vertex& v2, char v1d, char v2d);
+
+
+        std::vector<Junction *> *doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint);
 
         int BFS_EndPoint(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint);
 
@@ -127,6 +130,8 @@ namespace seqGraph {
         Junction* doesJunctionExist(Junction *junction);
 
         Junction* doesJunctionExist(Vertex& v1, Vertex& v2, char v1d, char v2d);
+
+        Junction* doesJunctionExist(EndPoint *sourceEndpoint, EndPoint *sinkEndpoint);
 
         void resetJunctionVisitFlag();
 
@@ -157,6 +162,11 @@ namespace seqGraph {
         SparseMatrix& getConjugateMatrix();
 
         void initRowMax();
+
+        void findAllPaths(EndPoint *sourceEndPoint, EndPoint *sinkEndPoint, EndPointPath &EPStack,
+                          std::vector<std::vector<Junction *>> &allPaths);
+
+        std::vector<std::vector<Junction *>> getAllPaths(EndPoint *sourceEndPoint, EndPoint *sinkEndPoint);
     };
 }
 
