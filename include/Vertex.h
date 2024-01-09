@@ -77,7 +77,7 @@ namespace seqGraph {
 
         const std::vector<Junction *> &getPrevJuncs() const;
     public:
-        Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum, int idx, int copy_idx);
+        Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum, int aCopyNumOriginal, int idx, int copy_idx);
         bool sameVertex(const seqGraph::Vertex & v2);
 
         ~Vertex();

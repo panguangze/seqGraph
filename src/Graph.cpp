@@ -144,11 +144,11 @@ Graph* Graph::getSubgraph(int i) {
     subG->isReconstructed = false;
     return subG;
 }
-Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum, int copy_idx) {
+Vertex *Graph::addVertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float mCredibility, int aCopyNum,int copy_idx, int aCopyNumOriginal) {
 //    create vertex add push
     auto v1 = this->getVertexById(mId);
     if(v1 != nullptr) return v1;
-    auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum, this->vertices->size(),copy_idx);
+    auto *vertex = new Vertex(mId, aChrom, aStart, aEnd, aCoverage, mCredibility, aCopyNum,aCopyNumOriginal, this->vertices->size(),copy_idx);
 //    vertex->setIdx(this->vertices->size());
     this->vertices->push_back(vertex);
     this->verticesIdx->emplace(mId, vertex->getIdx());
@@ -412,7 +412,7 @@ std::vector<std::vector<Junction *>> Graph::getAllPaths(EndPoint *sourceEndPoint
     return allPaths;
 }
 
-
+// this function return one path
 std::vector<Junction *> *Graph::doesPathExists(EndPoint *sourceEndPoint, EndPoint *sinkEndpoint) {
     bool isReach = false;
     EndPoint *startEP = sourceEndPoint;

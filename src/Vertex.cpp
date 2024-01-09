@@ -12,7 +12,7 @@ bool Vertex::sameVertex(const seqGraph::Vertex &v2) {
     return this->Id.substr(0, idx1) == v2.getId().substr(0,idx2);
 }
 
-Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float aCredibility, int aCopyNum, int idx, int copy_idx) {
+Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float aCoverage, float aCredibility, int aCopyNum, int aCopyNumOriginal, int idx, int copy_idx) {
     this->copy_idx = copy_idx;
     this->Id = mId;
     this->orphan = true;
@@ -26,7 +26,7 @@ Vertex::Vertex(std::string mId, std::string aChrom, int aStart, int aEnd,float a
     this->idx = idx;
 //    create weight
     weight = new Weight(aCoverage);
-    weight->setCopyNum(aCopyNum);
+    weight->setCopyNum(aCopyNum, aCopyNumOriginal);
 //    create endpoints
     this->EP5 = new EndPoint(weight, _LEFT_TOP_, mId);
     this->rEP5 = new EndPoint(weight, _RIGHT_BOTTOM_, mId);

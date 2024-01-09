@@ -77,8 +77,9 @@ public:
     int checkConjugateMatch();
     void checkConjugateMatrix();
     inline float getIRowMax(int i) {
-        if (this->graph->isSparse()) return this->graph->getConjugateMatrix().getIRowMax(i);
-        else return this->graph->getIRowMaxV(i);
+//        if (this->graph->isSparse()) return this->graph->getConjugateMatrix().getIRowMax(i);
+//        else return this->graph->getIRowMaxV(i);
+        return this->graph->getIRowMaxV(i);
     }
 
     float getIJ(int i,int j);

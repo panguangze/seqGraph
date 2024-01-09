@@ -21,6 +21,72 @@ int MIN_L = 1000;
 int MODEL = 0;
 bool DEBUG = false;
 std::string SUB_ONLY = "";
+
+std::unordered_map<std::string, int> max_seg_nodes(std::string &graph_file) {
+    std::unordered_map<std::string, int> out_results;
+    std::unordered_map<std::string, int> in_results;
+    std::string source, target, startTag, originalSource, originalTarget;
+    char sDir, tDir;
+    int copyNum;
+    float coverage = 1;
+    float weight;
+    float score;
+    int cGene;
+    std::ifstream infile(graph_file);
+    std::string line;
+    std::set<std::string> visited_self_loop;
+    std::set<std::string> prev_junc;
+    while (getline(infile, line)) {
+        std::istringstream iss(line);
+        if (line.rfind("SEG", 0) == 0) {
+            iss >> startTag >> originalSource >> coverage >> copyNum >> cGene >> score;
+            out_results[originalSource] = 0;
+            in_results[originalSource] = 0;
+        } else {
+            iss>>startTag>>originalSource>>sDir>>originalTarget>>tDir>>weight;
+            auto junc_str = originalSource+sDir+originalTarget+tDir;
+            if (prev_junc.count(junc_str) != 0){
+                continue;
+            }
+            prev_junc.insert(originalSource+sDir+originalTarget+tDir);
+            if (sDir == '+') {
+                if(out_results.find(originalSource) != out_results.end()) {
+                    out_results[originalSource]++;
+                }
+                sDir = '-';
+            } else {
+                if(in_results.find(originalSource) != in_results.end()) {
+                    in_results[originalSource]++;
+                }
+                sDir = '+';
+            }
+            if (tDir == '+') {
+                if(in_results.find(originalTarget) != in_results.end()) {
+                    in_results[originalTarget]++;
+                }
+                tDir = '-';
+            } else {
+                if(out_results.find(originalTarget) != out_results.end()) {
+                    out_results[originalTarget]++;
+                }
+                tDir = '+';
+            }
+            prev_junc.insert(originalTarget+tDir+originalSource+sDir);
+        }
+    }
+    for (auto& item : out_results) {
+        auto k = item.first;
+        auto v = item.second;
+        if (k == "k141_19604") {
+            auto tmp = 9;
+        }
+        if (in_results[k] > v) {
+            item.second = in_results[k];
+        }
+    }
+    return out_results;
+}
+
 bool check_visited_path(std::vector<std::vector<std::string>>& visited_vec, std::vector<std::string>& path){
     for (auto& p: visited_vec){
         if (p == path){
@@ -316,7 +382,7 @@ int main(int argc, char *argv[]) {
     int cGene;
 
 //
-
+    auto seg_max_node = max_seg_nodes(graphF);
 //    this used for path backtrack
     std::string line;
     std::set<std::string> visited_self_loop;
@@ -334,21 +400,22 @@ int main(int argc, char *argv[]) {
 //            TODO consider optimize the copied vertices.
             source = originalSource;
             source = source.append("_0");
-//            if(source == "EDGE_1499493_length_56_cov_55.000000_0") {
-//                int mm = 9;
-//            }
-            auto v = g->addVertex(source,"xx",1,2,coverage,1,copyNum, 0);
+            if(originalSource == "k141_19604") {
+                int mm = 9;
+            }
+            auto copyNumNew = std::min(copyNum, seg_max_node[originalSource]);
+            auto v = g->addVertex(source, "xx", 1, 2, coverage, 1, copyNumNew, 0, copyNum);
 //            score = 1;
             v->setGeneAndScore(cGene, score);
             if (!ignore_copy) {
-                for (int i = 1; i < copyNum; i++) {
+                for (int i = 1; i < copyNumNew; i++) {
                     source.pop_back();
                     if (i>=11)
                         source.pop_back();
                     if (i>=101)
                         source.pop_back();
                     source.append(std::to_string(i));
-                    v = g->addVertex(source,"xx",1,2,coverage,1,copyNum, i);
+                    v = g->addVertex(source, "xx", 1, 2, coverage, 1, copyNumNew,i, copyNum);
                     v->setGeneAndScore(cGene, score);
 //                source = originalSource;
                 }
@@ -379,14 +446,17 @@ int main(int argc, char *argv[]) {
 //            seqGraph::Vertex* v2;
             source = originalSource;
             target = originalTarget;
-            if (source == "EDGE_54893_length_473_cov_4.568182")
+            if (source == "k141_19604")
                 auto mk = 33;
             auto v1t = g->getVertexById(source+"_0");
             auto v2t = g->getVertexById(target+"_0");
 //            v1 = v1t == nullptr ? g->addVertex(source,"xx",1,2,1,1,2) : v1t;
 //            v2 = v2t == nullptr ? g->addVertex(target,"xx",1,2,1,1,2) : v2t;
-            float c1 = v1t->getWeight()->getCopyNum();
-            float c2 = v2t->getWeight()->getCopyNum();
+//here, change copy to max seg copy
+//            float c1 = v1t->getWeight()->getCopyNum();
+//            float c2 = v2t->getWeight()->getCopyNum();
+            float c1 = std::min(v1t->getWeight()->getCopyNum(), float(seg_max_node[originalSource]));
+            float c2 = std::min(v2t->getWeight()->getCopyNum(), float(seg_max_node[originalTarget]));
             if (c1 == 0 || c2 == 0) {
                 continue;
             }
@@ -423,13 +493,14 @@ int main(int argc, char *argv[]) {
     if (SUB_ONLY != "") return 0;
     std::cout<<"total nodes"<<g->getVertices()->size()<<std::endl;
     int maxI = g->subGraphCount();
-//    int maxI = 1;
+//    maxI = 3;
     std::cout<<"Isolated nodes"<<g->getIsolatedVs()->size()<<std::endl;
     for (auto item : *g->getIsolatedVs()) {
         resultFile<<item->getOriginId()<<"+"<<"\n";
     }
     std::vector<std::string> to_be_remove_sl;
     while (n < maxI) {
+//        if(n == 118) continue;
 //        if(n==6){
 //            int m = 9;
 //        }

@@ -29,7 +29,12 @@ void Weight::setCoverage(float aCoverage) { mCoverage = aCoverage; }
 
 // void Weight::setOriginalCoverage(float aCoverage) { mCoverageOriginal = aCoverage; }
 // void Weight::setAdjustedCoverage(float aCoverage) { mCoverageAdjusted = aCoverage; }
-void Weight::setCopyNum(float aCopyNum) { mCopyNum = mCopyNumOriginal = mCopyNumBackup = aCopyNum; }
+void Weight::setCopyNum(float aCopyNum, float aCopyNumOriginal) {
+    if (aCopyNumOriginal != 0) {
+        mCopyNumOriginal = mCopyNumBackup = aCopyNumOriginal;
+    }
+    mCopyNum = aCopyNum;
+}
 
 void Weight::backup() { mCopyNumBackup = mCopyNum; }
 

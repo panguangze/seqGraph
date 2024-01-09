@@ -226,8 +226,8 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
 //        visity[x] = true;
         for(int i = 1; i < N + 1; i++){
 //            if i is visited or i == x or (A1 -- B1 is in match already ,A2 -- B2, and model == 2)
-            if(visity[i] or i == x or this->vertexLookup(x,i)) continue;
-//            if(visity[i] or i == x) continue;
+//            if(visity[i] or i == x or this->vertexLookup(x,i)) continue;
+            if(visity[i] or i == x) continue;
             auto mIJ = this->getIJ(x,i);
             if(slack[i] >= ex[x] + ey[i] - mIJ){
                 slack[i] = ex[x] + ey[i] - mIJ;
@@ -244,8 +244,13 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
             d = 0;
         }
         if (d != 0) {
-            for(int i = 0; i < N+1; i++){
-                if(visity[i]) ex[matched[i]] -= d,ey[i] += d;
+            for(int i = 1; i < N+1; i++){
+                if(visity[i]) {
+                    ex[matched[i]] -= d,ey[i] += d;
+                    if(ex[matched[i]] < 0) {
+                        ex[matched[i]] = 0;
+                    }
+                }
                 else slack[i] -= d;
             }
         }
@@ -260,6 +265,7 @@ void matching::bfs(int u, float ex[], float ey[], bool visity[], int pre[], std:
         matched[y] = matched[pre[y]];
         matched[seqGraph::conjugateIdx(matched[pre[y]])] = seqGraph::conjugateIdx(y);
         skipped.emplace(matched[pre[y]]);
+//        TODO, if need this if??
         if (getIJ(matched[y], y) != 0)
             skipped.emplace(seqGraph::conjugateIdx(y));
         y = pre[y]; // 更新每个点对应的点
@@ -398,6 +404,7 @@ void matching::main_steps() {
 
 //TODO get row max
     for( int i = 1 ; i < N +1 ; i++ ){
+        auto t = this->getIRowMax(i);
         ex[i] = this->getIRowMax(i);
 //        for( int j = 1 ; j <= N ; j++ ){
 //            if( ex[i] < matrix[i][j] ) ex[i] = matrix[i][j];
@@ -405,7 +412,7 @@ void matching::main_steps() {
     }
     std::set<int> skipped;
     for( int i = 1 ; i < N+1 ; i++ ){
-        if (i == 19) {
+        if (i == 10) {
             auto tmpp = 33;
         }
         if (skipped.find(i) != skipped.end()) continue;
@@ -415,7 +422,7 @@ void matching::main_steps() {
 //        }
         memset( visity , false , sizeof(visity) );
         std::fill_n(pre, N+1, 0);
-        std::fill_n(slack, N+1, 10000000);
+        std::fill_n(slack, N+1, 1000000);
 
         bfs(i,ex,ey, visity,pre, skipped, slack);
         if (VERBOSE >= 1) {
@@ -960,38 +967,41 @@ void matching::breakAndMergeCycle(std::map<int,std::vector<int>*> *result) {
     if (this->cyclePaths.empty()) return;
     std::vector<std::pair<int, std::vector<int>*>> A;
     sort(*result,A);
+    std::sort(this->cyclePaths.begin(), this->cyclePaths.end());
+
+    // Step 2: Use std::unique to remove duplicate elements
+    auto end_unique = std::unique(this->cyclePaths.begin(), this->cyclePaths.end());
+
+    // Step 3: Erase the "extra" elements
+    this->cyclePaths.erase(end_unique, this->cyclePaths.end());
+    std::vector<int> to_remove;
     for (auto item: this->cyclePaths) {
-        if (item == 125) {
-            auto tmp = 33;
-        }
-//        Here we only consider the break point of the cycle path, have copy (a bug here may be, we don't consider the copied node at other place)
         auto v1 = idx2VertexInCurrentGraph(item);
         auto cPath = (*result)[item];
         for (auto& p : *result) {
-//           avoid A merged into B and B merged into A again
-            if (p.first == item or (this->mergedPaths.find(p.first) != this->mergedPaths.end())) continue;
+            if (p.first == item or std::find(to_remove.begin(), to_remove.end(),p.first) != to_remove.end()) continue;
             bool hit = false;
             for (int i = 0 ; i < p.second->size(); i++) {
                 auto idx = (*p.second)[i];
                 auto v2 = idx2VertexInCurrentGraph(idx);
                 if(v1->sameVertex(*v2)) {
-//                    merge a cycle into this path.
-                    this->mergedPaths.insert({item, p.first});
+//
                     auto pos = p.second->begin() + i;
-//                    keep the original first to be first
                     p.second->insert(pos, cPath->begin(), cPath->end());
                     hit = true;
-//                    process A1xxxxx insert to A0xxxxx, this will make the front diff from the key.
-                    if (i == 0) {
-                        auto cPathLen = cPath->size();
-                        int swapV = p.second->front();
-                        (*p.second)[0] = (*p.second)[cPathLen];
-                        (*p.second)[cPathLen] = swapV;
-                    }
+                    to_remove.push_back(item);
                     break;
                 }
             }
             if (hit) break;
+        }
+    }
+    if (BREAK_C) {
+        for (auto i : to_remove) {
+            result->erase(i);
+            auto it = std::find(this->cyclePaths.begin(), this->cyclePaths.end(), i);
+            if (it != this->cyclePaths.end())
+                this->cyclePaths.erase(it);
         }
     }
 }

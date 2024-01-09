@@ -29,7 +29,7 @@ namespace seqGraph {
 
         void setCoverage(float aCoverage);
 
-        void setCopyNum(float aCopyNum);
+        void setCopyNum(float aCopyNum, float aCopyNumOriginal=0);
 
         void backup();
 
